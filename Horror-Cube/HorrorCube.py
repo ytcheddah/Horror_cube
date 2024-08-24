@@ -13,7 +13,7 @@ pygame.display.set_caption("Horror Cube")
 clock = pygame.time.Clock()
 
 # Loads Images
-background = pygame.transform.scale(pygame.image.load("images/test-image1.png").convert(), (WIDTH, HEIGHT))
+background = pygame.transform.scale(pygame.image.load("Horror-Cube/images/test-image1.png").convert(), (WIDTH, HEIGHT))
 
 
 class Player(pygame.sprite.Sprite):
@@ -23,22 +23,22 @@ class Player(pygame.sprite.Sprite):
         super().__init__()
         self.sprites = []
         self.is_animating = False
-        self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC00.png"))
-        self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC01.png"))
-        self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC02.png"))
-        self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC03.png"))
-        self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC04.png"))
-        self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC05.png"))
-        self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC06.png"))
-        self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC07.png"))
-        self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC08.png"))
-        self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC09.png"))
-        self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC10.png"))
-        self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC11.png"))
-        self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC12.png"))
-        self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC13.png"))
-        self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC14.png"))
-        self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC15.png"))
+        self.sprites.append(pygame.image.load("Horror-Cube/images/MC-ind-Sprites/sprite_MC00.png"))
+        self.sprites.append(pygame.image.load("Horror-Cube/images/MC-ind-Sprites/sprite_MC01.png"))
+        self.sprites.append(pygame.image.load("Horror-Cube/images/MC-ind-Sprites/sprite_MC02.png"))
+        self.sprites.append(pygame.image.load("Horror-Cube/images/MC-ind-Sprites/sprite_MC03.png"))
+        self.sprites.append(pygame.image.load("Horror-Cube/images/MC-ind-Sprites/sprite_MC04.png"))
+        self.sprites.append(pygame.image.load("Horror-Cube/images/MC-ind-Sprites/sprite_MC05.png"))
+        self.sprites.append(pygame.image.load("Horror-Cube/images/MC-ind-Sprites/sprite_MC06.png"))
+        self.sprites.append(pygame.image.load("Horror-Cube/images/MC-ind-Sprites/sprite_MC07.png"))
+        self.sprites.append(pygame.image.load("Horror-Cube/images/MC-ind-Sprites/sprite_MC08.png"))
+        self.sprites.append(pygame.image.load("Horror-Cube/images/MC-ind-Sprites/sprite_MC09.png"))
+        self.sprites.append(pygame.image.load("Horror-Cube/images/MC-ind-Sprites/sprite_MC10.png"))
+        self.sprites.append(pygame.image.load("Horror-Cube/images/MC-ind-Sprites/sprite_MC11.png"))
+        self.sprites.append(pygame.image.load("Horror-Cube/images/MC-ind-Sprites/sprite_MC12.png"))
+        self.sprites.append(pygame.image.load("Horror-Cube/images/MC-ind-Sprites/sprite_MC13.png"))
+        self.sprites.append(pygame.image.load("Horror-Cube/images/MC-ind-Sprites/sprite_MC14.png"))
+        self.sprites.append(pygame.image.load("Horror-Cube/images/MC-ind-Sprites/sprite_MC15.png"))
 
         self.current_sprite = 0
         self.image = pygame.transform.rotozoom((self.sprites[self.current_sprite]).convert_alpha(), 0, 0.25)
