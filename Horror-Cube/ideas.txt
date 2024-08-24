@@ -1,0 +1,93 @@
+
+Scare Square
+Horror Cube
+Fear Box
+
+-----------------------------------------------------------------------------------------------
+
+Lore/Story:
+
+
+
+
+-----------------------------------------------------------------------------------------------
+
+Monster class idea/reference:
+
+class (monster)
+    def __init__(self,size,sounds,strength,hp,defense,status_type,alert_ratio,alert_radius,agro_type,agro_radius,)
+
+alert_ratio     = probability of their alert state converts to agro state
+agro_type       = whether monster is aggrod by sight or sound   
+
+
+-----------------------------------------------------------------------------------------------
+
+IDEAS:
+
+whole game is 1 Large Map, short, gets harder every time you beat it, goal is to complete runs (and story) and unlock more items/artifacts
+and enemies. Dark room, you find flashlights to see more of the map, you dodge enemies and obsticles to get to safe zone
+purely dodge, no attacking, enemies can attack but low/no projectiles. Find notes in game for the lore, have them be accessible
+in the game, not required to beat the game, BUT they are achievement faughter and extra credit. TV can be what teleports you from
+map to map. end of game you become a monster.
+In depth item collection, artifacts, things that affect future runs
+want player to be scared of the game even tho its a top down 2d game.
+constant tension and threat of being caught/chase while solving a puzzle.
+*Monsters will need procedurial animation
+    -notes-
+        vector from anchor with radius and additionally any point then scale vector to desired distance ea distance restraint
+            this can make a snake like animation that is based off an algorithm
+        the radius can alter in size and vary the body-shape and size of the animal, useful for lizard-like bodies
+        3 quarter turns from any anchor spot bound vector can determine body positions for features such as limbs
+        spine needs a maximum level of flexibility through angle restraints, if an angle is too big, it can be altered to a diff value
+        *kinematics*
+            Forward and Inverse Kinematics - will be needed for limbs and natural movement for reaching desired anchor positions
+                *FABRIK* = Forward And Backward Reaching Inverse Kinematics
+            FABRIK chain can be attached to a leg as its connector for a foot, and the distance control is the steps
+            
+
+
+Move with WASD but also have a mouse that controls the direction you face, moving the screen like binding of isaac.
+you could close eyes for a short period everytime screen moves to both give time for mouse adjustment and also have a grace period
+for not agro-ing monsters.
+
+*Random main character Blinking*
+
+make TRAPS, get trap parts to stop enemies, can step in your own traps
+Really lean into the Trap making aspect of the game as it is the only type of combat available to the character.
+
+TRAP TYPES:
+
+
+
+STATUS TYPES:
+
+static, dizzy, blind, poison, corrosion, hypnotized, Epilepsy, 
+---
+Hypnotize: inverts WASD controls and look opposite of mouse.
+
+
+UPGRADEABLE ITEMS:
+
+Traps, Flashlights, Night Vision
+
+
+
+-----------------------------------------------------------------------------------------------
+
+MONSTERS:
+
+Blob - can eat you and slow you down then spit you out.
+*blob with arm that pulls towards you while chasing,
+*camoflauge monster - clings to walls, can reach and grab you if you get too close to it. It emmits a dim light when it opens its
+            eye which both extends its alert radius and can 
+Mimic - copies a flashlight
+Screamer - alerts things around it, itself isnt very dangerous, but the screamer while chasing has an alert radius like the
+            player does, the screamers are blind, but are alerted themselves by a loud sound.
+*fast monster - deaf but 
+Ghost - mostly invisible, can go through walls, really slow and low alert radius
+Slopper - Vomits on you,
+*kamikaze type monster - homes in on you, really quiet, it tries to blow itself up on you
+*Tv Monster - Has a TV static screen with a bright light on its front facing side, its light can hypnotize you
+*monster that only moves when ur not looking at it* *wheeping angel* - 
+*angler fish monster - 
