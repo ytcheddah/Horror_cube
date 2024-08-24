@@ -17,7 +17,7 @@ screen = pygame.display.set_mode((800, 600))
 pygame.display.set_caption("Horror Cube")
 
 #font
-font = pygame.font.Font("Horror-Cube/font/boldPixelFont.ttf", 74)
+font = pygame.font.Font("font/boldPixelFont.ttf", 74)
 
 #colors
 WHITE = (255, 255, 255)
