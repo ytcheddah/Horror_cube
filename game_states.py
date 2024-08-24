@@ -81,9 +81,9 @@ while running:
             # Example: handle game controls here
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_p:  # Example: pause game
-                    game_state = PAUSED
+                    game_state = PAUSE
 
-    elif game_state == PAUSED:
+    elif game_state == PAUSE:
         # Add pause menu or logic here if necessary
         print("Game is paused")
         game_state = PLAYING  # Or handle pause logic
