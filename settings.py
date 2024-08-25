@@ -9,4 +9,4 @@ PLAYER_START_X = 400
 PLAYER_START_Y = 500
 PLAYER_SPEED = 8
 
-print(1000/3)
+print(96 - 33)
