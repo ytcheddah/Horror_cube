@@ -22,28 +22,9 @@ class Player(pygame.sprite.Sprite):
         #this below calls the parent class' constructor, which is the sprite class
         super().__init__()
         self.sprites = []
-        # self.is_animating = False
-        # self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC01.png"))
-        # self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC00.png"))
-        # self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC02.png"))
-        # self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC03.png"))
-        # self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC04.png"))
-        # self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC05.png"))
-        # self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC06.png"))
-        # self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC07.png"))
-        # self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC08.png"))
-        # self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC09.png"))
-        # self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC10.png"))
-        # self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC11.png"))
-        # self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC12.png"))
-        # self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC13.png"))
-        # self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC14.png"))
-        # self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC15.png"))
 
-        # self.current_sprite = 0
-        # self.image = pygame.transform.rotozoom((self.sprites[self.current_sprite]).convert_alpha(), 0, 0.25)
 
-        self.image = pygame.transform.rotozoom(pygame.image.load("images/MC-ind-Sprites/sprite_MC00.png").convert_alpha(), 0, 0.25)
+        self.image = pygame.transform.rotozoom(pygame.image.load("images\umo_Sprites\idle\umo-idle-0.png").convert_alpha(), 0, 0.5)
         self.pos = pygame.math.Vector2(PLAYER_START_X, PLAYER_START_Y)
         self.speed = PLAYER_SPEED
         
@@ -69,8 +50,8 @@ class Player(pygame.sprite.Sprite):
             self.velocity_x = self.speed
 
         if self.velocity_x != 0 and self.velocity_y != 0: # moving diagonally
-            self.velocity_x /= math.sqrt(2)
-            self.velocity_y /= math.sqrt(2)
+                self.velocity_x /= math.sqrt(2)
+                self.velocity_y /= math.sqrt(2)
 
         # if keys[pygame.K_r]:
         #     self.current_sprite += 1
