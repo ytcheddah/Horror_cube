@@ -15,6 +15,25 @@ Git/Github Notes:
 
         Remote Repository is what can be looked at from any machine, should be the mostly
             up to date, can be used to change and make changes to your local Repository
+    
+    Stage, commit, push, pull in terminal
+        
+        branch commands in terminal
+            git branch 
+                # checks the branch you are currently on
+            git checkout <branch-name> 
+                # replace '<branch-name>' with the name of the branch you want to switch to
+                    If the branch doesnt exist locally but does exist remotely, use:
+                        git checkout -b <branch-name>
+            
+        stage       
+            git add .
+        commit -- for main
+            git commit -m "your commit message"
+        push -- for main
+            git push origin main
+        pull -- pull before starting work !!! (For YT especially)
+            git pull origin main
 
 
     Git History and Branches:
@@ -79,3 +98,42 @@ Git/Github Notes:
         *pushes wont work if you are not up to date locally with the remote repo, or if there are conflicts to the changes
             made on the same line, you will need to manually tell Git what any merge conflicts should look like*
         - git push origin (name of different branch if ur not working in master branch)
+
+
+umo_sprite_movement 
+    goal: is to implement the animation and movement of the sprite monster 'umo'
+    status: work in progress
+    Ideas: umo moves in a random direction with the roam_chase animation.
+        - these animations are the same, but chase will be played back faster and 
+        the umo will move faster as well
+        - the key differences will be that during roam, it will move in a random 
+        direction then trigger the 'idle' animation before triggering the 'roam' 
+        animation again
+
+Object oriented coding
+    everything is treated as an Object
+    parameters apply to more than self
+    parameters may apply to any Object
+
+
+Mood meter
+    range (1, 1000)
+    x 5 to 96 pixels = 91 pixels in length
+    1000/91 = 10.989010989010989
+        rounds up to 11
+    every 11 instances of time, reduce the size of the bar by 1 pixel
+    3 colors
+        if x > 60               green
+        if x <= 60 and x >30    yellow
+        if x <= 30              red
+    3 status effects follow the same format
+        if x > 60               Comfortable, you are unbothered
+        if x <= 60 and x > 30   Uneasy, you hallucinate but you are aware that it's in your head. You may feel your lunch come up
+        if x <= 30              Schizo, you are in a state of crazed paranoia. Your senses are heightened, and you feel like you can move faster. 
+                                However you don't know if that monster chasing you is real or a figment of your imagination. 
+                                Better not test that!
+                       
+    Comfortable (baseline stats)
+    Uneasy (slight speed down. vision slightly increased. slightly transparent monsters spawn which don't influence the player, 
+    if one passes through you, puke)
+    Schizo (slight speed up. vision increased. fully Opaque monsters spawn out of view. They CAN and WILL kill you)
