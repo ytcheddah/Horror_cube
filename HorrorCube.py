@@ -71,16 +71,6 @@ class Player(pygame.sprite.Sprite):
         self.move()
 
 
-        #     self.current_sprite += .14
-
-        #     if self.current_sprite >= 7:
-        #         self.current_sprite = 0
-        #         self.is_animating = False
-        # else:
-        #     self.move()
-
-        #     self.image = pygame.transform.rotozoom((self.sprites[int(self.current_sprite)]).convert_alpha(), 0, 0.25)
-
 
 player = Player()
     
