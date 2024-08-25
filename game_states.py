@@ -165,10 +165,10 @@ while running:
             pygame.display.update()
             clock.tick(FPS)
 
-            if game_state == PLAYING:
-                # Example: Pressing ESC pauses the game and returns to the menu
-                for event in pygame.event.get():
-                    if event.type == pygame.KEYDOWN:
-                        if event.key == pygame.K_ESCAPE:
-                            game_state = MENU
+            # if game_state == PLAYING:
+            #     # Example: Pressing ESC pauses the game and returns to the menu
+            #     for event in pygame.event.get():
+            #         if event.type == pygame.KEYDOWN:
+            #             if event.key == pygame.K_ESCAPE:
+            #                 game_state = MENU
 
