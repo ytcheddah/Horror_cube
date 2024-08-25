@@ -6,14 +6,8 @@ from settings import *
 # initialize pygame
 pygame.init()
 
-# Constants imported from settings
-BAR_OUTLINE_WIDTH = 500
-BAR_OUTLINE_HEIGHT = 25
-BAR_WIDTH = 488
-BAR_HEIGHT = 15
-BAR_X = 250
-BAR_Y = 250
-YELLOW = (255, 255, 0)
+# constants imported from settings
+
 
 # space bar to increase rate of percentage decay
 # class Player():
@@ -64,8 +58,9 @@ def draw_psyche_bar(percentage):
 percentage = 100
 clock = pygame.time.Clock()
 
-
-percentage_decay = .01
+# percentage_decay is set to lower percentage to 0 in 3 minutes
+# 60 f / s * 180 s = 10800 frames
+percentage_decay = (100 / 10800)
 
 
 while True:
