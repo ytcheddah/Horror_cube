@@ -22,28 +22,28 @@ class Player(pygame.sprite.Sprite):
         #this below calls the parent class' constructor, which is the sprite class
         super().__init__()
         self.sprites = []
-        self.is_animating = False
-        self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC01.png"))
-        self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC00.png"))
-        self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC02.png"))
-        self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC03.png"))
-        self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC04.png"))
-        self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC05.png"))
-        self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC06.png"))
-        self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC07.png"))
-        self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC08.png"))
-        self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC09.png"))
-        self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC10.png"))
-        self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC11.png"))
-        self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC12.png"))
-        self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC13.png"))
-        self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC14.png"))
-        self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC15.png"))
+        # self.is_animating = False
+        # self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC01.png"))
+        # self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC00.png"))
+        # self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC02.png"))
+        # self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC03.png"))
+        # self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC04.png"))
+        # self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC05.png"))
+        # self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC06.png"))
+        # self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC07.png"))
+        # self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC08.png"))
+        # self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC09.png"))
+        # self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC10.png"))
+        # self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC11.png"))
+        # self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC12.png"))
+        # self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC13.png"))
+        # self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC14.png"))
+        # self.sprites.append(pygame.image.load("images/MC-ind-Sprites/sprite_MC15.png"))
 
-        self.current_sprite = 0
-        self.image = pygame.transform.rotozoom((self.sprites[self.current_sprite]).convert_alpha(), 0, 0.25)
+        # self.current_sprite = 0
+        # self.image = pygame.transform.rotozoom((self.sprites[self.current_sprite]).convert_alpha(), 0, 0.25)
 
-        #self.image = pygame.transform.rotozoom(pygame.image.load("images/MC-ind-Sprites/sprite_MC00.png").convert_alpha(), 0, 0.25)
+        self.image = pygame.transform.rotozoom(pygame.image.load("images/MC-ind-Sprites/sprite_MC00.png").convert_alpha(), 0, 0.25)
         self.pos = pygame.math.Vector2(PLAYER_START_X, PLAYER_START_Y)
         self.speed = PLAYER_SPEED
         
@@ -84,21 +84,21 @@ class Player(pygame.sprite.Sprite):
     def update(self):
 
 
-        if self.is_animating == True:
+        # if self.is_animating == True:
 
-            self.user_input()
-            self.move()
+        self.user_input()
+        self.move()
 
 
-            self.current_sprite += .14
+        #     self.current_sprite += .14
 
-            if self.current_sprite >= 7:
-                self.current_sprite = 0
-                self.is_animating = False
+        #     if self.current_sprite >= 7:
+        #         self.current_sprite = 0
+        #         self.is_animating = False
         # else:
         #     self.move()
 
-            self.image = pygame.transform.rotozoom((self.sprites[int(self.current_sprite)]).convert_alpha(), 0, 0.25)
+        #     self.image = pygame.transform.rotozoom((self.sprites[int(self.current_sprite)]).convert_alpha(), 0, 0.25)
 
 
 player = Player()
@@ -112,7 +112,7 @@ while True:
             pygame.quit()
             exit()
         if event.type == pygame.KEYDOWN:
-            player.animate()
+            player.user_input()
     
     screen.blit(background, (0, 0))
     screen.blit(player.image, player.pos)
