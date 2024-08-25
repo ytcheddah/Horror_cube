@@ -12,7 +12,7 @@ PAUSE = "pause"
 #initial state
 game_state = MENU
 
-#sud
+#screen display
 screen = pygame.display.set_mode((800, 600))
 pygame.display.set_caption("Horror Cube")
 
