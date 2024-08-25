@@ -11,13 +11,6 @@ sprite_sheet = pygame.image.load("images/MC-SpriteSheet.png").convert_alpha()
 sprite_sheet_image = pygame.transform.rotozoom(sprite_sheet, 0, 0.2)
 
 
-BG = (100, 100, 100)
-
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-RED = (255, 0, 0)
-GREEN = (0, 255, 0)
-
 def get_image(sheet, frame, width, height, scale, color):
 
     image = pygame.Surface((width, height)).convert_alpha()
@@ -27,10 +20,11 @@ def get_image(sheet, frame, width, height, scale, color):
 
     return image
 
-frame_0 = get_image(sprite_sheet_image, 0, 64, 64, 1, GREEN)
-frame_1 = get_image(sprite_sheet_image, 1, 64, 64, 1, GREEN)
-frame_2 = get_image(sprite_sheet_image, 2, 64, 64, 1, GREEN)
-frame_3 = get_image(sprite_sheet_image, 3, 64, 64, 1, GREEN)
+
+frame_0 = get_image(sprite_sheet_image, 0, 64, 64, 1, BLACK)
+frame_1 = get_image(sprite_sheet_image, 1, 64, 64, 1, BLACK)
+frame_2 = get_image(sprite_sheet_image, 2, 64, 64, 1, BLACK)
+frame_3 = get_image(sprite_sheet_image, 3, 64, 64, 1, BLACK)
 
 
 
