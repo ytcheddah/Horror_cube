@@ -5,6 +5,7 @@ from settings import *
 
 # initializes pygame
 pygame.init() 
+pygame.mixer.init()
 
 # initialize music
 
@@ -30,7 +31,7 @@ font = pygame.font.Font("font/boldPixelFont.ttf", 74)
 pygame.mixer.init()  # Initialize the mixer
 pygame.mixer.music.load('sound/Cube_Hell_menu_music.mp3')  # Load the music file
 pygame.mixer.music.set_volume(MUSIC_VOLUME)  # Set volume (optional)
-pygame.mixer.music.play(-1)  # Play the music on a loop (-1 means loop indefinitely)
+pygame.mixer.music.play(-1,)  # Play the music on a loop (-1 means loop indefinitely)
 
 # menu items
 menu_items = ['Start Game', 'Options', 'Exit']
@@ -97,7 +98,7 @@ while running:
                 self.sprites = []
 
 
-                self.image = pygame.transform.rotozoom(pygame.image.load("images/umo_Sprites/idle/umo-idle-0.png").convert_alpha(), 0, 0.5)
+                self.image = pygame.transform.rotozoom(pygame.image.load("images/umo_Sprites/idle/umo-idle-0.png").convert_alpha(), 0, 2)
                 self.pos = pygame.math.Vector2(PLAYER_START_X, PLAYER_START_Y)
                 self.speed = PLAYER_SPEED
                 
@@ -113,13 +114,13 @@ while running:
                 keys = pygame.key.get_pressed()
 
 
-                if keys[pygame.K_w]:
+                if keys[pygame.K_w] or keys[pygame.K_UP]:
                     self.velocity_y = -self.speed
-                if keys[pygame.K_a]:
+                if keys[pygame.K_a] or keys[pygame.K_LEFT]:
                     self.velocity_x = -self.speed
-                if keys[pygame.K_s]:
+                if keys[pygame.K_s] or keys[pygame.K_DOWN]:
                     self.velocity_y = self.speed
-                if keys[pygame.K_d]:
+                if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
                     self.velocity_x = self.speed
 
                 if self.velocity_x != 0 and self.velocity_y != 0: # moving diagonally
@@ -150,6 +151,7 @@ while running:
 
         while True:
 
+            pygame.time.delay(15)
             keys = pygame.key.get_pressed()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:

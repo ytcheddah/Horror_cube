@@ -24,7 +24,7 @@ class Player(pygame.sprite.Sprite):
         self.sprites = []
 
 
-        self.image = pygame.transform.rotozoom(pygame.image.load("images/umo_Sprites/idle/umo-idle-0.png").convert_alpha(), 0, 0.5)
+        self.image = pygame.transform.rotozoom(pygame.image.load("images/umo_Sprites/idle/umo-idle-0.png").convert_alpha(), 0, 2)
         self.pos = pygame.math.Vector2(PLAYER_START_X, PLAYER_START_Y)
         self.speed = PLAYER_SPEED
         
