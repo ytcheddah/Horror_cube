@@ -20,10 +20,11 @@ RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 YELLOW = (255, 255, 0)
+GRAY = (150, 150, 150)
 
 # Sound
 
-MUSIC_VOLUME = 0.5
+DEFAULT_MUSIC_VOLUME = 0.5
 
 # Mood bar
 
