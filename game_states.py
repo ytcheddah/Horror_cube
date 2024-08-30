@@ -24,9 +24,9 @@ clock = pygame.time.Clock()
 font = pygame.font.Font("font/boldPixelFont.ttf", 74)
 
 # Menu music
-pygame.mixer.music.load('sound/Cube_Hell_menu_music.mp3')
-pygame.mixer.music.set_volume(MUSIC_VOLUME)
-pygame.mixer.music.play(-1)
+# pygame.mixer.music.load('sound/Cube_Hell_menu_music.mp3')
+# pygame.mixer.music.set_volume(MUSIC_VOLUME)
+# pygame.mixer.music.play(-1)
 
 # Menu items
 menu_items = ['Start Game', 'Options', 'Exit']
@@ -48,13 +48,15 @@ def draw_menu(selected_item):
 
 def handle_menu_input():
     global game_state, selected_item
+    keys = pygame.key.get_pressed()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
         if event.type == pygame.KEYDOWN:
             print(f"Key pressed: {pygame.key.name(event.key)}")  # Debug print
-            if event.key in [pygame.K_UP, pygame.K_w]:
+            if keys[pygame.K_UP]:
+                print('UP')
                 selected_item = (selected_item - 1) % len(menu_items)
             if event.key in [pygame.K_DOWN, pygame.K_s]:
                 selected_item = (selected_item + 1) % len(menu_items)
@@ -62,7 +64,9 @@ def handle_menu_input():
                 if selected_item == 0:  # Start Game
                     game_state = PLAYING
                 if selected_item == 1:  # Options (implement if needed)
+                if selected_item == 1:  # Options (implement if needed)
                     print("Options selected")
+                if selected_item == 2:  # Exit
                 if selected_item == 2:  # Exit
                     pygame.quit()
                     sys.exit()
