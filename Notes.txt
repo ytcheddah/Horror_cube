@@ -110,10 +110,33 @@ umo_sprite_movement
         direction then trigger the 'idle' animation before triggering the 'roam' 
         animation again
 
-Object oriented coding
+Object oriented Programming:
+
     everything is treated as an Object
     parameters apply to more than self
     parameters may apply to any Object
+
+        OOP Notes Tech with Tim:
+
+            everything created already has a default object type based off what class it is
+            in, ex: string, integer, float, function, etc.
+            any "." operater calls a method that acts on an object, you can use methods based off
+            which type of class an object is.
+            methods within a class define its potential operations, can be used when calling an instance
+            of its class.
+            __init__, initialize, is a special method that instanciates the object right when its created, always happens
+            when you call a class, in order to call a class, you need to pass any parameters that are required
+            or stored in the init function within said class.
+            the (self) behind the scenes allows you to store different objects with different names and characteristics
+            through the same functions without replacing old attributes given to passed through objects.
+            self allows you to know which object is being called amongst preexisting objects that have been created
+            and passed through.
+            the object itself gets passed as a parameter when self is passed through __init__. initializes all actions
+            that are accessible through a class and its methods.
+            you can make attributes that are not connected to a parameter within a funciton.
+
+        Inheritance Notes Tech with Tim:
+            
 
 
 Mood meter

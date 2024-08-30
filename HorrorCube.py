@@ -21,17 +21,11 @@ class Player(pygame.sprite.Sprite):
     def __init__(self):
         #this below calls the parent class' constructor, which is the sprite class
         super().__init__()
-        self.sprites = []
-
 
         self.image = pygame.transform.rotozoom(pygame.image.load("images/umo_Sprites/idle/umo-idle-0.png").convert_alpha(), 0, 2)
         self.pos = pygame.math.Vector2(PLAYER_START_X, PLAYER_START_Y)
         self.speed = PLAYER_SPEED
         
-    def animate(self):
-
-        self.is_animating = True
-
 
     def user_input(self):
         self.velocity_x = 0
@@ -53,23 +47,14 @@ class Player(pygame.sprite.Sprite):
                 self.velocity_x /= math.sqrt(2)
                 self.velocity_y /= math.sqrt(2)
 
-        # if keys[pygame.K_r]:
-        #     self.current_sprite += 1
-
-
     def move(self):
 
         self.pos += pygame.math.Vector2(self.velocity_x, self.velocity_y)
 
-
     def update(self):
-
-
-        # if self.is_animating == True:
 
         self.user_input()
         self.move()
-
 
 
 player = Player()

@@ -56,14 +56,14 @@ def handle_menu_input():
             print(f"Key pressed: {pygame.key.name(event.key)}")  # Debug print
             if event.key in [pygame.K_UP, pygame.K_w]:
                 selected_item = (selected_item - 1) % len(menu_items)
-            elif event.key in [pygame.K_DOWN, pygame.K_s]:
+            if event.key in [pygame.K_DOWN, pygame.K_s]:
                 selected_item = (selected_item + 1) % len(menu_items)
-            elif event.key in [pygame.K_RETURN, pygame.K_SPACE]:
+            if event.key in [pygame.K_RETURN, pygame.K_SPACE]:
                 if selected_item == 0:  # Start Game
                     game_state = PLAYING
-                elif selected_item == 1:  # Options (implement if needed)
+                if selected_item == 1:  # Options (implement if needed)
                     print("Options selected")
-                elif selected_item == 2:  # Exit
+                if selected_item == 2:  # Exit
                     pygame.quit()
                     sys.exit()
 
@@ -118,8 +118,9 @@ while running:
             sys.exit()
 
     if game_state == MENU:
-        handle_menu_input()
-        draw_menu(selected_item)
+        while game_state == MENU:
+            handle_menu_input()
+            draw_menu(selected_item)
 
     elif game_state == PLAYING:
         player.update()
