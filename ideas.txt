@@ -17,8 +17,9 @@ Monster class idea/reference:
 class (monster)
     def __init__(self,size,sounds,strength,hp,defense,status_type,alert_ratio,alert_radius,agro_type,agro_radius,)
 
-alert_ratio     = probability of their alert state converts to agro state
-agro_type       = whether monster is aggrod by sight or sound   
+agro_type       = whether monster is aggrod by sight, sound, or proximity 
+agro_ratio      = how likely an agro event is to trigger an agro state      (EX: 1.0 = 100% .5 = 50%, etc.)
+agro_distance   = how far an event needs to be from the center of the monster in order to trigger an agro state
 
 
 -----------------------------------------------------------------------------------------------
