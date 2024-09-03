@@ -136,13 +136,13 @@ class Player(pygame.sprite.Sprite):
         keys = pygame.key.get_pressed()
         self.velocity_x = 0
         self.velocity_y = 0
-        if keys[pygame.K_w] or keys[pygame.K_UP]:
+        if keys[pygame.K_w] or keys[pygame.K_UP] and self.pos.y > 0 - 30 - PLAYER_SPEED:
             self.velocity_y = -self.speed
-        if keys[pygame.K_a] or keys[pygame.K_LEFT]:
+        if keys[pygame.K_a] or keys[pygame.K_LEFT] and self.pos.x > 0 - 30 - PLAYER_SPEED:
             self.velocity_x = -self.speed
-        if keys[pygame.K_s] or keys[pygame.K_DOWN]:
+        if keys[pygame.K_s] or keys[pygame.K_DOWN] and self.pos.y < HEIGHT - 120 - PLAYER_SPEED:
             self.velocity_y = self.speed
-        if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
+        if keys[pygame.K_d] or keys[pygame.K_RIGHT] and self.pos.x < WIDTH - 150 - PLAYER_SPEED:
             self.velocity_x = self.speed
 
         if self.velocity_x != 0 and self.velocity_y != 0:  # moving diagonally

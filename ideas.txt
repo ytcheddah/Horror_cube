@@ -52,13 +52,15 @@ Move with WASD but also have a mouse that controls the direction you face, movin
 you could close eyes for a short period everytime screen moves to both give time for mouse adjustment and also have a grace period
 for not agro-ing monsters.
 
+ROLL DODGE ALWAYS TOWARDS MOUSE??? (Would be nutty)
+
 *Random main character Blinking*
 
 make TRAPS, get trap parts to stop enemies, can step in your own traps
 Really lean into the Trap making aspect of the game as it is the only type of combat available to the character.
 
 TRAP TYPES:
-
+Bear Trap-
 
 
 STATUS TYPES:
@@ -76,31 +78,35 @@ Traps, Flashlights, Night Vision
 
 -----------------------------------------------------------------------------------------------
 
-MONSTERS:
+MONSTER STATES/INFO:
+    - idle, sleep, roam, agrod, death
+    - implement LOS (Line of Sight) that can be used for chasing/ranged attacking of enemies.
 
-Blob - can eat you and slow you down then spit you out.
-*blob with arm that pulls towards you while chasing,
-*camoflauge monster - clings to walls, can reach and grab you if you get too close to it. It emmits a dim light when it opens its
-            eye which both extends its alert radius and can 
-Mimic - copies a flashlight
-Screamer - alerts things around it, itself isnt very dangerous, but the screamer while chasing has an alert radius like the
-            player does, the screamers are blind, but are alerted themselves by a loud sound.
-*fast monster - deaf but 
-Ghost - mostly invisible, can go through walls, really slow and low alert radius
-Slopper - Vomits on you,
-*kamikaze type monster - homes in on you, really quiet, it tries to blow itself up on you
-*Tv Monster - Has a TV static screen with a bright light on its front facing side, its light can hypnotize you
-*monster that only moves when ur not looking at it* *wheeping angel* - 
-*angler fish monster - 
+MONSTER IDEAS:
+
+    Blob - can eat you and slow you down then spit you out.
+    *blob with arm that pulls towards you while chasing,
+    *camoflauge monster - clings to walls, can reach and grab you if you get too close to it. It emmits a dim light when it opens its
+                eye which both extends its alert radius and can 
+    Mimic - copies a flashlight
+    Screamer - alerts things around it, itself isnt very dangerous, but the screamer while chasing has an alert radius like the
+                player does, the screamers are blind, but are alerted themselves by a loud sound.
+    *fast monster - deaf but 
+    Ghost - mostly invisible, can go through walls, really slow and low alert radius
+    Slopper - Vomits on you,
+    *kamikaze type monster - homes in on you, really quiet, it tries to blow itself up on you
+    *Tv Monster - Has a TV static screen with a bright light on its front facing side, its light can hypnotize you
+    *monster that only moves when ur not looking at it* *wheeping angel* - 
+    *angler fish monster - 
 
 -----------------------------------------------------------------------------------------------
 
 MADE MONSTERS:
 
-Umo - 
-Zenba - Blind, big, moves slow, but once its agrod, it doesnt de agro until you teleport, so dont get this guy angry
-    has a small agro radius BUT is only agrod by sound, so it should be easier to avoid, however, in times it might not
-    be to avoidable in order to clear a level or get to where you want to go, usually the dont move too much and just rest.
+    Umo - 
+    Zenba - Blind, big, moves slow, but once its agrod, it doesnt de agro until you teleport, so dont get this guy angry
+        has a small agro radius BUT is only agrod by sound, so it should be easier to avoid, however, in times it might not
+        be to avoidable in order to clear a level or get to where you want to go, usually the dont move too much and just rest.
         - low chance to agro other enemies, in which case, it speeds up 10x more than normal and kamikazees them
         - sits idle and usually needs to be lured away slowly
         - stops to use antenna to continually track you
