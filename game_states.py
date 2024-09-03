@@ -23,6 +23,7 @@ clock = pygame.time.Clock()
 # Fonts
 font = pygame.font.Font("font/boldPixelFont.ttf", 74)
 p_font = pygame.font.Font("font/pixelFont.ttf", 36)
+pos_font = pygame.font.Font("font/pixelFont.ttf", 16)
 
 # initialize Menu music 
 pygame.mixer.music.load('sound/Cube_Hell_menu_music.mp3')
@@ -38,6 +39,7 @@ pause_selected_item = 0
 
 # Load Images
 background = pygame.transform.scale(pygame.image.load("images/test-image2.png").convert(), (WIDTH, HEIGHT))
+zenba = pygame.image.load("images/zenba_sprites/zenba1.png").convert_alpha()
 
 
 def draw_menu(selected_item):
@@ -118,7 +120,7 @@ def handle_pause_menu_input():
             if event.key in [pygame.K_ESCAPE]: # can close menu with escape as well as hitting enter on resume
                 print('Close Pause Menu')
                 game_state = PLAYING
-                pygame.time.wait(300) # this fixes a bug where escape doesnt accept game state change and keeps you in pause menu, prolly not suffiecient lol
+                pygame.time.wait(200) # this fixes a bug where escape doesnt accept game state change and keeps you in pause menu, prolly not suffiecient lol
                     
 class Player(pygame.sprite.Sprite):
 
@@ -154,6 +156,11 @@ class Player(pygame.sprite.Sprite):
     def move(self):
         self.pos += pygame.math.Vector2(self.velocity_x, self.velocity_y)
 
+    def track_position(self):
+        # Display the player's position on the screen
+        position_text = pos_font.render(f"Position: ({int(self.pos.x)}, {int(self.pos.y)})", True, GREEN)
+        screen.blit(position_text, (10, 10))  # Render position at the top-left corner
+
     def update(self):
         self.user_input()
         self.move()
@@ -179,8 +186,11 @@ while running:
     if game_state == PLAYING:
         pause_selected_item = 0
         player.update()
+        # screen.fill(WHITE)
         screen.blit(background, (0, 0))
+        screen.blit(zenba, ((WIDTH//2) - 50, (HEIGHT//2) - 50))
         screen.blit(player.image, player.pos)
+        player.track_position()
         pygame.display.flip()
         clock.tick(FPS)
 

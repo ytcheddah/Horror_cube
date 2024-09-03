@@ -92,3 +92,20 @@ Slopper - Vomits on you,
 *Tv Monster - Has a TV static screen with a bright light on its front facing side, its light can hypnotize you
 *monster that only moves when ur not looking at it* *wheeping angel* - 
 *angler fish monster - 
+
+-----------------------------------------------------------------------------------------------
+
+MADE MONSTERS:
+
+Umo - 
+Zenba - Blind, big, moves slow, but once its agrod, it doesnt de agro until you teleport, so dont get this guy angry
+    has a small agro radius BUT is only agrod by sound, so it should be easier to avoid, however, in times it might not
+    be to avoidable in order to clear a level or get to where you want to go, usually the dont move too much and just rest.
+        - low chance to agro other enemies, in which case, it speeds up 10x more than normal and kamikazees them
+        - sits idle and usually needs to be lured away slowly
+        - stops to use antenna to continually track you
+        - if it gets into melee range it will kamikaze into you which is an insta kill if you are hit
+        - they themselves dont make a lot of noise, similar threat style to a creeper in minecraft in that sense
+        - their explosion leaves a toxic trail that will decay after 5 seconds, if walked on will poison you.
+        - drops explosives and sludge in high amounts
+
