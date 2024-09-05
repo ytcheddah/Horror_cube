@@ -39,10 +39,24 @@ selected_item = 0
 pause_menu_items = ['Resume','Inventory','Options','Save Game','Return to Main Menu']
 pause_selected_item = 0
 
-# Load Images
+# Initialize and Load Images
 background = pygame.transform.scale(pygame.image.load("images/test-image2.png").convert(), (WIDTH, HEIGHT))
 zenba = pygame.image.load("images/zenba_sprites/zenba1.png").convert_alpha()
-
+walkRight = [pygame.transform.rotozoom(pygame.image.load('images/umo_Sprites/roam_chase/umo-rc-00.png').convert_alpha(), 0, 2), 
+             pygame.transform.rotozoom(pygame.image.load('images/umo_Sprites/roam_chase/umo-rc-01.png').convert_alpha(), 0, 2),
+             pygame.transform.rotozoom(pygame.image.load('images/umo_Sprites/roam_chase/umo-rc-02.png').convert_alpha(), 0, 2), 
+             pygame.transform.rotozoom(pygame.image.load('images/umo_Sprites/roam_chase/umo-rc-03.png').convert_alpha(), 0, 2), 
+             pygame.transform.rotozoom(pygame.image.load('images/umo_Sprites/roam_chase/umo-rc-04.png').convert_alpha(), 0, 2), 
+             pygame.transform.rotozoom(pygame.image.load('images/umo_Sprites/roam_chase/umo-rc-05.png').convert_alpha(), 0, 2), 
+             pygame.transform.rotozoom(pygame.image.load('images/umo_Sprites/roam_chase/umo-rc-06.png').convert_alpha(), 0, 2), 
+             pygame.transform.rotozoom(pygame.image.load('images/umo_Sprites/roam_chase/umo-rc-07.png').convert_alpha(), 0, 2), 
+             pygame.transform.rotozoom(pygame.image.load('images/umo_Sprites/roam_chase/umo-rc-08.png').convert_alpha(), 0, 2), 
+             pygame.transform.rotozoom(pygame.image.load('images/umo_Sprites/roam_chase/umo-rc-09.png').convert_alpha(), 0, 2), 
+             pygame.transform.rotozoom(pygame.image.load('images/umo_Sprites/roam_chase/umo-rc-10.png').convert_alpha(), 0, 2), 
+             pygame.transform.rotozoom(pygame.image.load('images/umo_Sprites/roam_chase/umo-rc-11.png').convert_alpha(), 0, 2)]
+left = False
+right = False
+walkCount = 0
 
 def draw_menu(selected_item):
 
@@ -152,16 +166,27 @@ class Player(pygame.sprite.Sprite):
         keys = pygame.key.get_pressed()
         self.velocity_x = 0
         self.velocity_y = 0
+        global left
+        global right
+        global walkCount
         if keys[pygame.K_w] or keys[pygame.K_UP] and self.pos.y > 0 - 30 - PLAYER_SPEED:
             self.velocity_y = -self.speed
-        if keys[pygame.K_a] or keys[pygame.K_LEFT] and self.pos.x > 0 - 30 - PLAYER_SPEED:
-            self.velocity_x = -self.speed
         if keys[pygame.K_s] or keys[pygame.K_DOWN] and self.pos.y < HEIGHT - 120 - PLAYER_SPEED:
             self.velocity_y = self.speed
-        if keys[pygame.K_d] or keys[pygame.K_RIGHT] and self.pos.x < WIDTH - 150 - PLAYER_SPEED:
+        if keys[pygame.K_a] or keys[pygame.K_LEFT] and self.pos.x > 0 - 30 - PLAYER_SPEED:
+            self.velocity_x = -self.speed
+            left = True
+            right = False
+        elif keys[pygame.K_d] or keys[pygame.K_RIGHT] and self.pos.x < WIDTH - 150 - PLAYER_SPEED:
             self.velocity_x = self.speed
+            right = True
+            left = False
+        else:
+            right = False
+            left = False
+            walkCount = 0
 
-        if self.velocity_x != 0 and self.velocity_y != 0:  # moving diagonally
+        if self.velocity_x != 0 and self.velocity_y != 0: # moving diagonally
             self.velocity_x /= math.sqrt(2)
             self.velocity_y /= math.sqrt(2)
 
@@ -222,8 +247,20 @@ class Player(pygame.sprite.Sprite):
         screen.blit(y_text,(10, 45))
 
     def draw(self, screen):
+        global walkCount
+        screen.fill(WHITE)
+        screen.blit(zenba, ((WIDTH//2) - 50, (HEIGHT//2) - 50))
         # Draw Player
-        screen.blit(self.image, self.pos)
+        if walkCount + 1 >= 60:
+            walkCount = 0
+        if left:
+            screen.blit(pygame.transform.flip(walkRight[walkCount//5], True, False), (self.pos))
+            walkCount += 1
+        elif right:
+            screen.blit(walkRight[walkCount//5], (self.pos))
+            walkCount += 1
+        else:
+            screen.blit(self.image, self.pos)        
         # Draw Traps
         for trap in self.inventoryTraps:
             trap.draw(screen)
@@ -273,10 +310,9 @@ while running:
     if game_state == PLAYING:
         pause_selected_item = 0
         player.update()
-        screen.fill(WHITE)
+        # screen.fill(WHITE)
         # screen.blit(background, (0, 0))
-        screen.blit(zenba, ((WIDTH//2) - 50, (HEIGHT//2) - 50))
-        # screen.blit(player.image, player.pos)
+        # screen.blit(zenba, ((WIDTH//2) - 50, (HEIGHT//2) - 50))
         player.draw(screen)
         player.track_stats()
         pygame.display.flip()

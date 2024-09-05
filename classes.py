@@ -5,6 +5,7 @@ from settings import *
 
 
 # --- Put all classes in this file and then import them into the other files to improve readability ---
+# actually just try to make monsters work here then copy it over, we can organize file types later lol
 
 # Game states
 MENU = "menu"
