@@ -212,14 +212,14 @@ class Player(pygame.sprite.Sprite):
 
     def track_stats(self): # meant to help us develop, not for game itself
         # Display the player's position on the screen
-        position_text = pos_font.render(f"Position: ({int(self.pos.x)}, {int(self.pos.y)})", True, GREEN)
+        position_text = pos_font.render(f"Position: ({int(self.pos.x)}, {int(self.pos.y)})", True, RED)
         speed_text = speed_font.render(f"FPS: ({FPS}) Speed: {self.speed}", True, RED)
-        x_text = xy_font.render(f'x-vel(pixel): {self.velocity_x}', True, GRAY )
-        y_text = xy_font.render(f'y-vel(pixel): {self.velocity_y}', True, GRAY )
+        x_text = xy_font.render(f'x-vel(pixel): {self.velocity_x:.5f}', True, GRAY )
+        y_text = xy_font.render(f'y-vel(pixel): {self.velocity_y:.5f}', True, GRAY )
         screen.blit(position_text, (10, 10))  # Render position at the top-left corner
         screen.blit(speed_text, (WIDTH - 200, 10))
-        screen.blit(x_text,(10, 25))
-        screen.blit(y_text,(10, 40))
+        screen.blit(x_text,(10, 30))
+        screen.blit(y_text,(10, 45))
 
     def draw(self, screen):
         # Draw Player
