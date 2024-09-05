@@ -133,6 +133,12 @@ class Player(pygame.sprite.Sprite):
         self.speed = self.base_speed
         self.velocity_x = 0
         self.velocity_y = 0
+        self.is_sprinting = False
+        self.in_cooldown = False  # New attribute to track cooldown state
+        self.sprint_duration = 2000  # Sprint lasts 2 seconds (2000 milliseconds)
+        self.sprint_cooldown = 3000  # Cooldown of 3 seconds (3000 milliseconds)
+        self.sprint_timer = 0
+        self.cooldown_timer = 0
 
     def user_input(self):
         keys = pygame.key.get_pressed()
@@ -154,6 +160,29 @@ class Player(pygame.sprite.Sprite):
         if keys[pygame.K_ESCAPE]:
             global game_state
             game_state = PAUSE
+
+        # Handle sprinting
+        if keys[pygame.K_LSHIFT] and not self.is_sprinting and not self.in_cooldown:
+            self.is_sprinting = True
+            self.speed = self.base_speed * 1.5  # Increase speed by 50%
+            self.sprint_timer = pygame.time.get_ticks()  # Start sprint timer
+
+        # Sprint duration management
+        if self.is_sprinting:
+            if pygame.time.get_ticks() - self.sprint_timer > self.sprint_duration:
+                self.is_sprinting = False
+                self.speed = self.base_speed  # Reset speed to normal
+                self.cooldown_time_left = self.sprint_cooldown  # Set cooldown time
+                self.cooldown_timer_start = pygame.time.get_ticks()  # Start cooldown timer
+                self.in_cooldown = True  # Enter cooldown state
+
+        # Cooldown management
+        if self.in_cooldown:
+            elapsed_time = pygame.time.get_ticks() - self.cooldown_timer_start
+            self.cooldown_time_left = max(self.cooldown_time_left - elapsed_time, 0)
+            self.cooldown_timer_start = pygame.time.get_ticks()  # Update timer start to keep it consistent
+            if self.cooldown_time_left <= 0:
+                self.in_cooldown = False  # Exit cooldown state
 
     def move(self):
         self.pos += pygame.math.Vector2(self.velocity_x, self.velocity_y)
