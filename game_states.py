@@ -24,6 +24,7 @@ clock = pygame.time.Clock()
 font = pygame.font.Font("font/boldPixelFont.ttf", 74)
 p_font = pygame.font.Font("font/pixelFont.ttf", 36)
 pos_font = pygame.font.Font("font/pixelFont.ttf", 16)
+speed_font = pygame.font.Font("font/pixelFont.ttf", 18)
 
 # initialize Menu music 
 pygame.mixer.music.load('sound/Cube_Hell_menu_music.mp3')
@@ -128,7 +129,8 @@ class Player(pygame.sprite.Sprite):
         super().__init__()
         self.image = pygame.transform.rotozoom(pygame.image.load("images/umo_Sprites/idle/umo-idle-0.png").convert_alpha(), 0, 2)
         self.pos = pygame.math.Vector2(PLAYER_START_X, PLAYER_START_Y)
-        self.speed = PLAYER_SPEED
+        self.base_speed = PLAYER_SPEED
+        self.speed = self.base_speed
         self.velocity_x = 0
         self.velocity_y = 0
 
@@ -159,7 +161,9 @@ class Player(pygame.sprite.Sprite):
     def track_position(self):
         # Display the player's position on the screen
         position_text = pos_font.render(f"Position: ({int(self.pos.x)}, {int(self.pos.y)})", True, GREEN)
+        speed_text = speed_font.render(f"FPS: ({FPS}) Speed: {self.speed}", True, RED)
         screen.blit(position_text, (10, 10))  # Render position at the top-left corner
+        screen.blit(speed_text, (WIDTH - 200, 10))
 
     def update(self):
         self.user_input()
@@ -186,8 +190,8 @@ while running:
     if game_state == PLAYING:
         pause_selected_item = 0
         player.update()
-        # screen.fill(WHITE)
-        screen.blit(background, (0, 0))
+        screen.fill(WHITE)
+        # screen.blit(background, (0, 0))
         screen.blit(zenba, ((WIDTH//2) - 50, (HEIGHT//2) - 50))
         screen.blit(player.image, player.pos)
         player.track_position()
