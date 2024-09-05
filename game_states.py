@@ -25,6 +25,7 @@ font = pygame.font.Font("font/boldPixelFont.ttf", 74)
 p_font = pygame.font.Font("font/pixelFont.ttf", 36)
 pos_font = pygame.font.Font("font/pixelFont.ttf", 16)
 speed_font = pygame.font.Font("font/pixelFont.ttf", 18)
+xy_font = pygame.font.Font("font/pixelFont.ttf", 14)
 
 # initialize Menu music 
 pygame.mixer.music.load('sound/Cube_Hell_menu_music.mp3')
@@ -133,12 +134,17 @@ class Player(pygame.sprite.Sprite):
         self.speed = self.base_speed
         self.velocity_x = 0
         self.velocity_y = 0
+
+        # Sprint Attributes
         self.is_sprinting = False
         self.in_cooldown = False  # New attribute to track cooldown state
         self.sprint_duration = 2000  # Sprint lasts 2 seconds (2000 milliseconds)
-        self.sprint_cooldown = 3000  # Cooldown of 3 seconds (3000 milliseconds)
+        self.sprint_cooldown = 7000  # Cooldown of 3 seconds (3000 milliseconds)
         self.sprint_timer = 0
         self.cooldown_timer = 0
+
+        # Trap List
+        self.inventoryTraps = []
 
     def user_input(self):
         keys = pygame.key.get_pressed()
@@ -161,11 +167,16 @@ class Player(pygame.sprite.Sprite):
             global game_state
             game_state = PAUSE
 
+        # Handle spacebar to place trap
+        if keys[pygame.K_SPACE]:
+            self.create_trap()
+
         # Handle sprinting
-        if keys[pygame.K_LSHIFT] and not self.is_sprinting and not self.in_cooldown:
-            self.is_sprinting = True
-            self.speed = self.base_speed * 1.5  # Increase speed by 50%
-            self.sprint_timer = pygame.time.get_ticks()  # Start sprint timer
+        if (self.velocity_x and self.velocity_y) or self.velocity_x or self.velocity_y != 0: # checks for moving, seems buggy (could be keyboard)
+            if keys[pygame.K_LSHIFT] and not self.is_sprinting and not self.in_cooldown:
+                self.is_sprinting = True
+                self.speed = self.base_speed * 1.5  # Increase speed by 50%
+                self.sprint_timer = pygame.time.get_ticks()  # Start sprint timer
 
         # Sprint duration management
         if self.is_sprinting:
@@ -187,17 +198,55 @@ class Player(pygame.sprite.Sprite):
     def move(self):
         self.pos += pygame.math.Vector2(self.velocity_x, self.velocity_y)
 
-    def track_position(self):
+    def create_trap(self):
+        # Create a new "trap" (circle) under the player
+        trap_x = self.pos.x + self.image.get_width() // 2 # center the circle horizontally
+        trap_y = self.pos.y + self.image.get_height() - 30 # place trap under player
+        new_trap = Trap(trap_x,trap_y)
+        self.inventoryTraps.append(new_trap)
+
+    def track_stats(self): # meant to help us develop, not for game itself
         # Display the player's position on the screen
         position_text = pos_font.render(f"Position: ({int(self.pos.x)}, {int(self.pos.y)})", True, GREEN)
         speed_text = speed_font.render(f"FPS: ({FPS}) Speed: {self.speed}", True, RED)
+        x_text = xy_font.render(f'x-vel(pixel): {self.velocity_x}', True, GRAY )
+        y_text = xy_font.render(f'y-vel(pixel): {self.velocity_y}', True, GRAY )
         screen.blit(position_text, (10, 10))  # Render position at the top-left corner
         screen.blit(speed_text, (WIDTH - 200, 10))
+        screen.blit(x_text,(10, 25))
+        screen.blit(y_text,(10, 40))
+
+    def draw(self, screen):
+        # Draw Player
+        screen.blit(self.image, self.pos)
+        # Draw Traps
+        for trap in self.inventoryTraps:
+            trap.draw(screen)
 
     def update(self):
         self.user_input()
         self.move()
 
+        # Updates traps and remove any that have expired
+        self.inventoryTraps = [trap for trap in self.inventoryTraps if trap.update()]
+
+class Trap:
+
+    def __init__(self, x, y, radius=20, duration=5000):
+        self.x = x
+        self.y = y
+        self.radius = radius
+        self.creation_time = pygame.time.get_ticks() # Correct reference to pygame.time.get_ticks
+        self.duration = duration
+
+    def update(self):
+        # Check if the trap has expired (lifetime is over)
+        if pygame.time.get_ticks() - self.creation_time > self.duration:
+            return False
+        return True
+    
+    def draw(self, screen):
+        pygame.draw.circle(screen, RED, (int(self.x), int(self.y)), self.radius)
 
 player = Player()
 
@@ -222,8 +271,9 @@ while running:
         screen.fill(WHITE)
         # screen.blit(background, (0, 0))
         screen.blit(zenba, ((WIDTH//2) - 50, (HEIGHT//2) - 50))
-        screen.blit(player.image, player.pos)
-        player.track_position()
+        # screen.blit(player.image, player.pos)
+        player.draw(screen)
+        player.track_stats()
         pygame.display.flip()
         clock.tick(FPS)
 
