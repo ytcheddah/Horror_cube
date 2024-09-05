@@ -268,7 +268,6 @@ class Player(pygame.sprite.Sprite):
     def update(self):
         self.user_input()
         self.move()
-
         # Updates traps and remove any that have expired
         self.inventoryTraps = [trap for trap in self.inventoryTraps if trap.update()]
 
@@ -310,9 +309,6 @@ while running:
     if game_state == PLAYING:
         pause_selected_item = 0
         player.update()
-        # screen.fill(WHITE)
-        # screen.blit(background, (0, 0))
-        # screen.blit(zenba, ((WIDTH//2) - 50, (HEIGHT//2) - 50))
         player.draw(screen)
         player.track_stats()
         pygame.display.flip()
