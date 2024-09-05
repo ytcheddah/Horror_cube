@@ -143,8 +143,10 @@ class Player(pygame.sprite.Sprite):
         self.sprint_timer = 0
         self.cooldown_timer = 0
 
-        # Trap List
+        # Trap Management
         self.inventoryTraps = []
+        self.trapCooldown = 1000
+        self.lastTrapTime = -self.trapCooldown # Ensures placing new Trap, checks time of old one
 
     def user_input(self):
         keys = pygame.key.get_pressed()
@@ -169,7 +171,10 @@ class Player(pygame.sprite.Sprite):
 
         # Handle spacebar to place trap
         if keys[pygame.K_SPACE]:
-            self.create_trap()
+            current_time = pygame.time.get_ticks()
+            if current_time - self.lastTrapTime >= self.trapCooldown:
+                self.create_trap()
+                self.lastTrapTime = current_time # Update the last trap to correct time           
 
         # Handle sprinting
         if (self.velocity_x and self.velocity_y) or self.velocity_x or self.velocity_y != 0: # checks for moving, seems buggy (could be keyboard)
