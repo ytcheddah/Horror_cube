@@ -7,10 +7,6 @@ from settings import *
 pygame.init()
 pygame.mixer.init()
 
-# Game states
-MENU = "menu"
-PLAYING = "playing"
-PAUSE = "pause"
 
 # Initial state
 game_state = MENU
@@ -68,7 +64,6 @@ def draw_menu(selected_item):
         label_rect = label.get_rect(center=(WIDTH // 2, HEIGHT // 2 + index * 100))
         screen.blit(label, label_rect)
     pygame.display.flip()
-
 
 def handle_menu_input():
 

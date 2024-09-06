@@ -182,7 +182,7 @@ class Player(pygame.sprite.Sprite):
         speed_text = speed_font.render(f"FPS: ({FPS}) Speed: {self.speed}", True, RED)
         x_text = xy_font.render(f'x-vel(pixel): {self.velocity_x:.5f}', True, GRAY )
         y_text = xy_font.render(f'y-vel(pixel): {self.velocity_y:.5f}', True, GRAY )
-        monster_text = monster_font.render(f'mons-vel:(x:{umo.vel_x}, y:{umo.vel_y}) mons-pos:(x:{umo.x}, y:{umo.y})', True, (30,200,120)) # <- Green <-
+        monster_text = monster_font.render(f'mons-vel:(x:{umo.vel_x:.5f}, y:{umo.vel_y:.5f}) mons-pos:(x:{umo.x}, y:{umo.y})', True, GREEN)
         screen.blit(position_text, (10, 10))  # Render position at the top-left corner
         screen.blit(speed_text, (WIDTH - 200, 10))
         screen.blit(x_text, (10, 30))
@@ -234,35 +234,37 @@ class Trap:
 
 class Monster(object):
 
-    def __init__(self, x, y, width, height):
+    def __init__(self, x, y, width, height, speed):
         self.x = x
         self.y = y
+        self.pos = pygame.math.Vector2(MONSTER_SPAWN_X, MONSTER_SPAWN_Y)
         self.width = width
         self.height = height
-        self.vel_x = 2
-        self.vel_y = 2
+        self.speed = speed
+        self.vel_x = 0
+        self.vel_y = 0
 
     def draw(self, screen):
         self.move()
-        screen.blit(umo_monster,(self.x, self.y))
+        screen.blit(umo_monster,self.pos)
 
     def move(self):
-        if self.x > Player().current_pos.x:
-            self.x -= self.vel_x
-        if self.x < Player().current_pos.x:
-            self.x += self.vel_x
-        if self.y > Player().current_pos.y:
-            self.y -= self.vel_y
-        if self.y < Player().current_pos.y:
-            self.y += self.vel_y
+        self.pos += pygame.math.Vector2(self.vel_x, self.vel_y)
         
-
     def behavior(self):
-        pass
-        """ if Player.pos.x > Monster.pos.x:
-                Monster.velocity_x += speed
-            if Player.pos.x < Monster.pos,x:
-                Monster.velocity_x -= speed"""
+        self.vel_x = 0
+        self.vel_y = 0
+        if self.x > Player().current_pos.x:
+            self.vel_x = -self.speed            
+        if self.x < Player().current_pos.x:
+            self.vel_x = self.speed            
+        if self.y > Player().current_pos.y:
+            self.vel_y = -self.speed        
+        if self.y < Player().current_pos.y:
+            self.vel_y = self.speed        
+        if self.vel_x != 0 and self.vel_y != 0: # moving diagonally
+            self.vel_x /= math.sqrt(2)
+            self.vel_y /= math.sqrt(2)
 
     def update(self):
         self.behavior()
@@ -270,7 +272,7 @@ class Monster(object):
 
 player = Player()
 # umo = Monster("Umo", umo_monster, 50, 50, 100, 10, 5, AGRO_TYPES[1], 1, 200)
-umo = Monster(1000, 600, 100, 100)
+umo = Monster(1000, 600, 100, 100, 3)
 
 # State Machine, always runs, checks which Game State we are in
 running = True

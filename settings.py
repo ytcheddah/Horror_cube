@@ -4,10 +4,16 @@ WIDTH = 1280
 HEIGHT = 720
 FPS = 60
 
+# Game states
+MENU = "menu"
+PLAYING = "playing"
+PAUSE = "pause"
+INVENTORY = "inventory"
+
 # Player Settings
 PLAYER_START_X = 300
 PLAYER_START_Y = 400
-PLAYER_SPEED = 7
+PLAYER_SPEED = 5
 PLAYER_ACCEL_R = 3
 
 # Colors
@@ -17,7 +23,7 @@ BG = (100, 100, 100)
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
-GREEN = (0, 255, 0)
+GREEN = (30, 200, 120) # more normal green
 BLUE = (0, 0, 255)
 YELLOW = (255, 255, 0)
 GRAY = (150, 150, 150)
@@ -40,5 +46,5 @@ BAR_Y = 250
 AGRO_TYPES = {1: "Sight", 2: "Sound", 3: "Proximity"}
 MONSTER_IMAGES = []
 
-MONSTER_SPAWN_X = 600
+MONSTER_SPAWN_X = 1000
 MONSTER_SPAWN_Y = 700
