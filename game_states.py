@@ -57,6 +57,7 @@ walkRight = [pygame.transform.rotozoom(pygame.image.load('images/umo_Sprites/roa
 left = False
 right = False
 walkCount = 0
+sprint_factor = 1
 
 def draw_menu(selected_item):
 
@@ -169,10 +170,21 @@ class Player(pygame.sprite.Sprite):
         global left
         global right
         global walkCount
+        global sprint_factor
+        global left
+        global right
         if keys[pygame.K_w] or keys[pygame.K_UP] and self.pos.y > 0 - 30 - PLAYER_SPEED:
             self.velocity_y = -self.speed
+            if right:
+                left = False
+            if left:
+                right = False
         if keys[pygame.K_s] or keys[pygame.K_DOWN] and self.pos.y < HEIGHT - 120 - PLAYER_SPEED:
             self.velocity_y = self.speed
+            if right:
+                left = False
+            if left:
+                right = False
         if keys[pygame.K_a] or keys[pygame.K_LEFT] and self.pos.x > 0 - 30 - PLAYER_SPEED:
             self.velocity_x = -self.speed
             left = True
@@ -207,7 +219,9 @@ class Player(pygame.sprite.Sprite):
                 self.is_sprinting = True
                 self.speed = self.base_speed * 1.5  # Increase speed by 50%
                 self.sprint_timer = pygame.time.get_ticks()  # Start sprint timer
-
+                if self.is_sprinting:
+                    sprint_factor = 2               
+                    
         # Sprint duration management
         if self.is_sprinting:
             if pygame.time.get_ticks() - self.sprint_timer > self.sprint_duration:
@@ -219,6 +233,7 @@ class Player(pygame.sprite.Sprite):
 
         # Cooldown management
         if self.in_cooldown:
+            sprint_factor = 1
             elapsed_time = pygame.time.get_ticks() - self.cooldown_timer_start
             self.cooldown_time_left = max(self.cooldown_time_left - elapsed_time, 0)
             self.cooldown_timer_start = pygame.time.get_ticks()  # Update timer start to keep it consistent
@@ -255,10 +270,10 @@ class Player(pygame.sprite.Sprite):
             walkCount = 0
         if left:
             screen.blit(pygame.transform.flip(walkRight[walkCount//5], True, False), (self.pos))
-            walkCount += 1
+            walkCount += 1 * int(sprint_factor)
         elif right:
             screen.blit(walkRight[walkCount//5], (self.pos))
-            walkCount += 1
+            walkCount += 1 * int(sprint_factor)
         else:
             screen.blit(self.image, self.pos)        
         # Draw Traps

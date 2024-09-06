@@ -1,7 +1,5 @@
 
-Scare Square
 Horror Cube
-Fear Box
 
 -----------------------------------------------------------------------------------------------
 
@@ -47,6 +45,9 @@ constant tension and threat of being caught/chase while solving a puzzle.
             FABRIK chain can be attached to a leg as its connector for a foot, and the distance control is the steps
             
 
+Anthony Ideas:
+Psyche bar, pick up items et: teddy bears, flowers, books, boost psyche.
+
 
 Move with WASD but also have a mouse that controls the direction you face, moving the screen like binding of isaac.
 you could close eyes for a short period everytime screen moves to both give time for mouse adjustment and also have a grace period
@@ -72,7 +73,7 @@ Hypnotize: inverts WASD controls and look opposite of mouse.
 
 UPGRADEABLE ITEMS:
 
-Traps, Flashlights, Night Vision
+Traps, Flashlights/Glow Sticks, Night Vision
 
 
 
