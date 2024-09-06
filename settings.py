@@ -34,3 +34,11 @@ BAR_WIDTH = 488
 BAR_HEIGHT = 15
 BAR_X = 250
 BAR_Y = 250
+
+# Monster variables and dictionaries
+
+AGRO_TYPES = {1: "Sight", 2: "Sound", 3: "Proximity"}
+MONSTER_IMAGES = []
+
+MONSTER_SPAWN_X = 600
+MONSTER_SPAWN_Y = 700

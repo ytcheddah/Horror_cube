@@ -12,8 +12,23 @@ Lore/Story:
 
 Monster class idea/reference:
 
-class (monster)
-    def __init__(self,size,sounds,strength,hp,defense,status_type,alert_ratio,alert_radius,agro_type,agro_radius,)
+class Monster(object)
+    def __init__(self, name, image, pos_x, pos_y, health, attack, speed, agro_type, agro_ratio, agro_distance):
+        super().__init__()
+        self.name = name
+        self.image = image
+        self.pos_x = pos_x
+        self.pos_y = pos_y
+        self.pos = pygame.math.Vector2(MONSTER_SPAWN_X, MONSTER_SPAWN_Y)
+        self.health = health
+        self.attack = attack
+        self.speed = speed
+        self.agro_type = agro_type
+        self.agro_ratio = agro_ratio
+        self.agro_distance = agro_distance
+        self.velocity_x = 0
+        self.velocity_y = 0
+
 
 agro_type       = whether monster is aggrod by sight, sound, or proximity 
 agro_ratio      = how likely an agro event is to trigger an agro state      (EX: 1.0 = 100% .5 = 50%, etc.)
