@@ -254,13 +254,13 @@ class Monster(object):
     def behavior(self):
         self.vel_x = 0
         self.vel_y = 0
-        if self.x > Player().current_pos.x:
+        if self.pos.x > Player().current_pos.x:
             self.vel_x = -self.speed            
-        if self.x < Player().current_pos.x:
+        if self.pos.x < Player().current_pos.x:
             self.vel_x = self.speed            
-        if self.y > Player().current_pos.y:
+        if self.pos.y > Player().current_pos.y:
             self.vel_y = -self.speed        
-        if self.y < Player().current_pos.y:
+        if self.pos.y < Player().current_pos.y:
             self.vel_y = self.speed        
         if self.vel_x != 0 and self.vel_y != 0: # moving diagonally
             self.vel_x /= math.sqrt(2)
