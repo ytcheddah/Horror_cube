@@ -81,7 +81,7 @@ class Player(pygame.sprite.Sprite):
         self.is_sprinting = False
         self.in_cooldown = False  # New attribute to track cooldown state
         self.sprint_duration = 2000  # Sprint lasts 2 seconds (2000 milliseconds)
-        self.sprint_cooldown = 7000  # Cooldown of 3 seconds (3000 milliseconds)
+        self.sprint_cooldown = 7000  # Cooldown of 7 seconds (3000 milliseconds)
         self.sprint_timer = 0
         self.cooldown_timer = 0
 
@@ -182,7 +182,7 @@ class Player(pygame.sprite.Sprite):
         speed_text = speed_font.render(f"FPS: ({FPS}) Speed: {self.speed}", True, RED)
         x_text = xy_font.render(f'x-vel(pixel): {self.velocity_x:.5f}', True, GRAY )
         y_text = xy_font.render(f'y-vel(pixel): {self.velocity_y:.5f}', True, GRAY )
-        monster_text = monster_font.render(f'mons-vel:(x:{umo.vel_x:.5f}, y:{umo.vel_y:.5f}) mons-pos:(x:{umo.x}, y:{umo.y})', True, GREEN)
+        monster_text = monster_font.render(f'mons-vel:(x:{umo.vel_x:.5f}, y:{umo.vel_y:.5f}) mons-pos:(x:{umo.pos.x}, y:{umo.pos.y})', True, GREEN)
         screen.blit(position_text, (10, 10))  # Render position at the top-left corner
         screen.blit(speed_text, (WIDTH - 200, 10))
         screen.blit(x_text, (10, 30))
@@ -234,15 +234,15 @@ class Trap:
 
 class Monster(object):
 
-    def __init__(self, x, y, width, height, speed):
-        self.x = x
-        self.y = y
-        self.pos = pygame.math.Vector2(MONSTER_SPAWN_X, MONSTER_SPAWN_Y)
+    def __init__(self, player, pos_x, pos_y, width, height, speed, agro_distance):
+        self.player = player
+        self.pos = pygame.math.Vector2(pos_x, pos_y)
         self.width = width
         self.height = height
         self.speed = speed
         self.vel_x = 0
         self.vel_y = 0
+        self.agro_distance = agro_distance
 
     def draw(self, screen):
         self.move()
@@ -254,15 +254,19 @@ class Monster(object):
     def behavior(self):
         self.vel_x = 0
         self.vel_y = 0
-        if self.pos.x > Player().current_pos.x:
-            self.vel_x = -self.speed            
-        if self.pos.x < Player().current_pos.x:
-            self.vel_x = self.speed            
-        if self.pos.y > Player().current_pos.y:
-            self.vel_y = -self.speed        
-        if self.pos.y < Player().current_pos.y:
-            self.vel_y = self.speed        
-        if self.vel_x != 0 and self.vel_y != 0: # moving diagonally
+        # Follow player if within agro distance
+        if abs(self.pos.x - self.player.current_pos.x) < self.agro_distance:
+            if abs(self.pos.y - self.player.current_pos.y) < self.agro_distance:
+                if self.pos.x > self.player.current_pos.x:
+                    self.vel_x = -self.speed            
+                if self.pos.x < self.player.current_pos.x:
+                    self.vel_x = self.speed
+                if self.pos.y > self.player.current_pos.y:
+                    self.vel_y = -self.speed        
+                if self.pos.y < self.player.current_pos.y:
+                    self.vel_y = self.speed
+        
+        if self.vel_x != 0 and self.vel_y != 0: # moving diagonally normilization
             self.vel_x /= math.sqrt(2)
             self.vel_y /= math.sqrt(2)
 
@@ -270,9 +274,9 @@ class Monster(object):
         self.behavior()
         self.move()
 
+#player and monster instances
 player = Player()
-# umo = Monster("Umo", umo_monster, 50, 50, 100, 10, 5, AGRO_TYPES[1], 1, 200)
-umo = Monster(1000, 600, 100, 100, 3)
+umo = Monster(player, 1000, 600, 100, 100, 1, 400)
 
 # State Machine, always runs, checks which Game State we are in
 running = True
@@ -283,12 +287,6 @@ while running:
             pygame.quit()
             sys.exit()
 
-    # if game_state == MENU:
-    #     pygame.mixer.music.play(-1)
-    #     while game_state == MENU:
-    #         handle_menu_input()
-    #         draw_menu(selected_item)
-
     if game_state == PLAYING:
         pause_selected_item = 0
         player.update()
@@ -298,10 +296,3 @@ while running:
         player.track_stats()
         pygame.display.flip()
         clock.tick(FPS)
-
-    # if game_state == PAUSE:
-    #     while game_state == PAUSE:
-    #         handle_pause_menu_input()  
-    #         draw_pause_menu(pause_selected_item) 
-    #         # pygame.display.flip()
-    #         # clock.tick(FPS)

@@ -34,6 +34,9 @@ agro_type       = whether monster is aggrod by sight, sound, or proximity
 agro_ratio      = how likely an agro event is to trigger an agro state      (EX: 1.0 = 100% .5 = 50%, etc.)
 agro_distance   = how far an event needs to be from the center of the monster in order to trigger an agro state
 
+*alert animation or state for when something doesnt agro from agro agro_ratio
+
+monster states = sleep_state, idle_state, alert_state, agro_state
 
 -----------------------------------------------------------------------------------------------
 

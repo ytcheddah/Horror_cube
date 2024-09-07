@@ -45,6 +45,3 @@ BAR_Y = 250
 
 AGRO_TYPES = {1: "Sight", 2: "Sound", 3: "Proximity"}
 MONSTER_IMAGES = []
-
-MONSTER_SPAWN_X = 1000
-MONSTER_SPAWN_Y = 700
