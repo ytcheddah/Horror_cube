@@ -79,8 +79,13 @@ make TRAPS, get trap parts to stop enemies, can step in your own traps
 Really lean into the Trap making aspect of the game as it is the only type of combat available to the character.
 
 TRAP TYPES:
-Bear Trap-
+Bear Trap   - traps enemy for 3 seconds and increase psyche by 5% upon successful trap           
+     - traps self and decreases psyche by 5% upon self trap
+         - mash inputs to get out of trap (10 presses over 2 seconds?)
 
+FloorSpikes -
+
+WallSpikes  -
 
 STATUS TYPES:
 
