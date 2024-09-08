@@ -88,11 +88,13 @@ class Player(pygame.sprite.Sprite):
 
         # Sprint Attributes
         self.is_sprinting = False
-        self.in_sprint_cooldown = False  # New attribute to track cooldown state
-        self.sprint_duration = 2000  # Sprint (milliseconds)
-        self.sprint_cooldown = 7000  # Cooldown (milliseconds)
-        self.sprint_duration_timer = 0
-        self.sprint_cooldown_timer = 0
+        self.in_sprint_cooldown = False  # Cooldown state
+        self.sprint_duration = 2000  # Sprint duration (milliseconds)
+        self.sprint_cooldown = 7000  # Cooldown duration (milliseconds)
+        self.sprint_timer_start = 0  # Timer to track sprint duration
+        self.cooldown_timer_start = 0  # Timer to track cooldown duration
+        self.sprint_factor = 1  # Multiplier for sprinting speed
+        self.shift_held = False  # Track if Shift is held
 
         # Crouch Attributes
         self.is_crouching = False
@@ -104,7 +106,6 @@ class Player(pygame.sprite.Sprite):
 
     def user_input(self):
         keys = pygame.key.get_pressed()
-        keys_held = pygame.key.get_mods()
         global left, right, walkCount, sprint_factor, crouch_factor
         self.velocity_x = 0
         self.velocity_y = 0
@@ -128,6 +129,10 @@ class Player(pygame.sprite.Sprite):
         else:
             walkCount = 0
 
+        # If no input, reset walkCount
+        if not (keys[pygame.K_w] or keys[pygame.K_s] or keys[pygame.K_a] or keys[pygame.K_d]):
+            walkCount = 0
+
         if self.velocity_x != 0 and self.velocity_y != 0: # moving diagonally
             self.velocity_x /= math.sqrt(2)
             self.velocity_y /= math.sqrt(2)
@@ -136,32 +141,15 @@ class Player(pygame.sprite.Sprite):
             global game_state
             game_state = PAUSE
 
-        # Handle sprinting
-        if (self.velocity_x and self.velocity_y) or self.velocity_x or self.velocity_y != 0: # checks for moving
-            if keys[pygame.K_LSHIFT] and not self.is_sprinting and not self.in_sprint_cooldown:
-                self.is_sprinting = True
-                self.speed = self.base_speed * 1.5  # Increase to 150% speed
-                self.sprint_duration_timer = pygame.time.get_ticks()  # Start sprint timer
-                if self.is_sprinting:
-                    sprint_factor = 2               
+        # Sprint logic (only sprint while Shift is held)
+        if keys[pygame.K_LSHIFT] and not self.in_sprint_cooldown:
+            self.shift_held = True
+            self.is_sprinting = True
+            self.speed = self.base_speed * 1.5  # Increase speed by 50%
+            self.sprint_timer_start = pygame.time.get_ticks()  # Start the sprint timer
 
-        # Sprint duration management
-        if self.is_sprinting:
-            if pygame.time.get_ticks() - self.sprint_duration_timer > self.sprint_duration:
-                self.is_sprinting = False
-                self.speed = self.base_speed  # Reset speed to normal
-                self.sprint_cooldown_time_left = self.sprint_cooldown  # Set cooldown time
-                self.sprint_cooldown_timer_start = pygame.time.get_ticks()  # Start cooldown timer
-                self.in_sprint_cooldown = True  # Enter cooldown state
-
-        # Sprint Cooldown management
-        if self.in_sprint_cooldown:
-            sprint_factor = 1
-            elapsed_time = pygame.time.get_ticks() - self.sprint_cooldown_timer_start
-            self.sprint_cooldown_time_left = max(self.sprint_cooldown_time_left - elapsed_time, 0)
-            self.sprint_cooldown_timer_start = pygame.time.get_ticks()  # Update timer start to keep it consistent
-            if self.sprint_cooldown_time_left <= 0:
-                self.in_sprint_cooldown = False  # Exit cooldown state
+        else:
+            self.shift_held = False
 
         # Handle Crouching
         if (self.velocity_x and self.velocity_y) or self.velocity_x or self.velocity_y != 0: # checks for moving
@@ -172,7 +160,6 @@ class Player(pygame.sprite.Sprite):
                     crouch_factor = .5
             else:
                 self.is_crouching = False
-                self.speed = self.base_speed # no cooldown needed thanks to this line, but need to hold crouch still
 
         # Handle spacebar to place trap
         if keys[pygame.K_SPACE]:
@@ -181,11 +168,28 @@ class Player(pygame.sprite.Sprite):
                 self.create_trap()
                 self.lastTrapTime = current_time # Update the last trap to correct time    
 
-    def cooldown(self, event_duration, event_cooldown):
-        self.event_duration = event_duration
-        self.event_cooldown = event_cooldown
+    def update_cooldown(self):
 
-        pass
+        global sprint_factor, crouch_factor
+        # sprint duration management
+        if self.is_sprinting:
+            # Check if sprint duration has been exceeded
+            if pygame.time.get_ticks() - self.sprint_timer_start > self.sprint_duration or not self.shift_held:
+                self.is_sprinting = False
+                self.speed = self.base_speed  # Reset speed
+                self.cooldown_timer_start = pygame.time.get_ticks()  # Start cooldown
+                self.in_sprint_cooldown = True
+        
+        # Cooldown Management
+        if self.in_sprint_cooldown:
+            sprint_factor = 1
+            if pygame.time.get_ticks() - self.cooldown_timer_start >= self.sprint_cooldown:
+                self.in_sprint_cooldown = False # Exit Cooldown
+        
+        # Crouch Management
+        if self.is_crouching and not self.is_sprinting == False:
+            crouch_factor = 1
+            self.speed = self.base_speed
 
     def move(self):
 
@@ -223,6 +227,7 @@ class Player(pygame.sprite.Sprite):
 
     def update(self):
         self.user_input()
+        self.update_cooldown()
         self.move()
         # Updates traps and remove any that have expired
         self.inventoryTraps = [trap for trap in self.inventoryTraps if trap.update()]
@@ -335,8 +340,8 @@ class Game:
         y_text = self.xy_font.render(f'y-vel(pixel): {self.player.velocity_y:.5f}', True, GRAY)
         monster_text = self.monster_font.render(f'mons-vel:(x:{self.monster.vel_x:.5f}, y:{self.monster.vel_y:.5f}) '
                                                 f'mons-pos:(x:{int(self.monster.pos.x)}, y:{int(self.monster.pos.y)})', True, GREEN)
-        sprint_text = self.speed_font.render(f'SPRINT: {self.player.is_sprinting} CD: {self.player.in_sprint_cooldown} SF: {sprint_factor}', True, bool_color1)
-        crouch_text = self.speed_font.render(f'CROUCH: {self.player.is_crouching} CD: N/A  CF: {crouch_factor}', True, bool_color2)
+        sprint_text = self.speed_font.render(f'SPRINT: {self.player.is_sprinting} CD: {self.player.in_sprint_cooldown} SF: {sprint_factor:.1f}', True, bool_color1)
+        crouch_text = self.speed_font.render(f'CROUCH: {self.player.is_crouching} CD: N/A  CF: {crouch_factor:.1f}', True, bool_color2)
 
         self.screen.blit(sprint_text, (SCREEN_WIDTH - 300, 32))
         self.screen.blit(crouch_text, (SCREEN_WIDTH - 300, 50))
