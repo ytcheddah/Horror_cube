@@ -17,7 +17,7 @@ pygame.display.set_caption("Horror Cube")
 clock = pygame.time.Clock()
 
 # Fonts
-font = pygame.font.Font("font/boldPixelFont.ttf", 74)
+menu_font = pygame.font.Font("font/boldPixelFont.ttf", 74)
 p_font = pygame.font.Font("font/pixelFont.ttf", 36)
 pos_font = pygame.font.Font("font/pixelFont.ttf", 16)
 speed_font = pygame.font.Font("font/pixelFont.ttf", 18)
@@ -60,7 +60,7 @@ def draw_menu(selected_item):
     screen.fill(BLACK)
     for index, item in enumerate(menu_items):
         color = WHITE if index == selected_item else (100, 100, 100)
-        label = font.render(item, True, color)
+        label = menu_font.render(item, True, color)
         label_rect = label.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + index * 100))
         screen.blit(label, label_rect)
     pygame.display.flip()

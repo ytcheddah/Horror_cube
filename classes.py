@@ -24,9 +24,10 @@ pygame.display.set_caption("Horror Cube")
 clock = pygame.time.Clock()
 
 # Fonts
-font = pygame.font.Font("font/boldPixelFont.ttf", 74)
+menu_font = pygame.font.Font("font/boldPixelFont.ttf", 74)
+
 p_font = pygame.font.Font("font/pixelFont.ttf", 36)
-pos_font = pygame.font.Font("font/pixelFont.ttf", 16)
+pos_font = pygame.font.Font("font/pixelFont.ttf", 18)
 speed_font = pygame.font.Font("font/pixelFont.ttf", 18)
 xy_font = pygame.font.Font("font/pixelFont.ttf", 14)
 monster_font = pygame.font.Font("font/pixelFont.ttf", 16)
@@ -73,7 +74,7 @@ class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.image = pygame.transform.rotozoom(pygame.image.load("images/umo_Sprites/idle/umo-idle-0.png").convert_alpha(), 0, 2)
-        self.pos = pygame.math.Vector2(PLAYER_START_X, PLAYER_START_Y)
+        self.pos = pygame.math.Vector2(SCREEN_WIDTH//2, SCREEN_HEIGHT//2)
         self.player_width = PLAYER_WIDTH
         self.player_height = PLAYER_HEIGHT
         self.base_speed = PLAYER_SPEED
@@ -173,8 +174,8 @@ class Player(pygame.sprite.Sprite):
                 self.in_cooldown = False  # Exit cooldown state
 
     def move(self):
-        # self.pos += pygame.math.Vector2(self.velocity_x, self.velocity_y)
-        self.virt_pos += pygame.math.Vector2(self.velocity_x, self.velocity_y)
+
+        self.pos += pygame.math.Vector2(self.velocity_x, self.velocity_y)
         self.bg_pos += pygame.math.Vector2(-self.velocity_x, -self.velocity_y)
 
 
@@ -182,15 +183,16 @@ class Player(pygame.sprite.Sprite):
         # Create a new "trap" (circle) under the player
         trap_x = self.virt_pos.x + self.image.get_width() // 2 # center the circle horizontally
         trap_y = self.virt_pos.y + self.image.get_height() - 30 # place trap under player
-        new_trap = Trap(trap_x,trap_y)
+        new_trap = Trap(player,trap_x,trap_y)
         self.inventoryTraps.append(new_trap)
 
     def track_stats(self): # meant to help us develop, not for game itself
-        position_text = pos_font.render(f"Pos: ({int(self.pos.x)}, {int(self.pos.y)})", True, RED)
+        position_text = pos_font.render(f"Pos: ({self.pos.x:.2f}, {self.pos.y:.2f})", True, RED)
         speed_text = speed_font.render(f"FPS: ({FPS}) Speed: {self.speed}", True, RED)
         x_text = xy_font.render(f'x-vel(pixel): {self.velocity_x:.5f}', True, GRAY )
         y_text = xy_font.render(f'y-vel(pixel): {self.velocity_y:.5f}', True, GRAY )
-        monster_text = monster_font.render(f'mons-vel:(x:{umo.vel_x:.5f}, y:{umo.vel_y:.5f}) mons-pos:(x:{umo.pos.x:.2f}, y:{umo.pos.y:.2f})', True, GREEN)
+        monster_text = monster_font.render(f'mons-vel:(x:{umo.vel_x:.5f}, y:{umo.vel_y:.5f})'
+                                            'mons-pos:(x:{umo.pos.x:.2f}, y:{umo.pos.y:.2f})', True, GREEN)
         screen.blit(position_text, (10, 10))  # Render position at the top-left corner
         screen.blit(speed_text, (SCREEN_WIDTH - 200, 10))
         screen.blit(x_text, (10, 30))
@@ -206,15 +208,12 @@ class Player(pygame.sprite.Sprite):
         if walkCount + 1 >= 60:
             walkCount = 0
         if left:
-            # screen.blit(pygame.transform.flip(walkRight[walkCount//5], True, False), (self.pos))
             screen.blit(pygame.transform.flip(walkRight[walkCount//5], True, False), ((SCREEN_WIDTH//2) - (self.player_width//2), (SCREEN_HEIGHT//2) - self.player_height//2))
             walkCount += 1 * int(sprint_factor)
         elif right:
-            # screen.blit(walkRight[walkCount//5], (self.pos))
             screen.blit(walkRight[walkCount//5], ((SCREEN_WIDTH//2) - (self.player_width//2), (SCREEN_HEIGHT//2) - self.player_height//2))
             walkCount += 1 * int(sprint_factor)
-        else:
-            # screen.blit(self.image, self.pos)        
+        else:       
             screen.blit(self.image, ((SCREEN_WIDTH//2) - (self.player_width//2), (SCREEN_HEIGHT//2) - self.player_height//2))
         # Draw Traps
         for trap in self.inventoryTraps:
@@ -229,7 +228,8 @@ class Player(pygame.sprite.Sprite):
 
 class Trap:
 
-    def __init__(self, x, y, radius=20, duration=5000):
+    def __init__(self, player, x, y, radius=20, duration=5000):
+        self.player = player
         self.x = x
         self.y = y
         self.radius = radius
@@ -243,7 +243,7 @@ class Trap:
         return True
     
     def draw(self, screen):
-        pygame.draw.circle(screen, RED, (int(self.x), int(self.y)), self.radius)
+        pygame.draw.circle(screen, RED, (self.player.pos.x, self.player.pos.y), self.radius)
 
 class Monster(object):
 
@@ -305,7 +305,7 @@ class Game:
         self.player = Player()
         self.monster = Monster(self.player, 1000, 600, 100, 100, 1, 400)
         self.game_objects = [self.player, self.monster]
-        self.font = font
+        self.font = menu_font
         self.xy_font = xy_font
         self.monster_font = monster_font
 
@@ -342,9 +342,10 @@ class Game:
                 self.update()
                 self.player.draw(self.screen)
                 self.monster.draw(self.screen)
+                self.track_stats()
                 pygame.display.flip()
                 self.clock.tick(FPS)
-                self.track_stats()
+                
 
 # Create game instance and run the game
 game = Game()
