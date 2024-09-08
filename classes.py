@@ -96,11 +96,6 @@ class Player(pygame.sprite.Sprite):
 
         # Crouch Attributes
         self.is_crouching = False
-        self.in_crouch_cooldown = False
-        self.crouch_duration = 5000 # 10 second crouch duration, should be PLENTY
-        self.crouch_cooldown = 1000 # barely a cooldown
-        self.crouch_duration_timer = 0
-        self.crouch_cooldown_timer = 0
 
         # Trap Management
         self.inventoryTraps = []
@@ -277,13 +272,15 @@ class Monster(object):
     def behavior(self):
         self.vel_x = 0
         self.vel_y = 0
-        # Follow player if within agro distance
-        if abs(self.pos.x - self.player.pos.x) < self.agro_distance:
+        # Chase player if within agro distance
+        if abs((self.pos.x + (self.width//2)) - (self.player.pos.x + (self.player.player_width//2))) < self.agro_distance:
             if abs(self.pos.y - self.player.pos.y) < self.agro_distance:
                 if self.pos.x > self.player.pos.x:
                     self.vel_x = -self.speed            
                 if self.pos.x < self.player.pos.x:
                     self.vel_x = self.speed
+        if abs((self.pos.y + (self.height//2)) - (self.player.pos.y + (self.player.player_height//2))) < self.agro_distance:
+            if abs(self.pos.x - self.player.pos.x) < self.agro_distance:
                 if self.pos.y > self.player.pos.y:
                     self.vel_y = -self.speed        
                 if self.pos.y < self.player.pos.y:
@@ -299,7 +296,7 @@ class Monster(object):
 
 #player and monster instances
 player = Player()
-umo = Monster(player, 1000, 600, 100, 100, 1, 400)
+umo = Monster(player, 1000, 600, 100, 100, 1, 300)
 
 game_objects.append(player)
 game_objects.append(umo)
@@ -319,7 +316,6 @@ class Game:
         self.speed_font = speed_font
         self.monster_font = monster_font
         self.xy_font = xy_font
-        self.monster_font = monster_font
 
     def track_stats(self):
 
@@ -332,17 +328,15 @@ class Game:
         bool_color2 = WHITE
         if self.player.is_crouching:
             bool_color2 = (T_GREEN)
-        if self.player.in_crouch_cooldown:
-            bool_color2 = (RED)
       
         position_text = self.pos_font.render(f"Pos: ({int(self.player.pos.x)}, {int(self.player.pos.y)})", True, RED)
-        speed_text = self.speed_font.render(f"FPS: ({FPS}) Speed: {self.player.speed}", True, RED)
+        speed_text = self.speed_font.render(f"FPS: ({FPS}) Speed: {self.player.speed}", True, PURPLE)
         x_text = self.xy_font.render(f'x-vel(pixel): {self.player.velocity_x:.5f}', True, GRAY)
         y_text = self.xy_font.render(f'y-vel(pixel): {self.player.velocity_y:.5f}', True, GRAY)
         monster_text = self.monster_font.render(f'mons-vel:(x:{self.monster.vel_x:.5f}, y:{self.monster.vel_y:.5f}) '
-                                                f'mons-pos:(x:{self.monster.pos.x:.2f}, y:{self.monster.pos.y:.2f})', True, GREEN)
+                                                f'mons-pos:(x:{int(self.monster.pos.x)}, y:{int(self.monster.pos.y)})', True, GREEN)
         sprint_text = self.speed_font.render(f'SPRINT: {self.player.is_sprinting} CD: {self.player.in_sprint_cooldown} SF: {sprint_factor}', True, bool_color1)
-        crouch_text = self.speed_font.render(f'CROUCH: {self.player.is_crouching} CD: {self.player.in_crouch_cooldown} CF: {crouch_factor}', True, bool_color2)
+        crouch_text = self.speed_font.render(f'CROUCH: {self.player.is_crouching} CD: N/A  CF: {crouch_factor}', True, bool_color2)
 
         self.screen.blit(sprint_text, (SCREEN_WIDTH - 300, 32))
         self.screen.blit(crouch_text, (SCREEN_WIDTH - 300, 50))
@@ -381,186 +375,3 @@ class Game:
 # Create game instance and run the game
 game = Game()
 game.run()
-
-
-# class Player(pygame.sprite.Sprite):
-
-#     def __init__(self):
-#         super().__init__()
-#         self.image = pygame.transform.rotozoom(pygame.image.load("images/umo_Sprites/idle/umo-idle-0.png").convert_alpha(), 0, 2)
-#         self.pos = pygame.math.Vector2(PLAYER_START_X, PLAYER_START_Y)
-#         self.player_width = PLAYER_WIDTH
-#         self.player_height = PLAYER_HEIGHT
-#         self.base_speed = PLAYER_SPEED
-#         self.speed = self.base_speed
-#         self.velocity_x = 0
-#         self.velocity_y = 0
-        
-#         # Screen and Background position initialization
-#         self.screen_width = SCREEN_WIDTH
-#         self.screen_height = SCREEN_HEIGHT
-#         self.bg_x = 0
-#         self.bg_y = 0
-#         self.bg_speed = PLAYER_SPEED
-
-#         # Sprint Attributes
-#         self.is_sprinting = False
-#         self.in_cooldown = False
-#         self.sprint_duration = 2000  # Sprint (milliseconds)
-#         self.sprint_cooldown = 7000  # Cooldown (milliseconds)
-#         self.sprint_timer = 0
-#         self.cooldown_timer = 0
-
-#     def user_input(self):
-#         keys = pygame.key.get_pressed()
-#         self.velocity_x = 0
-#         self.velocity_y = 0
-#         global left
-#         global right
-#         global walkCount
-#         global sprint_factor
-#         if keys[pygame.K_w]:
-#             self.velocity_y = -self.speed
-#         if keys[pygame.K_s]:
-#             self.velocity_y = self.speed
-#         if keys[pygame.K_a]:
-#             self.velocity_x = -self.speed
-#             left = True
-#             right = False
-#         if keys[pygame.K_d]:
-#             self.velocity_x = self.speed
-#             right = True
-#             left = False
-#         else:
-#             walkCount = 0
-
-#         if self.velocity_x != 0 and self.velocity_y != 0:
-#             self.velocity_x /= math.sqrt(2)
-#             self.velocity_y /= math.sqrt(2)
-
-#         if keys[pygame.K_ESCAPE]:
-#             global game_state
-#             game_state = PAUSE
-
-#     def move(self):
-#         # Move player position
-#         self.pos += pygame.math.Vector2(self.velocity_x, self.velocity_y)
-        
-#         # Move background position to create the illusion of player movement
-#         self.bg_x -= self.velocity_x
-#         self.bg_y -= self.velocity_y
-
-#     def draw(self, screen):
-#         global walkCount
-#         screen.fill(WHITE)
-#         screen.blit(bg, (self.bg_x, self.bg_y))
-        
-#         if walkCount + 1 >= 60:
-#             walkCount = 0
-            
-#         if self.velocity_x != 0 or self.velocity_y != 0:  # Player is moving
-#             if left:
-#                 screen.blit(pygame.transform.flip(walkRight[walkCount // 5], True, False), 
-#                             (SCREEN_WIDTH // 2 - self.player_width // 2, SCREEN_HEIGHT // 2 - self.player_height // 2))
-#                 walkCount += 1 * int(sprint_factor)
-#             elif right:
-#                 screen.blit(walkRight[walkCount // 5], 
-#                             (SCREEN_WIDTH // 2 - self.player_width // 2, SCREEN_HEIGHT // 2 - self.player_height // 2))
-#                 walkCount += 1 * int(sprint_factor)
-#         else:
-#             # If no movement, show idle
-#             screen.blit(self.image, 
-#                         (SCREEN_WIDTH // 2 - self.player_width // 2, SCREEN_HEIGHT // 2 - self.player_height // 2))
-
-# class Monster:
-
-#     def __init__(self, player, pos_x, pos_y, width, height, speed, agro_distance):
-#         self.player = player
-#         self.pos = pygame.math.Vector2(pos_x, pos_y)
-#         self.width = width
-#         self.height = height
-#         self.speed = speed
-#         self.vel_x = 0
-#         self.vel_y = 0
-#         self.agro_distance = agro_distance
-
-#     def draw(self, screen):
-#         self.move()
-#         screen.blit(umo_monster, self.pos)
-
-#     def move(self):
-#         self.pos += pygame.math.Vector2(self.vel_x, self.vel_y)
-        
-#     def behavior(self):
-#         self.vel_x = 0
-#         self.vel_y = 0
-#         if abs(self.pos.x - self.player.pos.x) < self.agro_distance:
-#             if abs(self.pos.y - self.player.pos.y) < self.agro_distance:
-#                 if self.pos.x > self.player.pos.x:
-#                     self.vel_x = -self.speed            
-#                 if self.pos.x < self.player.pos.x:
-#                     self.vel_x = self.speed
-#                 if self.pos.y > self.player.pos.y:
-#                     self.vel_y = -self.speed        
-#                 if self.pos.y < self.player.pos.y:
-#                     self.vel_y = self.speed
-        
-#         if self.vel_x != 0 and self.vel_y != 0:
-#             self.vel_x /= math.sqrt(2)
-#             self.vel_y /= math.sqrt(2)
-
-#     def update(self):
-#         self.behavior()
-#         self.move()
-
-# class Game:
-
-#     def __init__(self):
-#         self.screen = screen
-#         self.clock = clock
-#         self.player = Player()
-#         self.monster = Monster(self.player, 1000, 600, 100, 100, 1, 400)
-#         self.game_objects = [self.player, self.monster]
-#         self.font = font
-#         self.xy_font = xy_font
-#         self.monster_font = monster_font
-
-#     def track_stats(self):
-#         position_text = self.font.render(f"Pos: ({int(self.player.pos.x)}, {int(self.player.pos.y)})", True, RED)
-#         speed_text = self.font.render(f"FPS: ({FPS}) Speed: {self.player.speed}", True, RED)
-#         x_text = self.xy_font.render(f'x-vel(pixel): {self.player.velocity_x:.5f}', True, GRAY)
-#         y_text = self.xy_font.render(f'y-vel(pixel): {self.player.velocity_y:.5f}', True, GRAY)
-#         monster_text = self.monster_font.render(f'mons-vel:(x:{self.monster.vel_x:.5f}, y:{self.monster.vel_y:.5f}) '
-#                                                 f'mons-pos:(x:{self.monster.pos.x:.2f}, y:{self.monster.pos.y:.2f})', True, GREEN)
-
-#         self.screen.blit(position_text, (10, 10))
-#         self.screen.blit(speed_text, (SCREEN_WIDTH - 200, 10))
-#         self.screen.blit(x_text, (10, 30))
-#         self.screen.blit(y_text, (10, 45))
-#         self.screen.blit(monster_text, (200, 10))
-
-#     def update(self):
-#         self.player.update()
-#         for obj in self.game_objects:
-#             obj.update()
-#         self.track_stats()
-
-#     def run(self):
-#         global game_state
-#         running = True
-#         while running:
-#             for event in pygame.event.get():
-#                 if event.type == pygame.QUIT:
-#                     pygame.quit()
-#                     sys.exit()
-
-#             if game_state == PLAYING:
-#                 self.update()
-#                 self.player.draw(self.screen)
-#                 self.monster.draw(self.screen)
-#                 pygame.display.flip()
-#                 self.clock.tick(FPS)
-
-# # Create game instance and run the game
-# game = Game()
-# game.run()
