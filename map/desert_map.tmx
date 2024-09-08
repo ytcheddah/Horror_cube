@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="30" height="20" tilewidth="32" tileheight="32" infinite="0" nextlayerid="7" nextobjectid="41">
+ <tileset firstgid="1" source="Desert_Tiles.tsx"/>
+ <tileset firstgid="17" source="objects.tsx"/>
+ <layer id="1" name="ground" width="30" height="20">
+  <data encoding="base64" compression="zlib">
+   eJyVVQkOwyAMCwU6/v+iPW1UajTXdTgiRYxB4jgHNftL6Zq6Hl3zvR6wL7Yu7ge1dj27fuDe9bvd537Gd9sGbiXsInAjfmrdwa23jceMuJn4MV8+XxX2yb6jerLu8sWeSLRXfDwmFeNOfS+bntcv59d7aKTVnnx3+tntFFf0rWqxonWCG3EdzSv3V4StpEzsPJ6onhgv3sP8KGkW9zTyjeaW/+d65wB3ZUY4fo7TTOe72fPNQ+Gack4jPpw/ZTPiW+iu6mtV31PgRrOnhO9yX/PbjfxnfCNNsLJP32M/Y4wsEYay5fefZwRjW5EIO9ubUwZV33WPbVUiXHxncO4Pe78Do7zuYDsu+p71gOrdHfzobeNaM+4PxA0GgA==
+  </data>
+ </layer>
+ <layer id="3" name="foliage" width="30" height="20">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgF9AKcQMyFRI80e+nhDpi5zEDMhEQzobmJFgBmNjMUswAxI43tRLYXlz20sp+e8YrNXnQ2KfpIkWNAkyPVn5TYSwkYqfZyMgxc2hwFowAZAAAj1wKV
+  </data>
+ </layer>
+ <objectgroup id="5" name="bushes">
+  <object id="1" name="bush" type="vegetation" gid="19" x="159.273" y="170.915" width="33" height="29"/>
+  <object id="16" name="Bush" type="vegetation" gid="18" x="275.789" y="149.797" width="31" height="23"/>
+  <object id="19" name="bush" type="vegetation" gid="18" x="190.985" y="134.422" width="15.3468" height="11.3864"/>
+  <object id="20" name="bush" type="vegetation" gid="18" x="206.418" y="147.178" width="20.4183" height="15.1492"/>
+  <object id="21" name="bush" type="vegetation" gid="2147483667" x="329.34" y="254.364" width="35.9127" height="31.5596"/>
+  <object id="22" name="bush" type="vegetation" gid="18" x="467.079" y="312.454" width="31" height="23"/>
+  <object id="24" name="bush" type="vegetation" gid="19" x="471.679" y="461.989" width="33" height="29"/>
+  <object id="26" name="bush" type="vegetation" gid="19" x="577.859" y="488.401" width="33" height="29"/>
+  <object id="27" name="bush" type="vegetation" gid="19" x="713.398" y="389.843" width="33" height="29"/>
+  <object id="28" name="bush" type="vegetation" gid="18" x="757.872" y="401.334" width="31" height="23"/>
+  <object id="29" name="bush" type="vegetation" gid="18" x="630.135" y="490.108" width="31" height="23"/>
+  <object id="30" name="bush" type="vegetation" gid="18" x="533.39" y="489.099" width="31" height="23"/>
+  <object id="31" name="bush" type="vegetation" gid="18" x="512.764" y="449.754" width="31" height="23"/>
+  <object id="34" name="bush" type="vegetation" gid="19" x="353.405" y="271.396" width="35.9127" height="31.5596"/>
+  <object id="35" gid="18" x="336.687" y="253.925" width="31" height="23"/>
+  <object id="36" gid="18" x="317.203" y="278.651" width="31" height="23"/>
+  <object id="37" gid="18" x="302.389" y="258.258" width="31" height="23"/>
+  <object id="38" gid="18" x="298.787" y="233.722" width="31" height="23"/>
+  <object id="39" gid="18" x="331.201" y="220.216" width="31" height="23"/>
+ </objectgroup>
+ <objectgroup id="6" name="trees">
+  <object id="17" name="tree" type="vegetation" gid="17" x="127.481" y="479.496" width="99.0209" height="129.333"/>
+  <object id="40" name="tree" type="vegetation" gid="17" x="703.741" y="446.052" width="90.0655" height="117.637"/>
+ </objectgroup>
+ <layer id="4" name="plants and rocks" width="30" height="20">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2DkAU4g5hoBdo6CUTAKRsEoGBgAAPPkACc=
+  </data>
+ </layer>
+</map>
