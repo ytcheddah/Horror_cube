@@ -12,7 +12,7 @@ pygame.mixer.init()
 game_state = MENU
 
 # Screen display
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Horror Cube")
 clock = pygame.time.Clock()
 
@@ -36,7 +36,7 @@ pause_menu_items = ['Resume','Inventory','Options','Save Game','Return to Main M
 pause_selected_item = 0
 
 # Initialize and Load Images
-background = pygame.transform.scale(pygame.image.load("images/test-image2.png").convert(), (WIDTH, HEIGHT))
+background = pygame.transform.scale(pygame.image.load("images/test-image2.png").convert(), (SCREEN_WIDTH, SCREEN_HEIGHT))
 zenba = pygame.image.load("images/zenba_sprites/zenba1.png").convert_alpha()
 walkRight = [pygame.transform.rotozoom(pygame.image.load('images/umo_Sprites/roam_chase/umo-rc-00.png').convert_alpha(), 0, 2), 
              pygame.transform.rotozoom(pygame.image.load('images/umo_Sprites/roam_chase/umo-rc-01.png').convert_alpha(), 0, 2),
@@ -61,7 +61,7 @@ def draw_menu(selected_item):
     for index, item in enumerate(menu_items):
         color = WHITE if index == selected_item else (100, 100, 100)
         label = font.render(item, True, color)
-        label_rect = label.get_rect(center=(WIDTH // 2, HEIGHT // 2 + index * 100))
+        label_rect = label.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + index * 100))
         screen.blit(label, label_rect)
     pygame.display.flip()
 
@@ -91,16 +91,16 @@ def handle_menu_input():
 def draw_pause_menu(pause_selected_item):
 
     # draws a semi-transparent BLUEish BOX (bb) for the Pause Menu Text to be on
-    bb = pygame.Surface(([WIDTH - (WIDTH * .4),HEIGHT - (HEIGHT * .4)]), pygame.SRCALPHA)
+    bb = pygame.Surface(([SCREEN_WIDTH - (SCREEN_WIDTH * .4),SCREEN_HEIGHT - (SCREEN_HEIGHT * .4)]), pygame.SRCALPHA)
     bb.fill((105,125,250,100)) # RGBA - last number is Alpha value (aka ratio of transparency)
     bb.set_alpha(25)
-    screen.blit(bb, ((WIDTH - (WIDTH * .8)),HEIGHT - (HEIGHT * .8)))
+    screen.blit(bb, ((SCREEN_WIDTH - (SCREEN_WIDTH * .8)),SCREEN_HEIGHT - (SCREEN_HEIGHT * .8)))
     # draws BLACK BORDER on top of box on the Pause Menu
-    pygame.draw.rect(screen, BLACK, pygame.Rect((WIDTH - (WIDTH * .8),(HEIGHT - (HEIGHT * .8)), (WIDTH * .6), (HEIGHT * .6))), 10)    
+    pygame.draw.rect(screen, BLACK, pygame.Rect((SCREEN_WIDTH - (SCREEN_WIDTH * .8),(SCREEN_HEIGHT - (SCREEN_HEIGHT * .8)), (SCREEN_WIDTH * .6), (SCREEN_HEIGHT * .6))), 10)    
     for index, item in enumerate(pause_menu_items):
         p_color = ((202, 122, 31)) if index == pause_selected_item else (10, 10, 100)
         p_label = p_font.render(item, True, p_color)
-        p_label_rect = p_label.get_rect(center=(WIDTH // 2, HEIGHT // 4 + index * 90))
+        p_label_rect = p_label.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 4 + index * 90))
         screen.blit(p_label, p_label_rect)
     pygame.display.flip()
 
@@ -174,7 +174,7 @@ class Player(pygame.sprite.Sprite):
                 left = False
             if left:
                 right = False
-        if keys[pygame.K_s] or keys[pygame.K_DOWN] and self.pos.y < HEIGHT - 120 - PLAYER_SPEED:
+        if keys[pygame.K_s] or keys[pygame.K_DOWN] and self.pos.y < SCREEN_HEIGHT - 120 - PLAYER_SPEED:
             self.velocity_y = self.speed
             if right:
                 left = False
@@ -184,7 +184,7 @@ class Player(pygame.sprite.Sprite):
             self.velocity_x = -self.speed
             left = True
             right = False
-        elif keys[pygame.K_d] or keys[pygame.K_RIGHT] and self.pos.x < WIDTH - 150 - PLAYER_SPEED:
+        elif keys[pygame.K_d] or keys[pygame.K_RIGHT] and self.pos.x < SCREEN_WIDTH - 150 - PLAYER_SPEED:
             self.velocity_x = self.speed
             right = True
             left = False
@@ -252,14 +252,14 @@ class Player(pygame.sprite.Sprite):
         x_text = xy_font.render(f'x-vel(pixel): {self.velocity_x:.5f}', True, GRAY )
         y_text = xy_font.render(f'y-vel(pixel): {self.velocity_y:.5f}', True, GRAY )
         screen.blit(position_text, (10, 10))  # Render position at the top-left corner
-        screen.blit(speed_text, (WIDTH - 200, 10))
+        screen.blit(speed_text, (SCREEN_WIDTH - 200, 10))
         screen.blit(x_text,(10, 30))
         screen.blit(y_text,(10, 45))
 
     def draw(self, screen):
         global walkCount
         screen.fill(WHITE)
-        screen.blit(zenba, ((WIDTH//2) - 50, (HEIGHT//2) - 50))
+        screen.blit(zenba, ((SCREEN_WIDTH//2) - 50, (SCREEN_HEIGHT//2) - 50))
         # Draw Player
         if walkCount + 1 >= 60:
             walkCount = 0

@@ -8,13 +8,13 @@ from settings import *
 pygame.init()
 
 # Creating the window
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Horror Cube")
 clock = pygame.time.Clock()
 
 # Loads Images
 
-background = pygame.transform.scale(pygame.image.load("images/test-image2.png").convert(), (WIDTH, HEIGHT))
+background = pygame.transform.scale(pygame.image.load("images/test-image2.png").convert(), (SCREEN_WIDTH, SCREEN_HEIGHT))
 
 class Player(pygame.sprite.Sprite):
 

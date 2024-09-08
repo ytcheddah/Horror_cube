@@ -3,7 +3,7 @@ import pygame
 import sys
 from settings import *
 
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Spritesheets")
 
 # 320 x 320 px BUT image only is 280 x 280

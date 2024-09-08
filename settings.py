@@ -1,7 +1,7 @@
 
 # Game Setup
-WIDTH = 1280
-HEIGHT = 720
+SCREEN_WIDTH = 1280
+SCREEN_HEIGHT = 720
 FPS = 60
 
 # Game states
@@ -15,6 +15,8 @@ PLAYER_START_X = 300
 PLAYER_START_Y = 400
 PLAYER_SPEED = 5
 PLAYER_ACCEL_R = 3
+PLAYER_WIDTH = 64
+PLAYER_HEIGHT = 64
 
 # Colors
 
@@ -23,7 +25,8 @@ BG = (100, 100, 100)
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
-GREEN = (30, 200, 120) # more normal green
+GREEN = (0, 255, 0)
+T_GREEN = (30, 200, 120) # more normal green
 BLUE = (0, 0, 255)
 YELLOW = (255, 255, 0)
 GRAY = (150, 150, 150)

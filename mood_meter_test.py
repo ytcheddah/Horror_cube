@@ -29,7 +29,7 @@ pygame.init()
 
 # colors imported from settings
 
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Psyche Bar")
 
 # function to draw the psyche bar

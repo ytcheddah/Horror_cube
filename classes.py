@@ -19,7 +19,7 @@ PAUSE = "pause"
 game_state = PLAYING
 
 # Screen display
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Horror Cube")
 clock = pygame.time.Clock()
 
@@ -44,7 +44,8 @@ pause_menu_items = ['Resume','Inventory','Options','Save Game','Return to Main M
 pause_selected_item = 0
 
 # Initialize and Load Images
-background = pygame.transform.scale(pygame.image.load("images/test-image2.png").convert(), (WIDTH, HEIGHT))
+bg = pygame.transform.scale(pygame.image.load("images/desert_map.png").convert(), (4000, 2000))
+background = pygame.transform.scale(pygame.image.load("images/test-image2.png").convert(), (SCREEN_WIDTH, SCREEN_HEIGHT))
 zenba_monster = pygame.image.load("images/zenba_sprites/zenba1.png").convert_alpha()
 umo_monster = pygame.image.load("images/umo_Sprites/roam_chase/umo-rc-09.png")
 walkRight = [pygame.transform.rotozoom(pygame.image.load('images/umo_Sprites/roam_chase/umo-rc-00.png').convert_alpha(), 0, 2), 
@@ -64,6 +65,8 @@ right = False
 walkCount = 0
 sprint_factor = 1
 
+# Object Initialization
+game_objects = []
 
 class Player(pygame.sprite.Sprite):
 
@@ -71,17 +74,28 @@ class Player(pygame.sprite.Sprite):
         super().__init__()
         self.image = pygame.transform.rotozoom(pygame.image.load("images/umo_Sprites/idle/umo-idle-0.png").convert_alpha(), 0, 2)
         self.pos = pygame.math.Vector2(PLAYER_START_X, PLAYER_START_Y)
-        self.current_pos = self.pos
+        self.player_width = PLAYER_WIDTH
+        self.player_height = PLAYER_HEIGHT
         self.base_speed = PLAYER_SPEED
         self.speed = self.base_speed
         self.velocity_x = 0
         self.velocity_y = 0
+        
+        # Screen and Background position initialization
+        self.screen_width = SCREEN_WIDTH
+        self.screen_height = SCREEN_HEIGHT
+        self.bg_x = 0
+        self.bg_y = 0
+        self.bg_speed = PLAYER_SPEED
+
+        # "virtual" position in the world
+        self.virt_pos = pygame.Vector2(self.screen_width//2, self.screen_height//2)
 
         # Sprint Attributes
         self.is_sprinting = False
         self.in_cooldown = False  # New attribute to track cooldown state
-        self.sprint_duration = 2000  # Sprint lasts 2 seconds (2000 milliseconds)
-        self.sprint_cooldown = 7000  # Cooldown of 7 seconds (3000 milliseconds)
+        self.sprint_duration = 2000  # Sprint (milliseconds)
+        self.sprint_cooldown = 7000  # Cooldown (milliseconds)
         self.sprint_timer = 0
         self.cooldown_timer = 0
 
@@ -98,32 +112,25 @@ class Player(pygame.sprite.Sprite):
         global right
         global walkCount
         global sprint_factor
-        global left
-        global right
-        if keys[pygame.K_w] or keys[pygame.K_UP] and self.pos.y > 0 - 30 - PLAYER_SPEED:
+        if keys[pygame.K_w] or keys[pygame.K_UP]: # and self.pos.y > 0 - 30 - PLAYER_SPEED:
             self.velocity_y = -self.speed
-            if right:
-                left = False
-            if left:
-                right = False
-        if keys[pygame.K_s] or keys[pygame.K_DOWN] and self.pos.y < HEIGHT - 120 - PLAYER_SPEED:
+            self.bg_y = self.speed
+        if keys[pygame.K_s] or keys[pygame.K_DOWN]: # and self.pos.y < HEIGHT - 120 - PLAYER_SPEED:
             self.velocity_y = self.speed
-            if right:
-                left = False
-            if left:
-                right = False
-        if keys[pygame.K_a] or keys[pygame.K_LEFT] and self.pos.x > 0 - 30 - PLAYER_SPEED:
+            self.bg_y = -self.speed
+        if keys[pygame.K_a] or keys[pygame.K_LEFT]: # and self.pos.x > 0 - 30 - PLAYER_SPEED:
             self.velocity_x = -self.speed
+            self.bg_x = self.speed
             left = True
             right = False
-        elif keys[pygame.K_d] or keys[pygame.K_RIGHT] and self.pos.x < WIDTH - 150 - PLAYER_SPEED:
+        if keys[pygame.K_d] or keys[pygame.K_RIGHT]: # and self.pos.x < WIDTH - 150 - PLAYER_SPEED:
             self.velocity_x = self.speed
+            self.bg_x = -self.speed
             right = True
             left = False
         else:
-            right = False
-            left = False
             walkCount = 0
+        # if 
 
         if self.velocity_x != 0 and self.velocity_y != 0: # moving diagonally
             self.velocity_x /= math.sqrt(2)
@@ -182,9 +189,9 @@ class Player(pygame.sprite.Sprite):
         speed_text = speed_font.render(f"FPS: ({FPS}) Speed: {self.speed}", True, RED)
         x_text = xy_font.render(f'x-vel(pixel): {self.velocity_x:.5f}', True, GRAY )
         y_text = xy_font.render(f'y-vel(pixel): {self.velocity_y:.5f}', True, GRAY )
-        monster_text = monster_font.render(f'mons-vel:(x:{umo.vel_x:.5f}, y:{umo.vel_y:.5f}) mons-pos:(x:{umo.pos.x}, y:{umo.pos.y})', True, GREEN)
+        monster_text = monster_font.render(f'mons-vel:(x:{umo.vel_x:.5f}, y:{umo.vel_y:.5f}) mons-pos:(x:{umo.pos.x:.2f}, y:{umo.pos.y:.2f})', True, GREEN)
         screen.blit(position_text, (10, 10))  # Render position at the top-left corner
-        screen.blit(speed_text, (WIDTH - 200, 10))
+        screen.blit(speed_text, (SCREEN_WIDTH - 200, 10))
         screen.blit(x_text, (10, 30))
         screen.blit(y_text, (10, 45))
         screen.blit(monster_text, (200, 10))
@@ -192,21 +199,30 @@ class Player(pygame.sprite.Sprite):
     def draw(self, screen):
         global walkCount
         screen.fill(WHITE)
-        screen.blit(zenba_monster, ((WIDTH//2) - 50, (HEIGHT//2) - 50))
+        screen.blit(bg, (self.bg_x,self.bg_y))
+        # screen.blit(zenba_monster, ((WIDTH//2) - 50, (HEIGHT//2) - 50))
         # Draw Player
         if walkCount + 1 >= 60:
             walkCount = 0
         if left:
-            screen.blit(pygame.transform.flip(walkRight[walkCount//5], True, False), (self.pos))
+            # screen.blit(pygame.transform.flip(walkRight[walkCount//5], True, False), (self.pos))
+            screen.blit(pygame.transform.flip(walkRight[walkCount//5], True, False), ((SCREEN_WIDTH//2) - (self.player_width//2), (SCREEN_HEIGHT//2) - self.player_height//2))
             walkCount += 1 * int(sprint_factor)
         elif right:
-            screen.blit(walkRight[walkCount//5], (self.pos))
+            # screen.blit(walkRight[walkCount//5], (self.pos))
+            screen.blit(walkRight[walkCount//5], ((SCREEN_WIDTH//2) - (self.player_width//2), (SCREEN_HEIGHT//2) - self.player_height//2))
             walkCount += 1 * int(sprint_factor)
         else:
-            screen.blit(self.image, self.pos)        
+            # screen.blit(self.image, self.pos)        
+            screen.blit(self.image, ((SCREEN_WIDTH//2) - (self.player_width//2), (SCREEN_HEIGHT//2) - self.player_height//2))
         # Draw Traps
         for trap in self.inventoryTraps:
             trap.draw(screen)
+        # Draw objects at offset positions
+        for obj in game_objects:
+            obj_pos = obj.get_pos()
+            screen.blit(obj.image, (obj_pos[0] + self.bg_x, obj_pos[1] + self.bg_y))
+
 
     def update(self):
         self.user_input()
@@ -255,15 +271,15 @@ class Monster(object):
         self.vel_x = 0
         self.vel_y = 0
         # Follow player if within agro distance
-        if abs(self.pos.x - self.player.current_pos.x) < self.agro_distance:
-            if abs(self.pos.y - self.player.current_pos.y) < self.agro_distance:
-                if self.pos.x > self.player.current_pos.x:
+        if abs(self.pos.x - self.player.pos.x) < self.agro_distance:
+            if abs(self.pos.y - self.player.pos.y) < self.agro_distance:
+                if self.pos.x > self.player.pos.x:
                     self.vel_x = -self.speed            
-                if self.pos.x < self.player.current_pos.x:
+                if self.pos.x < self.player.pos.x:
                     self.vel_x = self.speed
-                if self.pos.y > self.player.current_pos.y:
+                if self.pos.y > self.player.pos.y:
                     self.vel_y = -self.speed        
-                if self.pos.y < self.player.current_pos.y:
+                if self.pos.y < self.player.pos.y:
                     self.vel_y = self.speed
         
         if self.vel_x != 0 and self.vel_y != 0: # moving diagonally normilization
@@ -277,6 +293,11 @@ class Monster(object):
 #player and monster instances
 player = Player()
 umo = Monster(player, 1000, 600, 100, 100, 1, 400)
+
+game_objects.append(player)
+game_objects.append(umo)
+
+# All non-player objects
 
 # State Machine, always runs, checks which Game State we are in
 running = True
