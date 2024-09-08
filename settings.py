@@ -29,7 +29,7 @@ GREEN = (0, 255, 0)
 T_GREEN = (30, 200, 120) # more normal green
 BLUE = (0, 0, 255)
 YELLOW = (255, 255, 0)
-GRAY = (150, 150, 150)
+GRAY = (200, 200, 200)
 
 # Sound
 

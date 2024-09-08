@@ -25,7 +25,6 @@ clock = pygame.time.Clock()
 
 # Fonts
 menu_font = pygame.font.Font("font/boldPixelFont.ttf", 74)
-
 p_font = pygame.font.Font("font/pixelFont.ttf", 36)
 pos_font = pygame.font.Font("font/pixelFont.ttf", 18)
 speed_font = pygame.font.Font("font/pixelFont.ttf", 18)
@@ -74,7 +73,7 @@ class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.image = pygame.transform.rotozoom(pygame.image.load("images/umo_Sprites/idle/umo-idle-0.png").convert_alpha(), 0, 2)
-        self.pos = pygame.math.Vector2(SCREEN_WIDTH//2, SCREEN_HEIGHT//2)
+        self.pos = pygame.math.Vector2(SCREEN_WIDTH//2, SCREEN_HEIGHT//2) # where I am relative to the map
         self.player_width = PLAYER_WIDTH
         self.player_height = PLAYER_HEIGHT
         self.base_speed = PLAYER_SPEED
@@ -83,13 +82,11 @@ class Player(pygame.sprite.Sprite):
         self.velocity_y = 0
         
         # Screen and Background position initialization
-        self.screen_width = SCREEN_WIDTH
-        self.screen_height = SCREEN_HEIGHT
         self.bg_pos = pygame.math.Vector2(0,0)
         self.bg_speed = PLAYER_SPEED
 
         # "virtual" position, keeps me in the middle off the screen
-        self.virt_pos = pygame.math.Vector2(self.screen_width//2, self.screen_height//2)
+        self.virt_pos = pygame.math.Vector2(SCREEN_WIDTH//2, SCREEN_HEIGHT//2)
 
         # Sprint Attributes
         self.is_sprinting = False
@@ -108,26 +105,29 @@ class Player(pygame.sprite.Sprite):
         keys = pygame.key.get_pressed()
         self.velocity_x = 0
         self.velocity_y = 0
+        self.facing_right = None 
         global left
         global right
         global walkCount
         global sprint_factor
-        if keys[pygame.K_w] or keys[pygame.K_UP]: # and self.pos.y > 0 - 30 - PLAYER_SPEED:
+        if keys[pygame.K_w] or keys[pygame.K_UP]: 
             self.velocity_y = -self.speed
             self.bg_y = self.speed
-        if keys[pygame.K_s] or keys[pygame.K_DOWN]: # and self.pos.y < HEIGHT - 120 - PLAYER_SPEED:
+        if keys[pygame.K_s] or keys[pygame.K_DOWN]: 
             self.velocity_y = self.speed
             self.bg_y = -self.speed
-        if keys[pygame.K_a] or keys[pygame.K_LEFT]: # and self.pos.x > 0 - 30 - PLAYER_SPEED:
+        if keys[pygame.K_a] or keys[pygame.K_LEFT]: 
             self.velocity_x = -self.speed
             self.bg_x = self.speed
             left = True
             right = False
-        if keys[pygame.K_d] or keys[pygame.K_RIGHT]: # and self.pos.x < WIDTH - 150 - PLAYER_SPEED:
+            self.facing_right = False
+        if keys[pygame.K_d] or keys[pygame.K_RIGHT]: 
             self.velocity_x = self.speed
             self.bg_x = -self.speed
             right = True
             left = False
+            self.facing_right = True
         else:
             walkCount = 0
 
@@ -181,23 +181,23 @@ class Player(pygame.sprite.Sprite):
 
     def create_trap(self):
         # Create a new "trap" (circle) under the player
-        trap_x = self.virt_pos.x + self.image.get_width() // 2 # center the circle horizontally
-        trap_y = self.virt_pos.y + self.image.get_height() - 30 # place trap under player
+        trap_x = (self.virt_pos.x + self.image.get_width() // 2) # center the circle horizontally
+        trap_y = self.virt_pos.y + self.image.get_height() # place trap under player
         new_trap = Trap(player,trap_x,trap_y)
         self.inventoryTraps.append(new_trap)
 
-    def track_stats(self): # meant to help us develop, not for game itself
-        position_text = pos_font.render(f"Pos: ({self.pos.x:.2f}, {self.pos.y:.2f})", True, RED)
-        speed_text = speed_font.render(f"FPS: ({FPS}) Speed: {self.speed}", True, RED)
-        x_text = xy_font.render(f'x-vel(pixel): {self.velocity_x:.5f}', True, GRAY )
-        y_text = xy_font.render(f'y-vel(pixel): {self.velocity_y:.5f}', True, GRAY )
-        monster_text = monster_font.render(f'mons-vel:(x:{umo.vel_x:.5f}, y:{umo.vel_y:.5f})'
-                                            'mons-pos:(x:{umo.pos.x:.2f}, y:{umo.pos.y:.2f})', True, GREEN)
-        screen.blit(position_text, (10, 10))  # Render position at the top-left corner
-        screen.blit(speed_text, (SCREEN_WIDTH - 200, 10))
-        screen.blit(x_text, (10, 30))
-        screen.blit(y_text, (10, 45))
-        screen.blit(monster_text, (200, 10))
+    # def track_stats(self): # meant to help us develop, not for game itself
+    #     position_text = pos_font.render(f"Pos: ({self.pos.x:.2f}, {self.pos.y:.2f})", True, RED)
+    #     speed_text = speed_font.render(f"FPS: ({FPS}) Speed: {self.speed}", True, RED)
+    #     x_text = xy_font.render(f'x-vel(pixel): {self.velocity_x:.5f}', True, GRAY )
+    #     y_text = xy_font.render(f'y-vel(pixel): {self.velocity_y:.5f}', True, GRAY )
+    #     # monster_text = monster_font.render(f'mons-vel:(x:{umo.vel_x:.5f}, y:{umo.vel_y:.5f})'
+    #                                         # 'mons-pos:(x:{umo.pos.x:.2f}, y:{umo.pos.y:.2f})', True, T_GREEN)
+    #     screen.blit(position_text, (10, 10))  # Render position at the top-left corner
+    #     screen.blit(speed_text, (SCREEN_WIDTH - 200, 10))
+    #     screen.blit(x_text, (10, 30))
+    #     screen.blit(y_text, (10, 45))
+    #     # screen.blit(monster_text, (200, 10))
 
     def draw(self, screen):
         global walkCount
@@ -208,13 +208,13 @@ class Player(pygame.sprite.Sprite):
         if walkCount + 1 >= 60:
             walkCount = 0
         if left:
-            screen.blit(pygame.transform.flip(walkRight[walkCount//5], True, False), ((SCREEN_WIDTH//2) - (self.player_width//2), (SCREEN_HEIGHT//2) - self.player_height//2))
+            screen.blit(pygame.transform.flip(walkRight[walkCount//5], True, False), ((SCREEN_WIDTH//2) - (self.player_width//2) - 35, (SCREEN_HEIGHT//2) - (self.player_height//2) - 35))
             walkCount += 1 * int(sprint_factor)
         elif right:
-            screen.blit(walkRight[walkCount//5], ((SCREEN_WIDTH//2) - (self.player_width//2), (SCREEN_HEIGHT//2) - self.player_height//2))
+            screen.blit(walkRight[walkCount//5], ((SCREEN_WIDTH//2) - (self.player_width//2) - 35, (SCREEN_HEIGHT//2) - (self.player_height//2) - 35))
             walkCount += 1 * int(sprint_factor)
         else:       
-            screen.blit(self.image, ((SCREEN_WIDTH//2) - (self.player_width//2), (SCREEN_HEIGHT//2) - self.player_height//2))
+            screen.blit(self.image, ((SCREEN_WIDTH//2) - (self.player_width//2) - 35, (SCREEN_HEIGHT//2) - (self.player_height//2) - 35))
         # Draw Traps
         for trap in self.inventoryTraps:
             trap.draw(screen)
@@ -289,10 +289,10 @@ class Monster(object):
 
 #player and monster instances
 player = Player()
-umo = Monster(player, 1000, 600, 100, 100, 1, 400)
+# umo = Monster(player, 1000, 600, 100, 100, 1, 400)
 
 game_objects.append(player)
-game_objects.append(umo)
+# game_objects.append(umo)
 
 # All non-player objects
 
@@ -303,31 +303,39 @@ class Game:
         self.screen = screen
         self.clock = clock
         self.player = Player()
-        self.monster = Monster(self.player, 1000, 600, 100, 100, 1, 400)
-        self.game_objects = [self.player, self.monster]
-        self.font = menu_font
+        # self.monster = Monster(self.player, 1000, 600, 100, 100, 1, 400)
+        self.game_objects = self.player # [,self.monster]
+        self.menu_font = menu_font
+        self.p_font = p_font
+        self.pos_font = pos_font
+        self.speed_font = speed_font
+        self.monster_font = monster_font
         self.xy_font = xy_font
         self.monster_font = monster_font
 
     def track_stats(self):
-        position_text = self.font.render(f"Pos: ({int(self.player.pos.x)}, {int(self.player.pos.y)})", True, RED)
-        speed_text = self.font.render(f"FPS: ({FPS}) Speed: {self.player.speed}", True, RED)
+        position_text = self.pos_font.render(f"Pos: ({int(self.player.pos.x)}, {int(self.player.pos.y)})", True, RED)
+        speed_text = self.speed_font.render(f"FPS: ({FPS}) Speed: {self.player.speed}", True, RED)
         x_text = self.xy_font.render(f'x-vel(pixel): {self.player.velocity_x:.5f}', True, GRAY)
         y_text = self.xy_font.render(f'y-vel(pixel): {self.player.velocity_y:.5f}', True, GRAY)
-        monster_text = self.monster_font.render(f'mons-vel:(x:{self.monster.vel_x:.5f}, y:{self.monster.vel_y:.5f}) '
-                                                f'mons-pos:(x:{self.monster.pos.x:.2f}, y:{self.monster.pos.y:.2f})', True, GREEN)
+        # monster_text = self.monster_font.render(f'mons-vel:(x:{self.monster.vel_x:.5f}, y:{self.monster.vel_y:.5f}) '
+        #                                         f'mons-pos:(x:{self.monster.pos.x:.2f}, y:{self.monster.pos.y:.2f})', True, GREEN)
+        sprint_text = self.speed_font.render(f'SPRINT:{self.player.is_sprinting} CD: {self.player.in_cooldown}', True, T_GREEN)
+        crouch_text = self.speed_font.render(f'CROUCH:{False}', True, T_GREEN)
 
+        self.screen.blit(sprint_text, (SCREEN_WIDTH - 250, 30))
+        self.screen.blit(crouch_text, (SCREEN_WIDTH - 250, 48))
         self.screen.blit(position_text, (10, 10))
-        self.screen.blit(speed_text, (SCREEN_WIDTH - 200, 10))
+        self.screen.blit(speed_text, (SCREEN_WIDTH - 250, 10))
         self.screen.blit(x_text, (10, 30))
         self.screen.blit(y_text, (10, 45))
-        self.screen.blit(monster_text, (200, 10))
+        # self.screen.blit(monster_text, (200, 10))
 
-    def update(self):
-        self.player.update()
-        for obj in self.game_objects:
-            obj.update()
-        self.track_stats()
+    # def update(self):
+    #     self.player.update()
+        # for obj in self.game_objects:
+        #     obj.update()
+        # self.track_stats()
 
     def run(self):
         global game_state
@@ -339,13 +347,12 @@ class Game:
                     sys.exit()
 
             if game_state == PLAYING:
-                self.update()
+                self.player.update()
                 self.player.draw(self.screen)
-                self.monster.draw(self.screen)
                 self.track_stats()
+                # self.monster.draw(self.screen)
                 pygame.display.flip()
                 self.clock.tick(FPS)
-                
 
 # Create game instance and run the game
 game = Game()
