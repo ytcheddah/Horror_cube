@@ -74,7 +74,6 @@ def draw_menu(selected_item):
     
     return menu_item_rects
 
-
 def handle_menu_input():
 
     global game_state, selected_item

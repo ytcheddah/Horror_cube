@@ -73,8 +73,11 @@ class Player(pygame.sprite.Sprite):
 
     def __init__(self):
         super().__init__()
-        self.image = pygame.transform.rotozoom(pygame.image.load("images/umo_Sprites/idle/umo-idle-0.png").convert_alpha(), 0, 2)
-        self.pos = pygame.math.Vector2(SCREEN_WIDTH//2, SCREEN_HEIGHT//2) # where I am on the screen
+        # load the image and scale it
+        self.image = pygame.transform.rotozoom(pygame.image.load("images/umo_Sprites/idle/umo-idle-0.png").convert_alpha(), 0 , 2)
+        self.rect = self.image.get_rect(center = (SCREEN_WIDTH//2, SCREEN_HEIGHT//2))
+        self.pos = pygame.math.Vector2(self.rect.center) # where I am on the screen
+        
         self.player_width = PLAYER_WIDTH
         self.player_height = PLAYER_HEIGHT
         self.base_speed = PLAYER_SPEED
@@ -192,15 +195,15 @@ class Player(pygame.sprite.Sprite):
             self.speed = self.base_speed
 
     def move(self):
-
-        self.pos += pygame.math.Vector2(self.velocity_x, self.velocity_y)
+       
+        self.rect.center += pygame.math.Vector2(self.velocity_x, self.velocity_y)
+        self.rect.center = self.pos # update rect position
         self.bg_pos += pygame.math.Vector2(-self.velocity_x, -self.velocity_y)
-
-
+        
     def create_trap(self):
         # Create a new "trap" (circle) under the player
-        trap_x = (self.pos.x + self.image.get_width()//2)  # center the circle horizontally
-        trap_y = self.pos.y - self.image.get_height() - 20 # place trap under player
+        trap_x = (self.rect.x)  # center the circle horizontally
+        trap_y = (self.rect.y) - 20 # place trap under player
         new_trap = Trap(player,trap_x,trap_y)
         self.inventoryTraps.append(new_trap)
 
@@ -213,17 +216,16 @@ class Player(pygame.sprite.Sprite):
         if walkCount + 1 >= 60:
             walkCount = 0
         if left:
-            screen.blit(pygame.transform.flip(walkRight[walkCount//5], True, False), ((SCREEN_WIDTH//2) - (self.player_width//2) - 35, (SCREEN_HEIGHT//2) - (self.player_height//2) - 35))
+            screen.blit(pygame.transform.flip(walkRight[walkCount//5], True, False), (self.rect.center))
             walkCount += 1 * int(sprint_factor) * int(crouch_factor)
         elif right:
-            screen.blit(walkRight[walkCount//5], ((SCREEN_WIDTH//2) - (self.player_width//2) - 35, (SCREEN_HEIGHT//2) - (self.player_height//2) - 35))
+            screen.blit(walkRight[walkCount//5], (self.rect.center))
             walkCount += 1 * int(sprint_factor) * int(crouch_factor)
         else:       
-            screen.blit(self.image, ((SCREEN_WIDTH//2) - (self.player_width//2) - 35, (SCREEN_HEIGHT//2) - (self.player_height//2) - 35))
+            screen.blit(self.image, (self.rect.center))
         # Draw Traps
         for trap in self.inventoryTraps:
             trap.draw(screen)
-
 
     def update(self):
         self.user_input()
