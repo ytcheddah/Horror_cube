@@ -10,7 +10,7 @@
  </layer>
  <layer id="6" name="water" width="100" height="100">
   <data encoding="base64" compression="zlib">
-   eJzt2TtOA0EAREEH3P/MxKNJLH/Uz1KVNDn0Y9YsPB6v+3M+ft61/vp/+XzT+nurnZL1FutTtN5Ej9t6Fy1u6320uK130uK23kuL03ozLU7r3fQ4rXfT4rbeT4fTekctTusttTit99Tjtt5Ui9N6Vz1u6221OK331eK23lmL03prLU7rvXU4rXfX4bTeX4ebFi1atGjRo0XPt7bW4XP83Hdp0aJBjzvSpEuXJj3uSo8mPd5Rerw7tmnT48506dKjSZcuTZo06dGjSYvnVpMmLXr06NGjR48eLXoAv8LzqsHvux3eB/f87WrL/9Z3nt1ei+/ToUOHPQ12Xv1c0OF172xu/8+xfYf9O+zfoEGLDh06dLgXHTp0uBctWnRo0aJHix4tevTo0aJHi/ePHk16NOnRo0ePFj06PK86fJ53aNGhRYcWHVp0aNGhRYcWLVo85x9w3R4t
+   eJzt2btug0AURVEX+f9vjlKkGE2D/NDdY9aS6OFsg03yeDzvx/H241XT53/y8UnT11Y7Sqa3mD6KpjfRYze9ixa76X202E3vpMVuei8tVtObabGa3k2P1fRuWuym99NhNb2jFqvpLbVYTe+px256Uy1W07vqsZveVovV9L5a7KZ31mI1vbUWq+m9dVhN767Danp/HXZatGjRokWPFrvp8/7U1qd1+FP9HH3j5/6KE67vLi3+1a+xfn53dLd75BS6dGnS417p0aTnTu8op7jbu+NptOlxz3Tp0qNJly5NmjTp0aNJi+dWkyYtevTo0aNHjx4tegCn8Lxq8Hu3w/vgPH+7muV/63Oubq/F5+nQocM8DeY8+72gw/Ne2dz+72P7Dvt32L9BgxYdOnTocF906NDhvmjRokOLFj1a9GjRo0ePFj1avH/0aNKjSY8ePXq06NHhedXh+7xDiw4tOrTo0KJDiw4tOrRo0eKaX8OIHoU=
   </data>
  </layer>
  <objectgroup id="2" name="bushes">
