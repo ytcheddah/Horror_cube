@@ -120,8 +120,10 @@ def handle_menu_input():
 
 def draw_pause_menu(pause_selected_item):
 
+    pause_menu_item_rects = []
+
     # draws a semi-transparent BLUEish BOX (bb) for the Pause Menu Text to be on
-    bb = pygame.Surface(([SCREEN_WIDTH - (SCREEN_WIDTH * .4),SCREEN_HEIGHT - (SCREEN_HEIGHT * .4)]), pygame.SRCALPHA)
+    bb = pygame.Surface(([SCREEN_WIDTH - (SCREEN_WIDTH * .4),SCREEN_HEIGHT - (SCREEN_HEIGHT * .4)]), pygame.SRCALPHA) # works
     bb.fill((105,125,250,100)) # RGBA - last number is Alpha value (aka ratio of transparency)
     bb.set_alpha(25)
     screen.blit(bb, ((SCREEN_WIDTH - (SCREEN_WIDTH * .8)),SCREEN_HEIGHT - (SCREEN_HEIGHT * .8)))
@@ -132,11 +134,19 @@ def draw_pause_menu(pause_selected_item):
         p_label = p_font.render(item, True, p_color)
         p_label_rect = p_label.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 4 + index * 90))
         screen.blit(p_label, p_label_rect)
+
+        pause_menu_item_rects.append(p_label_rect)
+
     pygame.display.flip()
+
+    return pause_menu_item_rects
 
 def handle_pause_menu_input():
 
     global game_state, pause_selected_item
+    mouse_pos = pygame.mouse.get_pos()
+    mouse_clicked = pygame.mouse.get_pressed()[0]
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -163,6 +173,25 @@ def handle_pause_menu_input():
                 print('Close Pause Menu')
                 game_state = PLAYING
                 pygame.time.wait(200) # this fixes a bug where escape doesnt accept game state change and keeps you in pause menu, prolly not suffiecient lol
+
+    pause_menu_item_rects = draw_pause_menu(pause_selected_item)
+    
+    # Mouse interaction
+    for i, item_rect in enumerate(pause_menu_item_rects):
+        if item_rect.collidepoint(mouse_pos):
+            pause_selected_item = i  # Highlight item under the mouse
+            if mouse_clicked:
+                if pause_selected_item == 0:  # Resume Game
+                    game_state = PLAYING
+                if pause_selected_item == 1:  # Inventory
+                    print("Inventory selected")
+                if pause_selected_item == 2:  # Options
+                    print("Options selected")
+                if pause_selected_item == 3:  # Save Game
+                    print("Save Game selected")
+                if pause_selected_item == 4:  # Return to Main Menu
+                    pygame.mixer.music.play(-1)
+                    game_state = MENU
                     
 class Player(pygame.sprite.Sprite):
 
@@ -358,5 +387,5 @@ while running:
         while game_state == PAUSE:
             handle_pause_menu_input()  
             draw_pause_menu(pause_selected_item) 
-            # pygame.display.flip()
-            # clock.tick(FPS)
+            pygame.display.flip()
+            clock.tick(FPS)
