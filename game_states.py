@@ -30,6 +30,7 @@ pygame.mixer.music.set_volume(DEFAULT_MUSIC_VOLUME)
 # Menu items
 menu_items = ['Start Game','Options','Exit']
 selected_item = 0
+mouse_pos = pygame.mouse.get_pos()
 
 # Pause Menu Items
 pause_menu_items = ['Resume','Inventory','Options','Save Game','Return to Main Menu']
@@ -58,11 +59,22 @@ sprint_factor = 1
 def draw_menu(selected_item):
 
     screen.fill(BLACK)
+    
+    label = menu_font.render(item, True, color)
+    label_rect = label.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + index * 100))
+    screen.blit(label, label_rect)
+
     for index, item in enumerate(menu_items):
-        color = WHITE if index == selected_item else (100, 100, 100)
-        label = menu_font.render(item, True, color)
-        label_rect = label.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + index * 100))
-        screen.blit(label, label_rect)
+        # color = WHITE if index == selected_item else (100, 100, 100)
+        if index or label_rect.collidepoint(mouse_pos) == selected_item:
+            color = WHITE
+            print(pygame.mouse.get_pressed)
+        else: 
+            color = (100, 100, 100)
+        # if label_rect.collidepoint(mouse_pos): 
+        #     print(pygame.mouse.get_pressed())
+        
+
     pygame.display.flip()
 
 def handle_menu_input():
@@ -72,6 +84,7 @@ def handle_menu_input():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
+        
         if event.type == pygame.KEYDOWN:
             # print(f"Key pressed: {pygame.key.name(event.key)}")  # Debug print
             if event.key in [pygame.K_UP, pygame.K_w]:
