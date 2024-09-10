@@ -20,7 +20,7 @@ game_state = PLAYING
 
 # Screen display
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption("Horror Cube")
+pygame.display.set_caption("HC_CLASSES")
 clock = pygame.time.Clock()
 
 # Fonts
@@ -93,7 +93,7 @@ class Player(pygame.sprite.Sprite):
         self.is_sprinting = False
         self.in_sprint_cooldown = False  # Cooldown state
         self.sprint_duration = 2000  # Sprint duration (milliseconds)
-        self.sprint_cooldown = 7000  # Cooldown duration (milliseconds)
+        self.sprint_cooldown = 3000  # Cooldown duration (milliseconds)
         self.sprint_timer_start = 0  # Timer to track sprint duration
         self.cooldown_timer_start = 0  # Timer to track cooldown duration
         self.sprint_factor = 1  # Multiplier for sprinting speed
@@ -145,14 +145,19 @@ class Player(pygame.sprite.Sprite):
             game_state = PAUSE
 
         # Sprint logic (only sprint while Shift is held)
-        if keys[pygame.K_LSHIFT] and not self.in_sprint_cooldown:
+        if keys[pygame.K_LSHIFT] and not self.in_sprint_cooldown and not self.is_crouching:
             self.shift_held = True
             self.is_sprinting = True
             self.speed = self.base_speed * 1.5  # Increase speed by 50%
-            self.sprint_timer_start = pygame.time.get_ticks()  # Start the sprint timer
-
-        else:
-            self.shift_held = False
+            sprint_factor = 2
+        if (self.velocity_x and self.velocity_y) or self.velocity_x or self.velocity_y != 0: # checks for moving, seems buggy (could be keyboard)
+            if not keys[pygame.K_LSHIFT] and not self.in_sprint_cooldown:
+                self.sprint_timer_start = pygame.time.get_ticks()  # Start the sprint timer
+                print('multiple print = problem')
+                self.shift_held = False
+                if not self.shift_held:
+                    print('multiple print = problem')
+                    self.in_sprint_cooldown
 
         # Handle Crouching
         if (self.velocity_x and self.velocity_y) or self.velocity_x or self.velocity_y != 0: # checks for moving
@@ -161,6 +166,8 @@ class Player(pygame.sprite.Sprite):
                 self.speed = self.base_speed * .6 # Decrease to 60% speed
                 if self.is_crouching:
                     crouch_factor = .5
+                    # if self.is_sprinting:
+                    #     self.in_sprint_cooldown = False
             else:
                 self.is_crouching = False
 
@@ -177,7 +184,7 @@ class Player(pygame.sprite.Sprite):
         # sprint duration management
         if self.is_sprinting:
             # Check if sprint duration has been exceeded
-            if pygame.time.get_ticks() - self.sprint_timer_start > self.sprint_duration or not self.shift_held:
+            if pygame.time.get_ticks() - self.sprint_timer_start > self.sprint_duration:  # or not self.shift_held:
                 self.is_sprinting = False
                 self.speed = self.base_speed  # Reset speed
                 self.cooldown_timer_start = pygame.time.get_ticks()  # Start cooldown
@@ -190,7 +197,7 @@ class Player(pygame.sprite.Sprite):
                 self.in_sprint_cooldown = False # Exit Cooldown
         
         # Crouch Management
-        if self.is_crouching and not self.is_sprinting == False:
+        if not self.is_crouching and not self.is_sprinting:
             crouch_factor = 1
             self.speed = self.base_speed
 
