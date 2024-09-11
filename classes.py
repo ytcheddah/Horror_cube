@@ -1,6 +1,8 @@
 import pygame
 import math
 import sys
+
+import pygame.gfxdraw
 from settings import *
 
 
@@ -75,7 +77,7 @@ class Player(pygame.sprite.Sprite):
         super().__init__()
         # load the image and scale it
         self.image = pygame.transform.rotozoom(pygame.image.load("images/umo_Sprites/idle/umo-idle-0.png").convert_alpha(), 0 , 2)
-        self.rect = self.image.get_rect(center = (SCREEN_WIDTH//2, SCREEN_HEIGHT//2))
+        self.rect = self.image.get_rect(center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
         self.pos = pygame.math.Vector2(self.rect.center) # where I am on the screen
         
         self.player_width = PLAYER_WIDTH
@@ -85,6 +87,16 @@ class Player(pygame.sprite.Sprite):
         self.velocity_x = 0
         self.velocity_y = 0
         
+        # Glowstick attr
+        self.light_radius = 100
+        self.light_power = 10
+        
+        # creates transparent surface which allows us to print shapes to
+        self.light_surf = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
+        
+        # darkness surface
+        self.darkness_surf = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
+        self.darkness_rect = self.darkness_surf.get_rect(center = (0, 0))
         # Screen and Background position initialization
         self.bg_pos = pygame.math.Vector2(0,0) # Where the map is (objects should be pos here, render will be the sauce to make it seemless)
         self.bg_speed = PLAYER_SPEED
@@ -216,9 +228,16 @@ class Player(pygame.sprite.Sprite):
 
     def draw(self, screen):
         global walkCount
-        screen.fill(WHITE)
-        screen.blit(bg, self.bg_pos)
-        pygame.draw.rect(screen, 'white', self.rect)
+        
+        # layer stack
+        screen.fill(WHITE) # init fill
+        screen.blit(bg, self.bg_pos) # map
+        # screen.blit(self.darkness_surf, (0, 0)) # darkness_surf
+        # pygame.draw.rect(self.darkness_surf, (RED), self.darkness_rect.topleft)
+       
+        # pygame.draw.rect(screen, 'pink', self.rect)
+        screen.blit(self.light_surf, (0, 0))
+        pygame.draw.circle(self.light_surf, (0, 0, 0, self.light_power), self.rect.center, self.light_radius)
         # screen.blit(zenba_monster, ((SCREEN_WIDTH//2) - 50, (SCREEN_HEIGHT//2) - 50))
         # Draw Player       
         screen.blit(self.image, ((self.rect.centerx - self.player_width , self.rect.centery - self.player_height)))
@@ -323,6 +342,10 @@ class Game:
         self.monster_font = monster_font
         self.xy_font = xy_font
 
+    # future def for making light outside of player class
+    # def create_light(self, screen, x, y, radius, color, alpha_level):
+    
+    #     pygame.gfxdraw.filled_circle(screen, x ,y ,radius ,(color[0],color[1],color[2],alpha_level))
     def track_stats(self):
 
         bool_color1 = WHITE
