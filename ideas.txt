@@ -43,7 +43,7 @@ monster states = sleep_state, idle_state, alert_state, agro_state
 IDEAS:
 
 whole game is 1 Large Map, short, gets harder every time you beat it, goal is to complete runs (and story) and unlock more items/artifacts
-and enemies. Dark room, you find flashlights to see more of the map, you dodge enemies and obsticles to get to safe zone
+and enemies. Dark room, you find GLOWSTICKS to see more of the map, you dodge enemies and obsticles to get to safe zone
 purely dodge, no attacking, enemies can attack but low/no projectiles. Find notes in game for the lore, have them be accessible
 in the game, not required to beat the game, BUT they are achievement faughter and extra credit. TV can be what teleports you from
 map to map. end of game you become a monster.
@@ -115,14 +115,15 @@ MONSTER IDEAS:
     Mimic - copies a flashlight
     Screamer - alerts things around it, itself isnt very dangerous, but the screamer while chasing has an alert radius like the
                 player does, the screamers are blind, but are alerted themselves by a loud sound.
-    *fast monster - deaf but 
+    *fast monster - deaf but runs really fast in a straight line, has a charge up and should be easy to dodge, but sucks to get hit by
     Ghost - mostly invisible, can go through walls, really slow and low alert radius
     Slopper - Vomits on you,
     *kamikaze type monster - homes in on you, really quiet, it tries to blow itself up on you
     *Tv Monster - Has a TV static screen with a bright light on its front facing side, its light can hypnotize you
     *monster that only moves when ur not looking at it* *wheeping angel* - 
-    *angler fish monster - 
+    *angler fish monster - extends a light bob 2 character lengths ahead of himself, looks similar to a glowstick
     *wolf in sheeps clothing - 
+    * poop
 
 -----------------------------------------------------------------------------------------------
 
