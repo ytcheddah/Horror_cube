@@ -289,7 +289,7 @@ class Trap:
 
 class Monster(object):
 
-    def __init__(self, player, x, y, width, height, speed, agro_distance):
+    def __init__(self, player, x, y, width, height, speed, agro_distance, attack_range):
         self.player = player
         self.image = umo_monster
         self.pos = pygame.math.Vector2(x, y)
@@ -297,6 +297,7 @@ class Monster(object):
         self.height = height
         self.speed = speed
         self.agro_distance = agro_distance
+        self.attack_range = attack_range
 
         self.rect = self.image.get_rect(center = (self.pos.x, self.pos.y))
         self.coords = pygame.math.Vector2(self.player.bg_pos.x + self.pos.x, self.player.bg_pos.y + self.pos.y)
@@ -324,7 +325,7 @@ class Monster(object):
         distance_to_player = self.pos.distance_to(self.player.pos)
         
         if distance_to_player <= self.agro_distance:
-            if distance_to_player > 5: # small threshold to avoid jittering
+            if distance_to_player > self.attack_range: # small threshold to avoid jittering
                 # Calculate direction towards player
                 direction = (self.player.pos - self.pos).normalize()
                 # Set velocity towards player
@@ -352,7 +353,7 @@ class Game:
         self.screen = screen
         self.clock = clock
         self.player = Player()
-        self.monster = Monster(self.player, 1000, 600, 50, 50, 1, 300) # eventually will make subclasses
+        self.monster = Monster(self.player, 1000, 600, 50, 50, 1, 300, 5) # eventually will make subclasses
         self.game_objects = [self.player,self.monster]
         self.menu_font = menu_font
         self.p_font = p_font
