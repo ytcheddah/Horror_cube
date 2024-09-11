@@ -220,13 +220,17 @@ class Player(pygame.sprite.Sprite):
        
         # Player movement
         self.rect.center += pygame.math.Vector2(self.velocity_x, self.velocity_y)
-        self.rect.center = self.pos # update rect position
+        
+        # update rect position
+        self.rect.center = self.pos 
 
         # Map movement (caused by player input)
         self.bg_pos += pygame.math.Vector2(-self.velocity_x, -self.velocity_y)
+
+        # position rel to map
         self.coords += pygame.math.Vector2(self.velocity_x, self.velocity_y)
 
-        # Trap movement
+        # Trap movement rel to player after placed
         for trap in self.inventoryTraps:
             trap.x += -self.velocity_x
             trap.y += -self.velocity_y
@@ -299,13 +303,17 @@ class Monster(object):
 
     def draw(self, screen):
         # Adjusts monster position relative to player's map position
-        screen.blit(self.image,(self.pos.x, self.pos.y))
+        screen.blit(self.image,(self.rect.x, self.rect.y))
 
     def move(self):
         # Movement logic
         self.pos += pygame.math.Vector2(self.vel_x, self.vel_y)
         self.pos += pygame.math.Vector2(-self.player.velocity_x, -self.player.velocity_y)
 
+        # Move Rect to match logical vector pos
+        self.rect.center = (self.pos.x, self.pos.y)
+
+        # Location relative to map
         self.coords += pygame.math.Vector2(self.vel_x, self.vel_y)
         
     def behavior(self):
@@ -344,7 +352,7 @@ class Game:
         self.screen = screen
         self.clock = clock
         self.player = Player()
-        self.monster = Monster(self.player, 1000, 600, 100, 100, 1, 300) # eventually will make subclasses
+        self.monster = Monster(self.player, 1000, 600, 50, 50, 1, 300) # eventually will make subclasses
         self.game_objects = [self.player,self.monster]
         self.menu_font = menu_font
         self.p_font = p_font

@@ -160,3 +160,14 @@ Mood meter
     Uneasy (slight speed down. vision slightly increased. slightly transparent monsters spawn which don't influence the player, 
     if one passes through you, puke)
     Schizo (slight speed up. vision increased. fully Opaque monsters spawn out of view. They CAN and WILL kill you)
+
+    rects are for drawing and collision, Vectors are floats that are for precision and movement
+    create a rect that moves based off the logical position, draw the rect but move the vector, ex:
+
+     self.rect.center = (self.pos.x, self.pos.y) - move rect with vector pos
+
+     screen.blit(self.image,(self.rect.x, self.rect.y)) - draw with rects
+
+     direction = (self.player.pos - self.pos).normalize() - move according to vector
+                # Set velocity towards player
+                self.vel_x = direction.x * self.speed
