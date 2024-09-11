@@ -299,7 +299,7 @@ class Monster(object):
         self.agro_distance = agro_distance
 
         self.rect = self.image.get_rect(center = (self.pos.x, self.pos.y))
-        self.coords = pygame.math.Vector2(self.player.bg_pos.x + self.rect.x, self.player.bg_pos.y + self.rect.y)
+        self.coords = pygame.math.Vector2(self.player.bg_pos.x + self.pos.x, self.player.bg_pos.y + self.pos.y)
 
     def draw(self, screen):
         # Adjusts monster position relative to player's map position
