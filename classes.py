@@ -77,6 +77,7 @@ class Player(pygame.sprite.Sprite):
         super().__init__()
         # load the image and scale it
         self.image = pygame.transform.rotozoom(pygame.image.load("images/umo_Sprites/idle/umo-idle-0.png").convert_alpha(), 0 , 2)
+        # get_rect() gets the rectangular area of a given surface, the kwarg "center" creates a rectangle for the Surface centered at the given position
         self.rect = self.image.get_rect(center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
         self.pos = pygame.math.Vector2(self.rect.center) # where I am on the screen
 
@@ -91,14 +92,14 @@ class Player(pygame.sprite.Sprite):
         self.light_radius = 100
         self.light_power = 10
         
-        # creates transparent surface which allows us to print shapes to
+        # creates transparent-capable surface for "light" (shapes) to draw to
         self.light_surf = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
         
-        # darkness surface
+        # darkness surface, unique transparency value from light surface
         self.darkness_surf = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
         self.darkness_rect = self.darkness_surf.get_rect(center = (0, 0))
 
-        # Screen and Background position initialization
+        # Background-related initialization
         self.bg_pos = pygame.math.Vector2(0,0) # Where the map is (objects should be pos here, render will be the sauce to make it seemless)
         self.bg_speed = PLAYER_SPEED
         self.coords = pygame.math.Vector2(self.bg_pos + self.rect.center)
@@ -284,24 +285,21 @@ class Trap:
 
 class Monster(object):
 
-    def __init__(self, player, pos_x, pos_y, width, height, speed, agro_distance):
+    def __init__(self, player, x, y, width, height, speed, agro_distance):
         self.player = player
-        self.pos = pygame.math.Vector2(pos_x, pos_y)
+        self.image = umo_monster
+        self.pos = pygame.math.Vector2(x, y)
         self.width = width
         self.height = height
         self.speed = speed
-        self.vel_x = 0
-        self.vel_y = 0
         self.agro_distance = agro_distance
 
-        self.coords = pygame.math.Vector2(self.player.bg_pos.x + self.pos.x, self.player.bg_pos.y + self.pos.y)
+        self.rect = self.image.get_rect(center = (self.pos.x, self.pos.y))
+        self.coords = pygame.math.Vector2(self.player.bg_pos.x + self.rect.x, self.player.bg_pos.y + self.rect.y)
 
     def draw(self, screen):
         # Adjusts monster position relative to player's map position
-        screen_x = self.pos.x - self.player.pos.x + (SCREEN_WIDTH // 2)
-        screen_y = self.pos.y - self.player.pos.y + (SCREEN_HEIGHT // 2)
-
-        screen.blit(umo_monster,(screen_x, screen_y))
+        screen.blit(self.image,(self.pos.x, self.pos.y))
 
     def move(self):
         # Movement logic
@@ -314,33 +312,30 @@ class Monster(object):
         self.vel_x = 0
         self.vel_y = 0
         # Chase player if within agro distance
-        if abs((self.pos.x + (self.width//2)) - (self.player.pos.x + (self.player.player_width//2))) < self.agro_distance:
-            if abs(self.pos.y - self.player.pos.y) < self.agro_distance:
-                if self.pos.x > self.player.pos.x:
-                    self.vel_x = -self.speed            
-                if self.pos.x < self.player.pos.x:
-                    self.vel_x = self.speed
-        if abs((self.pos.y + (self.height//2)) - (self.player.pos.y + (self.player.player_height//2))) < self.agro_distance:
-            if abs(self.pos.x - self.player.pos.x) < self.agro_distance:
-                if self.pos.y > self.player.pos.y:
-                    self.vel_y = -self.speed        
-                if self.pos.y < self.player.pos.y:
-                    self.vel_y = self.speed
+        # Check distance between monster and player
+        distance_to_player = self.pos.distance_to(self.player.pos)
         
-        if self.vel_x != 0 and self.vel_y != 0: # moving diagonally normilization
-            self.vel_x /= math.sqrt(2)
-            self.vel_y /= math.sqrt(2)
+        if distance_to_player <= self.agro_distance:
+            if distance_to_player > 5: # small threshold to avoid jittering
+                # Calculate direction towards player
+                direction = (self.player.pos - self.pos).normalize()
+                # Set velocity towards player
+                self.vel_x = direction.x * self.speed
+                self.vel_y = direction.y * self.speed
+            else: # stops approaching player when within threshold
+                self.vel_x = 0
+                self.vel_y = 0
 
     def update(self):
         self.behavior()
         self.move()
 
-#player and monster instances
+# player and monster instances
 player = Player()
-umo = Monster(player, 1000, 600, 100, 100, 1, 300)
+# umo = Monster(player, 1000, 600, 100, 100, 1, 300)
 
-game_objects.append(player)
-game_objects.append(umo)
+# game_objects.append(player)
+# game_objects.append(umo)
 
 # State Machine, always runs, checks which Game State we are in
 class Game:
@@ -349,7 +344,7 @@ class Game:
         self.screen = screen
         self.clock = clock
         self.player = Player()
-        self.monster = Monster(self.player, 1000, 600, 100, 100, 1, 400)
+        self.monster = Monster(self.player, 1000, 600, 100, 100, 1, 300) # eventually will make subclasses
         self.game_objects = [self.player,self.monster]
         self.menu_font = menu_font
         self.p_font = p_font
@@ -357,6 +352,9 @@ class Game:
         self.speed_font = speed_font
         self.monster_font = monster_font
         self.xy_font = xy_font
+
+        # game_objects.append(player)
+        # game_objects.append(umo)
 
     # future function for making light outside of player class, will be needed eventually
     # def create_light(self, screen, x, y, radius, color, alpha_level):
@@ -376,9 +374,9 @@ class Game:
       
         position_text = self.pos_font.render(f"Pos: ({int(self.player.coords.x)}, {int(self.player.coords.y)})", True, RED)
         speed_text = self.speed_font.render(f"FPS: ({FPS}) Speed: {self.player.speed}", True, PURPLE)
-        x_text = self.xy_font.render(f'x-vel(pixel): {self.player.velocity_x:.5f}', True, GRAY)
-        y_text = self.xy_font.render(f'y-vel(pixel): {self.player.velocity_y:.5f}', True, GRAY)
-        monster_text = self.monster_font.render(f'mons-vel:(x:{self.monster.vel_x:.5f}, y:{self.monster.vel_y:.5f}) '
+        x_text = self.xy_font.render(f'x-vel(pixel): {self.player.velocity_x:.3f}', True, GRAY)
+        y_text = self.xy_font.render(f'y-vel(pixel): {self.player.velocity_y:.3f}', True, GRAY)
+        monster_text = self.monster_font.render(f'mons-vel:(x:{self.monster.vel_x:.3f}, y:{self.monster.vel_y:.3f}) '
                                                 f'mons-pos:(x:{int(self.monster.coords.x)}, y:{int(self.monster.coords.y)})', True, GREEN)
         sprint_text = self.speed_font.render(f'SPRINT: {self.player.is_sprinting} CD: {self.player.in_sprint_cooldown} SF: {sprint_factor:.1f}', True, bool_color1)
         crouch_text = self.speed_font.render(f'CROUCH: {self.player.is_crouching} CD: N/A  CF: {crouch_factor:.1f}', True, bool_color2)
@@ -416,6 +414,10 @@ class Game:
                 self.track_stats()
                 pygame.display.flip()
                 self.clock.tick(FPS)
+
+            if game_state == PAUSE:     ###
+                pygame.quit()       # TEMPORARY! DO NOT KEEP THIS LOL
+                sys.exit()              ###
 
 # Create game instance and run the game
 game = Game()
