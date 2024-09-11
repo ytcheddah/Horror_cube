@@ -165,10 +165,10 @@ class Player(pygame.sprite.Sprite):
         if (self.velocity_x and self.velocity_y) or self.velocity_x or self.velocity_y != 0: # checks for moving, seems buggy (could be keyboard)
             if not keys[pygame.K_LSHIFT] and not self.in_sprint_cooldown:
                 self.sprint_timer_start = pygame.time.get_ticks()  # Start the sprint timer
-                print('multiple print = problem')
+                # print('multiple print = problem')
                 self.shift_held = False
                 if not self.shift_held:
-                    print('multiple print = problem')
+                    # print('multiple print = problem')
                     self.in_sprint_cooldown
 
         # Handle Crouching
@@ -218,11 +218,14 @@ class Player(pygame.sprite.Sprite):
         self.rect.center += pygame.math.Vector2(self.velocity_x, self.velocity_y)
         self.rect.center = self.pos # update rect position
         self.bg_pos += pygame.math.Vector2(-self.velocity_x, -self.velocity_y)
+        for trap in self.inventoryTraps:
+            trap.x += -self.velocity_x
+            trap.y += -self.velocity_y
         
     def create_trap(self):
         # Create a new "trap" (circle) under the player
         trap_x = (self.rect.x)  # center the circle horizontally
-        trap_y = (self.rect.y) - 20 # place trap under player
+        trap_y = (self.rect.y) - 50 # place trap under player
         new_trap = Trap(player,trap_x,trap_y)
         self.inventoryTraps.append(new_trap)
 
@@ -269,7 +272,7 @@ class Trap:
         return True
     
     def draw(self, screen):
-        pygame.draw.circle(screen, RED, (self.player.pos.x, self.player.pos.y), self.radius) # needs to be relative to the map
+        pygame.draw.circle(screen, RED, (self.x + 100, self.y + 200), self.radius) # needs to be relative to the map
 
 class Monster(object):
 
@@ -293,6 +296,7 @@ class Monster(object):
     def move(self):
         # Movement logic
         self.pos += pygame.math.Vector2(self.vel_x, self.vel_y)
+        self.pos += pygame.math.Vector2(-self.player.velocity_x, -self.player.velocity_y)
         
     def behavior(self):
         self.vel_x = 0
