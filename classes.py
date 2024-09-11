@@ -79,7 +79,7 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.transform.rotozoom(pygame.image.load("images/umo_Sprites/idle/umo-idle-0.png").convert_alpha(), 0 , 2)
         self.rect = self.image.get_rect(center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
         self.pos = pygame.math.Vector2(self.rect.center) # where I am on the screen
-        
+
         self.player_width = PLAYER_WIDTH
         self.player_height = PLAYER_HEIGHT
         self.base_speed = PLAYER_SPEED
@@ -97,9 +97,11 @@ class Player(pygame.sprite.Sprite):
         # darkness surface
         self.darkness_surf = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
         self.darkness_rect = self.darkness_surf.get_rect(center = (0, 0))
+
         # Screen and Background position initialization
         self.bg_pos = pygame.math.Vector2(0,0) # Where the map is (objects should be pos here, render will be the sauce to make it seemless)
         self.bg_speed = PLAYER_SPEED
+        self.coords = pygame.math.Vector2(self.bg_pos + self.rect.center)
 
         # Sprint Attributes
         self.is_sprinting = False
@@ -215,9 +217,15 @@ class Player(pygame.sprite.Sprite):
 
     def move(self):
        
+        # Player movement
         self.rect.center += pygame.math.Vector2(self.velocity_x, self.velocity_y)
         self.rect.center = self.pos # update rect position
+
+        # Map movement (caused by player input)
         self.bg_pos += pygame.math.Vector2(-self.velocity_x, -self.velocity_y)
+        self.coords += pygame.math.Vector2(self.velocity_x, self.velocity_y)
+
+        # Trap movement
         for trap in self.inventoryTraps:
             trap.x += -self.velocity_x
             trap.y += -self.velocity_y
@@ -366,7 +374,7 @@ class Game:
         if self.player.is_crouching:
             bool_color2 = (T_GREEN)
       
-        position_text = self.pos_font.render(f"Pos: ({int(self.player.pos.x)}, {int(self.player.pos.y)})", True, RED)
+        position_text = self.pos_font.render(f"Pos: ({int(self.player.coords.x)}, {int(self.player.coords.y)})", True, RED)
         speed_text = self.speed_font.render(f"FPS: ({FPS}) Speed: {self.player.speed}", True, PURPLE)
         x_text = self.xy_font.render(f'x-vel(pixel): {self.player.velocity_x:.5f}', True, GRAY)
         y_text = self.xy_font.render(f'y-vel(pixel): {self.player.velocity_y:.5f}', True, GRAY)
