@@ -218,18 +218,10 @@ class Player(pygame.sprite.Sprite):
         global walkCount
         screen.fill(WHITE)
         screen.blit(bg, self.bg_pos)
+        pygame.draw.rect(screen, 'white', self.rect)
         # screen.blit(zenba_monster, ((SCREEN_WIDTH//2) - 50, (SCREEN_HEIGHT//2) - 50))
-        # Draw Player
-        if walkCount + 1 >= 60:
-            walkCount = 0
-        if left:
-            screen.blit(pygame.transform.flip(walkRight[walkCount//5], True, False), (self.rect.center))
-            walkCount += 1 * int(sprint_factor) * int(crouch_factor)
-        elif right:
-            screen.blit(walkRight[walkCount//5], (self.rect.center))
-            walkCount += 1 * int(sprint_factor) * int(crouch_factor)
-        else:       
-            screen.blit(self.image, (self.rect.center))
+        # Draw Player       
+        screen.blit(self.image, ((self.rect.centerx - self.player_width , self.rect.centery - self.player_height)))
         # Draw Traps
         for trap in self.inventoryTraps:
             trap.draw(screen)
