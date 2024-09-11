@@ -286,6 +286,8 @@ class Monster(object):
         self.vel_y = 0
         self.agro_distance = agro_distance
 
+        self.coords = pygame.math.Vector2(self.player.bg_pos.x,self.player.bg_pos.y)
+
     def draw(self, screen):
         # Adjusts monster position relative to player's map position
         screen_x = self.pos.x - self.player.pos.x + (SCREEN_WIDTH // 2)
@@ -297,6 +299,8 @@ class Monster(object):
         # Movement logic
         self.pos += pygame.math.Vector2(self.vel_x, self.vel_y)
         self.pos += pygame.math.Vector2(-self.player.velocity_x, -self.player.velocity_y)
+
+        self.coords += pygame.math.Vector2(self.vel_x, self.vel_y)
         
     def behavior(self):
         self.vel_x = 0
@@ -346,7 +350,7 @@ class Game:
         self.monster_font = monster_font
         self.xy_font = xy_font
 
-    # future def for making light outside of player class
+    # future function for making light outside of player class, will be needed eventually
     # def create_light(self, screen, x, y, radius, color, alpha_level):
     
     #     pygame.gfxdraw.filled_circle(screen, x ,y ,radius ,(color[0],color[1],color[2],alpha_level))
@@ -367,7 +371,7 @@ class Game:
         x_text = self.xy_font.render(f'x-vel(pixel): {self.player.velocity_x:.5f}', True, GRAY)
         y_text = self.xy_font.render(f'y-vel(pixel): {self.player.velocity_y:.5f}', True, GRAY)
         monster_text = self.monster_font.render(f'mons-vel:(x:{self.monster.vel_x:.5f}, y:{self.monster.vel_y:.5f}) '
-                                                f'mons-pos:(x:{int(self.monster.pos.x)}, y:{int(self.monster.pos.y)})', True, GREEN)
+                                                f'mons-pos:(x:{int(self.monster.coords.x)}, y:{int(self.monster.coords.y)})', True, GREEN)
         sprint_text = self.speed_font.render(f'SPRINT: {self.player.is_sprinting} CD: {self.player.in_sprint_cooldown} SF: {sprint_factor:.1f}', True, bool_color1)
         crouch_text = self.speed_font.render(f'CROUCH: {self.player.is_crouching} CD: N/A  CF: {crouch_factor:.1f}', True, bool_color2)
 
