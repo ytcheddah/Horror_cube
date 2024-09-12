@@ -300,7 +300,7 @@ class Trap:
 
 class Monster(object):
 
-    def __init__(self, player, image, x, y, width, height, speed, agro_distance, attack_range):
+    def __init__(self, player, image, x, y, width, height, speed, agro_distance, pursue_range, attack_range):
         self.player = player
         self.image = image
         self.rect = self.image.get_rect()
@@ -310,8 +310,8 @@ class Monster(object):
         self.width = width
         self.height = height
         self.speed = speed
-        self.target_pos = None
         self.agro_distance = agro_distance
+        self.pursue_range = pursue_range
         self.attack_range = attack_range
         self.rect = self.image.get_rect(center = (self.pos.x, self.pos.y))
         self.vel_x = 0
@@ -326,8 +326,8 @@ class Monster(object):
 
     def move(self):
         # Location relative to map
-        self.coords += pygame.math.Vector2(self.vel_x, self.vel_y)
-        self.coords += pygame.math.Vector2(-self.player.velocity_x, -self.player.velocity_y)
+        self.pos += pygame.math.Vector2(self.vel_x, self.vel_y)
+        self.pos += pygame.math.Vector2(-self.player.velocity_x, -self.player.velocity_y)
 
         # Movement logic
         # self.pos += pygame.math.Vector2(self.vel_x, self.vel_y)
@@ -340,20 +340,26 @@ class Monster(object):
         # Check distance between monster and player
         distance_to_player = self.pos.distance_to(self.player.pos)
         
-        if distance_to_player <= self.agro_distance:
-            if distance_to_player > self.attack_range: # small threshold to avoid jittering
-                # Calculate direction towards player
-                direction = (self.player.pos - self.pos).normalize()
-                # Set velocity towards player
-                self.vel_x = direction.x * self.speed
-                self.vel_y = direction.y * self.speed
+        if distance_to_player <= self.pursue_range:
+            if distance_to_player <= self.agro_distance:
+                if distance_to_player > self.attack_range: # also prevents jittering and monst going directly on top of player
+                    # Calculate direction towards player
+                    direction = (self.player.pos - self.pos).normalize()
+                    # Set velocity towards player
+                    self.vel_x = direction.x * self.speed
+                    self.vel_y = direction.y * self.speed
 
-                # self.coords = direction.x * self.speed
-                # self.rect.center = self.coords - map_offset
-            else: # stops approaching player when within threshold
-                self.vel_x = 0
-                self.vel_y = 0
+                    if distance_to_player <= self.attack_range: # also prevents jittering and monst going directly on top of player
+                        self.vel_x = 0
+                        self.vel_y = 0
 
+                else: # stops approaching player when within threshold
+                    self.vel_x = 0
+                    self.vel_y = 0
+        else: # stops chasing when outside pursue range
+            self.vel_x = 0
+            self.vel_y = 0
+            
     def update(self): # player_pos, map_offset
         self.behavior()
         self.move()
@@ -370,9 +376,9 @@ class Game:
         self.player = Player()
 
         self.monsters = [
-            Monster(self.player, umo_mon, 1000, 600, 50, 50, 1, 300, 5),
-            Monster(self.player, louis_mon, 1200, 500, 64, 64, 3, 300, 15),
-            Monster(self.player, squihomie_mon, 850, 700, 64, 64, 1, 300, 45)
+            Monster(self.player, umo_mon, 1000, 600, 50, 50, 1, 300, 500, 5),
+            Monster(self.player, louis_mon, 1200, 500, 64, 64, 3, 300, 500, 50),
+            Monster(self.player, squihomie_mon, 850, 700, 64, 64, 2, 300, 500, 100)
         ]
         
         self.game_objects = [self.player] + self.monsters
