@@ -303,6 +303,7 @@ class Monster(object):
     def __init__(self, player, image, x, y, width, height, speed, agro_distance, attack_range):
         self.player = player
         self.image = image
+        self.rect = self.image.get_rect()
         self.pos = pygame.math.Vector2(x, y) # position on the screen
         self.coords = pygame.math.Vector2(x, y) # Position relative to the map
         # self.coords = pygame.math.Vector2(self.player.bg_pos.x + self.pos.x, self.player.bg_pos.y + self.pos.y)
@@ -318,7 +319,7 @@ class Monster(object):
 
     def draw(self, screen):
 
-        self.pos = self.coords - self.player.bg_pos
+        self.pos = self.coords
         self.rect.center = (self.pos.x, self.pos.y)
         # Adjusts monster position relative to player's map position
         screen.blit(self.image,self.rect.topleft)
@@ -326,15 +327,12 @@ class Monster(object):
     def move(self):
         # Location relative to map
         self.coords += pygame.math.Vector2(self.vel_x, self.vel_y)
-
-        # self.pos += pygame.math.Vector2(-self.player.velocity_x, -self.player.velocity_y)
+        self.coords += pygame.math.Vector2(-self.player.velocity_x, -self.player.velocity_y)
 
         # Movement logic
         # self.pos += pygame.math.Vector2(self.vel_x, self.vel_y)
         # self.pos += pygame.math.Vector2(-self.player.velocity_x, -self.player.velocity_y)
 
-        # Move Rect to match logical vector pos
-        # self.rect.center = (self.pos.x, self.pos.y)
 
     def behavior(self):
         
@@ -360,12 +358,8 @@ class Monster(object):
         self.behavior()
         self.move()
 
-# player and monster instances
+# player instance
 player = Player()
-# umo = Monster(player, 1000, 600, 100, 100, 1, 300)
-
-# game_objects.append(player)
-# game_objects.append(umo)
 
 # State Machine, always runs, checks which Game State we are in
 class Game:
@@ -380,7 +374,6 @@ class Game:
             Monster(self.player, louis_mon, 1200, 500, 64, 64, 3, 300, 15),
             Monster(self.player, squihomie_mon, 850, 700, 64, 64, 1, 300, 45)
         ]
-        # self.monster = Monster(self.player, umo_monster, 1000, 600, 50, 50, 1, 300, 5) # eventually will make subclasses
         
         self.game_objects = [self.player] + self.monsters
 
@@ -392,7 +385,6 @@ class Game:
         self.monster_font = monster_font
         self.xy_font = xy_font
 
-        # game_objects.append(player)
         # game_objects.append(umo)
 
     # future function for making light outside of player class, will be needed eventually
@@ -429,12 +421,10 @@ class Game:
         # self.screen.blit(monster_text, (200, 10))
 
     def update(self):
+
         # iterates and updates all game objects
         for obj in self.game_objects:
             obj.update()
-
-            for monster in self.monsters:
-                monster.update()
 
     def draw(self):
         # iterates and draws all objects
