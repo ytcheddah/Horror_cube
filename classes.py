@@ -48,8 +48,15 @@ pause_selected_item = 0
 # Initialize and Load Images
 bg = pygame.transform.scale(pygame.image.load("images/desert_map.png").convert(), (4000, 2000))
 background = pygame.transform.scale(pygame.image.load("images/test-image2.png").convert(), (SCREEN_WIDTH, SCREEN_HEIGHT))
-zenba_monster = pygame.image.load("images/zenba_sprites/zenba1.png").convert_alpha()
-umo_monster = pygame.image.load("images/umo_Sprites/roam_chase/umo-rc-09.png")
+
+# Initialize Enemy Sprites
+zenba_mon = pygame.image.load("images/zenba_sprites/zenba1.png").convert_alpha()
+umo_mon = pygame.image.load("images/umo_Sprites/roam_chase/umo-rc-09.png").convert_alpha()
+filth_mon = pygame.transform.rotozoom(pygame.image.load("images/anth_sprites/80x80/filth1.png").convert_alpha(), 0, 2)
+louis_mon = pygame.image.load("images/anth_sprites/64x64/louis1.png").convert_alpha()
+squihomie_mon = pygame.transform.rotozoom(pygame.image.load("images/anth_sprites/64x64/squihomie1.png").convert_alpha(), 0, 2)
+
+# Initialize Player Sprites
 walkRight = [pygame.transform.rotozoom(pygame.image.load('images/umo_Sprites/roam_chase/umo-rc-00.png').convert_alpha(), 0, 2), 
              pygame.transform.rotozoom(pygame.image.load('images/umo_Sprites/roam_chase/umo-rc-01.png').convert_alpha(), 0, 2),
              pygame.transform.rotozoom(pygame.image.load('images/umo_Sprites/roam_chase/umo-rc-02.png').convert_alpha(), 0, 2), 
@@ -67,6 +74,10 @@ right = False
 walkCount = 0
 sprint_factor = 1
 crouch_factor = 1
+
+# Trap initialization
+spike_trap1 = pygame.image.load('images/anth_sprites/64x64/spiketrap1.png').convert_alpha()
+# spike_trap1 = spike_trap1.convert_alpha()
 
 # Object Initialization
 game_objects = []
@@ -87,7 +98,7 @@ class Player(pygame.sprite.Sprite):
         self.speed = self.base_speed
         self.velocity_x = 0
         self.velocity_y = 0
-        
+
         # Glowstick attr
         self.light_radius = 100
         self.light_power = 10
@@ -220,9 +231,7 @@ class Player(pygame.sprite.Sprite):
        
         # Player movement
         self.rect.center += pygame.math.Vector2(self.velocity_x, self.velocity_y)
-        
-        # update rect position
-        self.rect.center = self.pos 
+        self.rect.center = self.pos
 
         # Map movement (caused by player input)
         self.bg_pos += pygame.math.Vector2(-self.velocity_x, -self.velocity_y)
@@ -285,41 +294,50 @@ class Trap:
         return True
     
     def draw(self, screen):
-        pygame.draw.circle(screen, RED, (self.x + 100, self.y + 200), self.radius) # needs to be relative to the map
+        pygame.draw.circle(screen, 'pink', (self.x + 100, self.y + 200), self.radius) # needs to be relative to the map
+        screen.blit(spike_trap1, (self.x + 75, self.y + 150))
+
 
 class Monster(object):
 
-    def __init__(self, player, x, y, width, height, speed, agro_distance, attack_range):
+    def __init__(self, player, image, x, y, width, height, speed, agro_distance, attack_range):
         self.player = player
-        self.image = umo_monster
-        self.pos = pygame.math.Vector2(x, y)
+        self.image = image
+        self.pos = pygame.math.Vector2(x, y) # position on the screen
+        self.coords = pygame.math.Vector2(x, y) # Position relative to the map
+        # self.coords = pygame.math.Vector2(self.player.bg_pos.x + self.pos.x, self.player.bg_pos.y + self.pos.y)
         self.width = width
         self.height = height
         self.speed = speed
+        self.target_pos = None
         self.agro_distance = agro_distance
         self.attack_range = attack_range
-
         self.rect = self.image.get_rect(center = (self.pos.x, self.pos.y))
-        self.coords = pygame.math.Vector2(self.player.bg_pos.x + self.pos.x, self.player.bg_pos.y + self.pos.y)
-
-    def draw(self, screen):
-        # Adjusts monster position relative to player's map position
-        screen.blit(self.image,(self.rect.x, self.rect.y))
-
-    def move(self):
-        # Movement logic
-        self.pos += pygame.math.Vector2(self.vel_x, self.vel_y)
-        self.pos += pygame.math.Vector2(-self.player.velocity_x, -self.player.velocity_y)
-
-        # Move Rect to match logical vector pos
-        self.rect.center = (self.pos.x, self.pos.y)
-
-        # Location relative to map
-        self.coords += pygame.math.Vector2(self.vel_x, self.vel_y)
-        
-    def behavior(self):
         self.vel_x = 0
         self.vel_y = 0
+
+    def draw(self, screen):
+
+        self.pos = self.coords - self.player.bg_pos
+        self.rect.center = (self.pos.x, self.pos.y)
+        # Adjusts monster position relative to player's map position
+        screen.blit(self.image,self.rect.topleft)
+
+    def move(self):
+        # Location relative to map
+        self.coords += pygame.math.Vector2(self.vel_x, self.vel_y)
+
+        # self.pos += pygame.math.Vector2(-self.player.velocity_x, -self.player.velocity_y)
+
+        # Movement logic
+        # self.pos += pygame.math.Vector2(self.vel_x, self.vel_y)
+        # self.pos += pygame.math.Vector2(-self.player.velocity_x, -self.player.velocity_y)
+
+        # Move Rect to match logical vector pos
+        # self.rect.center = (self.pos.x, self.pos.y)
+
+    def behavior(self):
+        
         # Chase player if within agro distance
         # Check distance between monster and player
         distance_to_player = self.pos.distance_to(self.player.pos)
@@ -331,11 +349,14 @@ class Monster(object):
                 # Set velocity towards player
                 self.vel_x = direction.x * self.speed
                 self.vel_y = direction.y * self.speed
+
+                # self.coords = direction.x * self.speed
+                # self.rect.center = self.coords - map_offset
             else: # stops approaching player when within threshold
                 self.vel_x = 0
                 self.vel_y = 0
 
-    def update(self):
+    def update(self): # player_pos, map_offset
         self.behavior()
         self.move()
 
@@ -353,8 +374,17 @@ class Game:
         self.screen = screen
         self.clock = clock
         self.player = Player()
-        self.monster = Monster(self.player, 1000, 600, 50, 50, 1, 300, 5) # eventually will make subclasses
-        self.game_objects = [self.player,self.monster]
+
+        self.monsters = [
+            Monster(self.player, umo_mon, 1000, 600, 50, 50, 1, 300, 5),
+            Monster(self.player, louis_mon, 1200, 500, 64, 64, 3, 300, 15),
+            Monster(self.player, squihomie_mon, 850, 700, 64, 64, 1, 300, 45)
+        ]
+        # self.monster = Monster(self.player, umo_monster, 1000, 600, 50, 50, 1, 300, 5) # eventually will make subclasses
+        
+        self.game_objects = [self.player] + self.monsters
+
+        # Fonts and other resources
         self.menu_font = menu_font
         self.p_font = p_font
         self.pos_font = pos_font
@@ -385,8 +415,8 @@ class Game:
         speed_text = self.speed_font.render(f"FPS: ({FPS}) Speed: {self.player.speed}", True, PURPLE)
         x_text = self.xy_font.render(f'x-vel(pixel): {self.player.velocity_x:.3f}', True, GRAY)
         y_text = self.xy_font.render(f'y-vel(pixel): {self.player.velocity_y:.3f}', True, GRAY)
-        monster_text = self.monster_font.render(f'mons-vel:(x:{self.monster.vel_x:.3f}, y:{self.monster.vel_y:.3f}) '
-                                                f'mons-pos:(x:{int(self.monster.coords.x)}, y:{int(self.monster.coords.y)})', True, GREEN)
+        # monster_text = self.monster_font.render(f'mons-vel:(x:{self.monsters.vel_x:.3f}, y:{self.monsters.vel_y:.3f}) '
+                                                # f'mons-pos:(x:{int(self.monsters.coords.x)}, y:{int(self.monsters.coords.y)})', True, GREEN)
         sprint_text = self.speed_font.render(f'SPRINT: {self.player.is_sprinting} CD: {self.player.in_sprint_cooldown} SF: {sprint_factor:.1f}', True, bool_color1)
         crouch_text = self.speed_font.render(f'CROUCH: {self.player.is_crouching} CD: N/A  CF: {crouch_factor:.1f}', True, bool_color2)
 
@@ -396,12 +426,15 @@ class Game:
         self.screen.blit(speed_text, (SCREEN_WIDTH - 300, 10))
         self.screen.blit(x_text, (10, 30))
         self.screen.blit(y_text, (10, 45))
-        self.screen.blit(monster_text, (200, 10))
+        # self.screen.blit(monster_text, (200, 10))
 
     def update(self):
         # iterates and updates all game objects
         for obj in self.game_objects:
             obj.update()
+
+            for monster in self.monsters:
+                monster.update()
 
     def draw(self):
         # iterates and draws all objects
@@ -412,6 +445,7 @@ class Game:
         global game_state
         running = True
         while running:
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
