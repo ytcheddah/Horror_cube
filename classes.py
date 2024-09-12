@@ -55,6 +55,7 @@ umo_mon = pygame.image.load("images/umo_Sprites/roam_chase/umo-rc-09.png").conve
 filth_mon = pygame.transform.rotozoom(pygame.image.load("images/anth_sprites/80x80/filth1.png").convert_alpha(), 0, 2)
 louis_mon = pygame.image.load("images/anth_sprites/64x64/louis1.png").convert_alpha()
 squihomie_mon = pygame.transform.rotozoom(pygame.image.load("images/anth_sprites/64x64/squihomie1.png").convert_alpha(), 0, 2)
+thecarne_mon = pygame.image.load("images/anth_sprites/64x64/thecarne1.png").convert_alpha()
 
 # Initialize Player Sprites
 walkRight = [pygame.transform.rotozoom(pygame.image.load('images/umo_Sprites/roam_chase/umo-rc-00.png').convert_alpha(), 0, 2), 
@@ -359,7 +360,7 @@ class Monster(object):
         else: # stops chasing when outside pursue range
             self.vel_x = 0
             self.vel_y = 0
-            
+
     def update(self): # player_pos, map_offset
         self.behavior()
         self.move()
@@ -376,9 +377,10 @@ class Game:
         self.player = Player()
 
         self.monsters = [
-            Monster(self.player, umo_mon, 1000, 600, 50, 50, 1, 300, 500, 5),
-            Monster(self.player, louis_mon, 1200, 500, 64, 64, 3, 300, 500, 50),
-            Monster(self.player, squihomie_mon, 850, 700, 64, 64, 2, 300, 500, 100)
+            Monster(self.player, umo_mon, 1000, 600, 50, 50, 1, 300, 500, 75),
+            Monster(self.player, louis_mon, 1200, 500, 64, 64, 3, 200, 500, 50),
+            Monster(self.player, squihomie_mon, 850, 700, 64, 64, 2, 100, 800, 100),
+            Monster(self.player, thecarne_mon, 1000, 300, 64, 64, 1.5, 250, 400, 75)
         ]
         
         self.game_objects = [self.player] + self.monsters
