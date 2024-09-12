@@ -1,5 +1,6 @@
 import pygame
 import math
+import random
 import sys
 
 import pygame.gfxdraw
@@ -57,6 +58,9 @@ louis_mon = pygame.image.load("images/anth_sprites/64x64/louis1.png").convert_al
 squihomie_mon = pygame.transform.rotozoom(pygame.image.load("images/anth_sprites/64x64/squihomie1.png").convert_alpha(), 0, 2)
 thecarne_mon = pygame.image.load("images/anth_sprites/64x64/thecarne1.png").convert_alpha()
 
+monster_list = [zenba_mon, umo_mon, filth_mon, louis_mon, squihomie_mon, thecarne_mon]
+# MONSTER_IMAGES.append(zenba_mon,umo_mon,filth_mon,louis_mon,squihomie_mon,thecarne_mon)
+
 # Initialize Player Sprites
 walkRight = [pygame.transform.rotozoom(pygame.image.load('images/umo_Sprites/roam_chase/umo-rc-00.png').convert_alpha(), 0, 2), 
              pygame.transform.rotozoom(pygame.image.load('images/umo_Sprites/roam_chase/umo-rc-01.png').convert_alpha(), 0, 2),
@@ -78,7 +82,9 @@ crouch_factor = 1
 
 # Trap initialization
 spike_trap1 = pygame.image.load('images/anth_sprites/64x64/spiketrap1.png').convert_alpha()
-# spike_trap1 = spike_trap1.convert_alpha()
+
+# Button initialization
+spawn_button = pygame.image.load('images/spawn_button1.png').convert_alpha()
 
 # Object Initialization
 game_objects = []
@@ -198,6 +204,10 @@ class Player(pygame.sprite.Sprite):
             else:
                 self.is_crouching = False
 
+        # Temporary check monster spawning
+        if keys[pygame.K_k]:
+            pass
+
         # Handle spacebar to place trap
         if keys[pygame.K_SPACE]:
             current_time = pygame.time.get_ticks()
@@ -301,15 +311,15 @@ class Trap:
 
 class Monster(object):
 
-    def __init__(self, player, image, x, y, width, height, speed, agro_distance, pursue_range, attack_range):
+    def __init__(self, player, image, x, y, speed, agro_distance, pursue_range, attack_range):
         self.player = player
         self.image = image
         self.rect = self.image.get_rect()
         self.pos = pygame.math.Vector2(x, y) # position on the screen
         self.coords = pygame.math.Vector2(x, y) # Position relative to the map
         # self.coords = pygame.math.Vector2(self.player.bg_pos.x + self.pos.x, self.player.bg_pos.y + self.pos.y)
-        self.width = width
-        self.height = height
+        self.width = image.get_width()
+        self.height = image.get_height()
         self.speed = speed
         self.agro_distance = agro_distance
         self.pursue_range = pursue_range
@@ -317,6 +327,10 @@ class Monster(object):
         self.rect = self.image.get_rect(center = (self.pos.x, self.pos.y))
         self.vel_x = 0
         self.vel_y = 0
+
+        self.chase_duration = 5000 # miliseconds
+        self.chase_cooldown = 1000 
+        self.in_chase_cooldown = False
 
     def draw(self, screen):
 
@@ -334,7 +348,6 @@ class Monster(object):
         # self.pos += pygame.math.Vector2(self.vel_x, self.vel_y)
         # self.pos += pygame.math.Vector2(-self.player.velocity_x, -self.player.velocity_y)
 
-
     def behavior(self):
         
         # Chase player if within agro distance
@@ -344,6 +357,8 @@ class Monster(object):
         if distance_to_player <= self.pursue_range:
             if distance_to_player <= self.agro_distance:
                 if distance_to_player > self.attack_range: # also prevents jittering and monst going directly on top of player
+                    # checks time of the start of the chase
+                    chasing_timer = pygame.time.get_ticks()
                     # Calculate direction towards player
                     direction = (self.player.pos - self.pos).normalize()
                     # Set velocity towards player
@@ -354,36 +369,66 @@ class Monster(object):
                         self.vel_x = 0
                         self.vel_y = 0
 
-                else: # stops approaching player when within threshold
+                else: # stops approaching player when within attack range
                     self.vel_x = 0
                     self.vel_y = 0
+
         else: # stops chasing when outside pursue range
             self.vel_x = 0
             self.vel_y = 0
-
+        
     def update(self): # player_pos, map_offset
         self.behavior()
         self.move()
 
-# player instance
-player = Player()
+class Button():
+
+    def __init__(self, x, y, image, scale):
+        width = image.get_width()
+        height = image.get_height()
+        self.image = pygame.transform.scale(image,(int(width * scale), (int(height * scale))))
+        self.rect = self.image.get_rect()
+        self.rect.topleft = (x, y)
+        self.clicked = False
+
+    def draw(self, screen):
+        # draw button on screen
+        screen.blit(self.image, (self.rect.x, self.rect.y))
+    
+    def update(self):
+        action = False
+        # get mouse position
+        pos = pygame.mouse.get_pos()
+
+        # check mouseover and clicked conditions
+        if self.rect.collidepoint(pos):
+            if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False: # the list 0-2 is leftmouse, centermouse, rightmouse button
+                self.clicked = True
+                # print('CLICKED') # debug checker (already works tho)
+                action = True
+        
+        if pygame.mouse.get_pressed()[0] == 0:
+            self.clicked = False
+
+        return action
 
 # State Machine, always runs, checks which Game State we are in
-class Game:
+class BaseGame:
 
     def __init__(self):
         self.screen = screen
         self.clock = clock
         self.player = Player()
+        self.button = Button((SCREEN_WIDTH//2 - 64), 10, spawn_button, 1)
 
         self.monsters = [
-            Monster(self.player, umo_mon, 1000, 600, 50, 50, 1, 300, 500, 75),
-            Monster(self.player, louis_mon, 1200, 500, 64, 64, 3, 200, 500, 50),
-            Monster(self.player, squihomie_mon, 850, 700, 64, 64, 2, 100, 800, 100),
-            Monster(self.player, thecarne_mon, 1000, 300, 64, 64, 1.5, 250, 400, 75)
+            Monster(self.player, umo_mon, 1000, 600, 1, 300, 500, 125),
+            Monster(self.player, louis_mon, 1200, 500, 3, 250, 500, 75),
+            Monster(self.player, squihomie_mon, 850, 700, 2, 300, 500, 100),
+            Monster(self.player, thecarne_mon, 1000, 300, 1.5, 250, 300, 75)
         ]
         
-        self.game_objects = [self.player] + self.monsters
+        self.game_objects = [self.player, self.button] + self.monsters
 
         # Fonts and other resources
         self.menu_font = menu_font
@@ -428,11 +473,24 @@ class Game:
         self.screen.blit(y_text, (10, 45))
         # self.screen.blit(monster_text, (200, 10))
 
+    def on_click_spawn(self):
+
+        random_index = random.randint(0, len(monster_list) - 1)
+        random_mon = monster_list[random_index] # make a monster_list dictionary in the future
+        
+        new_monster = Monster(self.player, random_mon, 900, 650, 2, 300, 500, 100)
+        # last 3 paramters are generic because: no dict for monster_list, no subclasses for monster types
+        self.monsters.append(new_monster) 
+        self.game_objects.append(new_monster)
+        # print(f'{len(self.monsters)} in self.monsters list')
+
     def update(self):
 
         # iterates and updates all game objects
         for obj in self.game_objects:
             obj.update()
+            if self.button.update(): # if "action = True" is returned
+                self.on_click_spawn()
 
     def draw(self):
         # iterates and draws all objects
@@ -460,6 +518,12 @@ class Game:
                 pygame.quit()       # TEMPORARY! DO NOT KEEP THIS LOL
                 sys.exit()              ###
 
+# player instance
+player = Player()
+
+# button instance
+# button = Button()
+
 # Create game instance and run the game
-game = Game()
+game = BaseGame()
 game.run()
