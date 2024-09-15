@@ -33,7 +33,7 @@ p_font = pygame.font.Font("font/pixelFont.ttf", 36)
 pos_font = pygame.font.Font("font/pixelFont.ttf", 18)
 speed_font = pygame.font.Font("font/pixelFont.ttf", 18)
 xy_font = pygame.font.Font("font/pixelFont.ttf", 14)
-monster_font = pygame.font.Font("font/pixelFont.ttf", 16)
+monster_font = pygame.font.Font("font/pixelFont.ttf", 14)
 
 # initialize Menu music 
 pygame.mixer.music.load('sound/Cube_Hell_menu_music.mp3')
@@ -312,9 +312,10 @@ class Trap:
 
 class Monster(object):
 
-    def __init__(self, player, image, x, y, speed, agro_distance, pursue_range, attack_range):
+    def __init__(self, name, player, image, x, y, speed, agro_distance, pursue_range, attack_range):
         x = randint(0, SCREEN_WIDTH)
         y = randint(0, SCREEN_HEIGHT)
+        self.name = name
         self.player = player
         self.image = image
         self.rect = self.image.get_rect()
@@ -423,10 +424,10 @@ class BaseGame:
         self.button = Button((SCREEN_WIDTH//2 - 64), 10, spawn_button, 1)
 
         self.monsters = [
-            Monster(self.player, umo_mon, 1000, 600, 1, 300, 500, 125),
-            Monster(self.player, louis_mon, 1200, 500, 3, 250, 500, 75),
-            Monster(self.player, squihomie_mon, 850, 700, 2, 300, 500, 100),
-            Monster(self.player, thecarne_mon, 1000, 300, 1.5, 250, 300, 75)
+            Monster('Umo',self.player, umo_mon, 1000, 600, 1, 300, 500, 125),
+            Monster('Louis',self.player, louis_mon, 1200, 500, 3, 250, 500, 75),
+            Monster('Squihomie',self.player, squihomie_mon, 850, 700, 2, 300, 500, 100),
+            Monster('the Carne',self.player, thecarne_mon, 1000, 300, 1.5, 250, 300, 75)
         ]
         
         self.game_objects = [self.player, self.button] + self.monsters
@@ -461,30 +462,35 @@ class BaseGame:
         speed_text = self.speed_font.render(f"FPS: ({FPS}) Speed: {self.player.speed}", True, PURPLE)
         x_text = self.xy_font.render(f'x-vel(pixel): {self.player.velocity_x:.3f}', True, GRAY)
         y_text = self.xy_font.render(f'y-vel(pixel): {self.player.velocity_y:.3f}', True, GRAY)
-        # monster_text = self.monster_font.render(f'mons-vel:(x:{self.monsters.vel_x:.3f}, y:{self.monsters.vel_y:.3f}) '
-                                                # f'mons-pos:(x:{int(self.monsters.coords.x)}, y:{int(self.monsters.coords.y)})', True, GREEN)
         sprint_text = self.speed_font.render(f'SPRINT: {self.player.is_sprinting} CD: {self.player.in_sprint_cooldown} SF: {sprint_factor:.1f}', True, bool_color1)
         crouch_text = self.speed_font.render(f'CROUCH: {self.player.is_crouching} CD: N/A  CF: {crouch_factor:.1f}', True, bool_color2)
+        
+        for i, monster in enumerate(self.monsters):
+            monster_text = self.monster_font.render(
+                f'{monster.name}-vel:(x:{monster.vel_x:.3f}, y:{monster.vel_y:.3f}) '
+                f'-pos:(x:{int(monster.coords.x)}, y:{int(monster.coords.y)})',
+                True, GREEN)
+            self.screen.blit(monster_text, (10, 10 + i * 15))
 
         self.screen.blit(sprint_text, (SCREEN_WIDTH - 300, 32))
         self.screen.blit(crouch_text, (SCREEN_WIDTH - 300, 50))
-        self.screen.blit(position_text, (10, 10))
+        self.screen.blit(position_text, (SCREEN_WIDTH - 500, 10))
         self.screen.blit(speed_text, (SCREEN_WIDTH - 300, 10))
-        self.screen.blit(x_text, (10, 30))
-        self.screen.blit(y_text, (10, 45))
-        # self.screen.blit(monster_text, (200, 10))
+        self.screen.blit(x_text, (SCREEN_WIDTH - 500, 30))
+        self.screen.blit(y_text, (SCREEN_WIDTH - 500, 45))
 
     def on_click_spawn(self):
 
         random_index = random.randint(0, len(monster_list) - 1)
         random_mon = monster_list[random_index] # make a monster_list dictionary in the future
         
-        new_monster = Monster(self.player, random_mon, 900, 650, 2, 300, 500, 100)
+        new_monster = Monster('added',self.player, random_mon, 900, 650, 2, 300, 500, 100)
         # last 3 paramters are generic because: no dict for monster_list, no subclasses for monster types
-        if len(self.game_objects) < 11:
+        if len(self.game_objects) < 14:
+            self.monsters.append(new_monster)
             self.game_objects.append(new_monster)
         else:
-            print('Reached mob cap of 10')
+            print('Reached mob cap of 15')
         # print(f'{len(self.monsters)} in self.monsters list')
 
     def update(self):
