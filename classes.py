@@ -178,37 +178,17 @@ class Player(pygame.sprite.Sprite):
             global game_state
             game_state = PAUSE
 
-        # Sprint logic (only sprint while Shift is held)
+        # Sprint logic
         if keys[pygame.K_LSHIFT] and not self.in_sprint_cooldown and not self.is_crouching:
-            self.shift_held = True
-            self.is_sprinting = True
-            self.speed = self.base_speed * 1.5  # Increase speed by 50%
-            sprint_factor = 2
-        if (self.velocity_x and self.velocity_y) or self.velocity_x or self.velocity_y != 0: # checks for moving, seems buggy (could be keyboard)
-            if not keys[pygame.K_LSHIFT] and not self.in_sprint_cooldown:
-                self.sprint_timer_start = pygame.time.get_ticks()  # Start the sprint timer
-                # print('multiple print = problem')
-                self.shift_held = False
-                if not self.shift_held:
-                    # print('multiple print = problem')
-                    self.in_sprint_cooldown
+            self.start_sprint()
+        elif self.is_sprinting and not keys[pygame.K_LSHIFT]:
+            self.stop_sprint()
 
-        # Handle Crouching
-        if (self.velocity_x and self.velocity_y) or self.velocity_x or self.velocity_y != 0: # checks for moving
-            if keys[pygame.K_LCTRL]:
-                self.is_crouching = True
-                self.speed = self.base_speed * .6 # Decrease to 60% speed
-                if self.is_crouching:
-                    crouch_factor = .5
-                if self.is_sprinting:
-                    self.in_sprint_cooldown = True
-
-            else:
-                self.is_crouching = False
-
-        # Temporary check monster spawning
-        if keys[pygame.K_k]:
-            pass
+        # Crouch logic
+        if keys[pygame.K_LCTRL]:
+            self.start_crouch()
+        else:
+            self.stop_crouch()
 
         # Handle spacebar to place trap
         if keys[pygame.K_SPACE]:
@@ -217,28 +197,53 @@ class Player(pygame.sprite.Sprite):
                 self.create_trap()
                 self.lastTrapTime = current_time # Update the last trap to correct time    
 
+    def start_sprint(self):
+
+        if not self.is_sprinting and not self.in_sprint_cooldown:
+            self.is_sprinting = True
+            self.sprint_timer_start = pygame.time.get_ticks()
+            self.speed = self.base_speed * 1.5
+            self.sprint_factor = 2
+
+    def stop_sprint(self):
+
+        if self.is_sprinting:
+            self.is_sprinting = False
+            self.in_sprint_cooldown = True
+            self.cooldown_timer_start = pygame.time.get_ticks()
+            self.speed = self.base_speed  # Reset speed
+
+    def start_crouch(self):
+
+        if not self.is_crouching:
+            self.is_crouching = True
+            self.speed = self.base_speed * 0.6
+            self.sprint_factor = 0.5
+            # Stop sprinting if crouching
+            if self.is_sprinting:
+                self.speed = self.base_speed * 0.6
+                self.stop_sprint()
+                print('stop sprint')
+
+    def stop_crouch(self):
+
+        if self.is_crouching:
+            self.is_crouching = False
+            self.speed = self.base_speed  # Reset speed
+
     def update_cooldown(self):
 
-        global sprint_factor, crouch_factor
-        # sprint duration management
+        global sprint_factor
+        # Handle sprint cooldown
         if self.is_sprinting:
-            # Check if sprint duration has been exceeded
-            if pygame.time.get_ticks() - self.sprint_timer_start > self.sprint_duration:  # or not self.shift_held:
-                self.is_sprinting = False
-                self.speed = self.base_speed  # Reset speed
-                self.cooldown_timer_start = pygame.time.get_ticks()  # Start cooldown
-                self.in_sprint_cooldown = True
-        
-        # Cooldown Management
+            if pygame.time.get_ticks() - self.sprint_timer_start > self.sprint_duration:
+                self.stop_sprint()
+
+        # Handle cooldown duration
         if self.in_sprint_cooldown:
-            sprint_factor = 1
             if pygame.time.get_ticks() - self.cooldown_timer_start >= self.sprint_cooldown:
-                self.in_sprint_cooldown = False # Exit Cooldown
-        
-        # Crouch Management
-        if not self.is_crouching and not self.is_sprinting:
-            crouch_factor = 1
-            self.speed = self.base_speed
+                self.in_sprint_cooldown = False  # Exit cooldown
+                self.sprint_factor = 1  # Reset sprint factor
 
     def move(self):
        
@@ -319,12 +324,12 @@ class Monster(object):
         self.name = name
         self.player = player
         self.image = image
-        self.rect = self.image.get_rect()
+        self.width = image.get_width()
+        self.height = image.get_height()
+        self.rect = self.image.get_rect(center = (x + self.width//2, y + self.width//2))
         self.pos = pygame.math.Vector2(x, y) # position on the screen
         self.coords = pygame.math.Vector2(x, y) # Position relative to the map
         # self.coords = pygame.math.Vector2(self.player.bg_pos.x + self.pos.x, self.player.bg_pos.y + self.pos.y)
-        self.width = image.get_width()
-        self.height = image.get_height()
         self.speed = speed
         self.agro_distance = agro_distance
         self.pursue_range = pursue_range
@@ -339,9 +344,9 @@ class Monster(object):
 
     def draw(self, screen):
 
-        self.pos = self.coords
         self.rect.center = (self.pos.x, self.pos.y)
         # Adjusts monster position relative to player's map position
+        pygame.draw.rect(screen, 'red', self.rect, width=self.width)
         screen.blit(self.image,self.rect.topleft)
 
     def move(self):
@@ -349,9 +354,7 @@ class Monster(object):
         self.pos += pygame.math.Vector2(self.vel_x, self.vel_y)
         self.pos += pygame.math.Vector2(-self.player.velocity_x, -self.player.velocity_y)
 
-        # Movement logic
-        # self.pos += pygame.math.Vector2(self.vel_x, self.vel_y)
-        # self.pos += pygame.math.Vector2(-self.player.velocity_x, -self.player.velocity_y)
+        self.coords += pygame.math.Vector2(self.vel_x, self.vel_y)
 
     def behavior(self):
         
