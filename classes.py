@@ -2,6 +2,7 @@ import pygame
 import math
 import random
 import sys
+from random import randint
 
 import pygame.gfxdraw
 from settings import *
@@ -312,6 +313,8 @@ class Trap:
 class Monster(object):
 
     def __init__(self, player, image, x, y, speed, agro_distance, pursue_range, attack_range):
+        x = randint(0, SCREEN_WIDTH)
+        y = randint(0, SCREEN_HEIGHT)
         self.player = player
         self.image = image
         self.rect = self.image.get_rect()
