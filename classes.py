@@ -52,15 +52,15 @@ bg = pygame.transform.scale(pygame.image.load("images/desert_map.png").convert()
 background = pygame.transform.scale(pygame.image.load("images/test-image2.png").convert(), (SCREEN_WIDTH, SCREEN_HEIGHT))
 
 # Initialize Enemy Sprites
-zenba_mon = pygame.image.load("images/zenba_sprites/zenba1.png").convert_alpha()
-umo_mon = pygame.image.load("images/umo_Sprites/roam_chase/umo-rc-09.png").convert_alpha()
+angremlin_mon = pygame.image.load("images/_angremlin/angremlin1test.png").convert_alpha()
+thecarne_mon = pygame.image.load("images/anth_sprites/64x64/thecarne1.png").convert_alpha()
 filth_mon = pygame.transform.rotozoom(pygame.image.load("images/anth_sprites/80x80/filth1.png").convert_alpha(), 0, 2)
 louis_mon = pygame.image.load("images/anth_sprites/64x64/louis1.png").convert_alpha()
 squihomie_mon = pygame.transform.rotozoom(pygame.image.load("images/anth_sprites/64x64/squihomie1.png").convert_alpha(), 0, 2)
-thecarne_mon = pygame.image.load("images/anth_sprites/64x64/thecarne1.png").convert_alpha()
+umo_mon = pygame.image.load("images/umo_Sprites/roam_chase/umo-rc-09.png").convert_alpha()
+zenba_mon = pygame.image.load("images/zenba_sprites/zenba1.png").convert_alpha()
 
-monster_list = [zenba_mon, umo_mon, filth_mon, louis_mon, squihomie_mon, thecarne_mon]
-# MONSTER_IMAGES.append(zenba_mon,umo_mon,filth_mon,louis_mon,squihomie_mon,thecarne_mon)
+monster_list = [angremlin_mon, thecarne_mon, filth_mon, louis_mon, squihomie_mon, umo_mon, zenba_mon]
 
 # Initialize Player Sprites
 walkRight = [pygame.transform.rotozoom(pygame.image.load('images/umo_Sprites/roam_chase/umo-rc-00.png').convert_alpha(), 0, 2), 
@@ -200,8 +200,9 @@ class Player(pygame.sprite.Sprite):
                 self.speed = self.base_speed * .6 # Decrease to 60% speed
                 if self.is_crouching:
                     crouch_factor = .5
-                    # if self.is_sprinting:
-                    #     self.in_sprint_cooldown = False
+                if self.is_sprinting:
+                    self.in_sprint_cooldown = True
+
             else:
                 self.is_crouching = False
 
@@ -423,13 +424,8 @@ class BaseGame:
         self.player = Player()
         self.button = Button((SCREEN_WIDTH//2 - 64), 10, spawn_button, 1)
 
-        self.monsters = [
-            Monster('Umo',self.player, umo_mon, 1000, 600, 1, 300, 500, 125),
-            Monster('Louis',self.player, louis_mon, 1200, 500, 3, 250, 500, 75),
-            Monster('Squihomie',self.player, squihomie_mon, 850, 700, 2, 300, 500, 100),
-            Monster('the Carne',self.player, thecarne_mon, 1000, 300, 1.5, 250, 300, 75)
-        ]
-        
+        self.monsters = []
+
         self.game_objects = [self.player, self.button] + self.monsters
 
         # Fonts and other resources
@@ -484,9 +480,9 @@ class BaseGame:
         random_index = random.randint(0, len(monster_list) - 1)
         random_mon = monster_list[random_index] # make a monster_list dictionary in the future
         
-        new_monster = Monster('added',self.player, random_mon, 900, 650, 2, 300, 500, 100)
-        # last 3 paramters are generic because: no dict for monster_list, no subclasses for monster types
-        if len(self.game_objects) < 14:
+        new_monster = Monster('dict-name',self.player, random_mon, 900, 650, 2, 300, 500, 100)
+        # last 3 paramters and name are generic because: no dict for monster_list, no subclasses for monster types
+        if len(self.monsters) < 15: # any starting monsters not in the list break this mob cap method from being accurate
             self.monsters.append(new_monster)
             self.game_objects.append(new_monster)
         else:
