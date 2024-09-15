@@ -346,7 +346,7 @@ class Monster(object):
 
         self.rect.center = (self.pos.x, self.pos.y)
         # Adjusts monster position relative to player's map position
-        pygame.draw.rect(screen, 'red', self.rect, width=self.width)
+        pygame.draw.rect(screen, 'pink', self.rect, width=self.width)
         screen.blit(self.image,self.rect.topleft)
 
     def move(self):
@@ -356,19 +356,16 @@ class Monster(object):
 
         self.coords += pygame.math.Vector2(self.vel_x, self.vel_y)
 
-    def behavior(self):
-        
-        # Chase player if within agro distance
+    def behavior(self):     
+
         # Check distance between monster and player
         distance_to_player = self.pos.distance_to(self.player.pos)
+        # Calculate direction towards player
+        direction = (self.player.pos - self.pos).normalize()
         
         if distance_to_player <= self.pursue_range:
             if distance_to_player <= self.agro_distance:
-                if distance_to_player > self.attack_range: # also prevents jittering and monst going directly on top of player
-                    # checks time of the start of the chase
-                    chasing_timer = pygame.time.get_ticks()
-                    # Calculate direction towards player
-                    direction = (self.player.pos - self.pos).normalize()
+                if distance_to_player > self.attack_range: # also prevents jittering and monst going directly on top of player                
                     # Set velocity towards player
                     self.vel_x = direction.x * self.speed
                     self.vel_y = direction.y * self.speed
@@ -383,7 +380,7 @@ class Monster(object):
 
         else: # stops chasing when outside pursue range
             self.vel_x = 0
-            self.vel_y = 0
+            self.vel_y = 0          
         
     def update(self): # player_pos, map_offset
         self.behavior()
