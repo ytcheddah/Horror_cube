@@ -305,7 +305,7 @@ class Trap:
         return True
     
     def draw(self, screen):
-        pygame.draw.circle(screen, 'pink', (self.x + 100, self.y + 200), self.radius) # needs to be relative to the map
+        # pygame.draw.circle(screen, 'pink', (self.x + 100, self.y + 200), self.radius) # needs to be relative to the map
         screen.blit(spike_trap1, (self.x + 75, self.y + 150))
 
 
@@ -406,13 +406,11 @@ class Button():
                 self.clicked = True
                 # print('CLICKED') # debug checker (already works tho)
                 action = True
-        
         if pygame.mouse.get_pressed()[0] == 0:
             self.clicked = False
 
         return action
 
-# State Machine, always runs, checks which Game State we are in
 class BaseGame:
 
     def __init__(self):
@@ -480,8 +478,10 @@ class BaseGame:
         
         new_monster = Monster(self.player, random_mon, 900, 650, 2, 300, 500, 100)
         # last 3 paramters are generic because: no dict for monster_list, no subclasses for monster types
-        self.monsters.append(new_monster) 
-        self.game_objects.append(new_monster)
+        if len(self.game_objects) < 11:
+            self.game_objects.append(new_monster)
+        else:
+            print('Reached mob cap of 10')
         # print(f'{len(self.monsters)} in self.monsters list')
 
     def update(self):
@@ -497,6 +497,7 @@ class BaseGame:
         for obj in self.game_objects:
             obj.draw(screen)
 
+    # State Machine, always runs, checks which Game State we are in
     def run(self):
         global game_state
         running = True
@@ -520,9 +521,6 @@ class BaseGame:
 
 # player instance
 player = Player()
-
-# button instance
-# button = Button()
 
 # Create game instance and run the game
 game = BaseGame()
