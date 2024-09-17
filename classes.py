@@ -84,6 +84,8 @@ crouch_factor = 1
 # Trap initialization
 spike_trap1 = pygame.image.load('images/anth_sprites/64x64/spiketrap1.png').convert_alpha()
 
+trap_list = [spike_trap1]
+
 # Button initialization
 spawn_button = pygame.image.load('images/spawn_button1.png').convert_alpha()
 
@@ -269,7 +271,7 @@ class Player(pygame.sprite.Sprite):
         # Create a new "trap" (circle) under the player
         trap_x = (self.rect.x)  # center the circle horizontally
         trap_y = (self.rect.y) - 50 # place trap under player
-        new_trap = Trap(player,trap_x,trap_y)
+        new_trap = Trap(player,trap_x,trap_y, trap_list[0]) # add more logic when new traps are made
         self.inventoryTraps.append(new_trap)
 
     def draw(self, screen):
@@ -289,7 +291,7 @@ class Player(pygame.sprite.Sprite):
         if not self.show_mask:              
             screen.blit(self.image, ((self.rect.centerx - self.player_width , self.rect.centery - self.player_height)))
         else:
-            screen.blit(self.mask.to_surface(unsetcolor=(0,0,0,50), setcolor=(155,255,255,255)), ((self.rect.centerx - self.player_width , self.rect.centery - self.player_height)))
+            screen.blit(self.mask.to_surface(unsetcolor=(0,0,0,0), setcolor=(155,255,255,255)), ((self.rect.centerx - self.player_width , self.rect.centery - self.player_height)))
                             
         # Draw Traps
         for trap in self.inventoryTraps:
@@ -304,13 +306,17 @@ class Player(pygame.sprite.Sprite):
 
 class Trap:
 
-    def __init__(self, player, x, y, radius=20, duration=5000):
+    def __init__(self, player, x, y, image, radius=20, duration=5000):
         self.player = player
         self.x = x
         self.y = y
         self.radius = radius
+        self.image = image
         self.creation_time = pygame.time.get_ticks() # Correct reference to pygame.time.get_ticks
         self.duration = duration
+        self.rect = self.image.get_rect(center = (x + self.width//2, y + self.width//2))
+
+        self.mask = pygame.mask.from_surface(self.image)
 
     def update(self):
         # Check if the trap has expired (lifetime is over)
@@ -320,7 +326,11 @@ class Trap:
     
     def draw(self, screen):
         # pygame.draw.circle(screen, 'pink', (self.x + 100, self.y + 200), self.radius) # needs to be relative to the map
-        screen.blit(spike_trap1, (self.x + 75, self.y + 150))
+        if not self.player.show_mask:
+            screen.blit(self.image, (self.x + 75, self.y + 150))
+        else:
+            screen.blit(self.mask.to_surface(unsetcolor=(0,0,0,0), setcolor=(155,145,220,255)), (self.x + 75, self.y + 150))
+            print('working')
 
 class Monster(object):
 
@@ -333,17 +343,11 @@ class Monster(object):
         self.width = image.get_width()
         self.height = image.get_height()
 
-
         self.rect = self.image.get_rect(center = (x + self.width//2, y + self.width//2))
         self.pos = pygame.math.Vector2(x, y) # position on the screen
         self.coords = pygame.math.Vector2(x, y) # Position relative to the map
-        # self.coords = pygame.math.Vector2(self.player.bg_pos.x + self.pos.x, self.player.bg_pos.y + self.pos.y)
 
         self.mask = pygame.mask.from_surface(self.image)
-        self.offset_x = self.rect.x - self.player.rect.x
-        self.offset_y = self.rect.y - self.player.rect.y
-        self.offset = (self.offset_x, self.offset_y)
-        self.overlap_mask = self.mask.overlap_mask(self.mask, self.offset)
 
         self.speed = speed
         self.agro_distance = agro_distance
@@ -359,17 +363,13 @@ class Monster(object):
 
     def draw(self, screen):
 
-        self.rect.center = (self.pos.x, self.pos.y)
+        self.rect.center = (self.pos.x - (self.width/2), self.pos.y - (self.height/2))
         # Adjusts monster position relative to player's map position
         # pygame.draw.rect(screen, 'pink', self.rect, width=self.width)
         if not self.player.show_mask:
-            screen.blit(self.image, self.rect.topleft)
+            screen.blit(self.image, self.rect.center)
         else:
-            if pygame.sprite.spritecollide(self, game.monsters, False, pygame.sprite.collide_mask):
-                screen.blit(self.mask.to_surface(unsetcolor=(0,0,0,50), setcolor=(255,145,200,255)), self.rect.topleft)
-            else:
-                screen.blit(self.mask.to_surface(unsetcolor=(0,0,0,20), setcolor=(55,145,20,255)), self.rect.topleft)
-            # screen.blit(self.overlap_mask.to_surface(unsetcolor=(0,0,0,50), setcolor=(255,0,0,255)), self.rect.topleft)
+            screen.blit(self.mask.to_surface(unsetcolor=(0,0,0,0), setcolor=(155,245,120,255)), self.rect.center)
 
     def move(self):
         # Location relative to map
@@ -384,11 +384,6 @@ class Monster(object):
         distance_to_player = self.pos.distance_to(self.player.pos)
         # Calculate direction towards player
         direction = (self.player.pos - self.pos).normalize()
-
-        self.offset_x = self.rect.x - self.player.rect.x
-        self.offset_y = self.rect.y - self.player.rect.y
-        self.offset = (self.offset_x, self.offset_y)
-        self.overlap_mask = self.mask.overlap_mask(self.mask, self.offset)
         
         if distance_to_player <= self.pursue_range:
             if distance_to_player <= self.agro_distance:
@@ -530,7 +525,7 @@ class BaseGame:
         self.button.draw(screen)
 
         if pygame.sprite.spritecollide(self.player, self.monsters, False, pygame.sprite.collide_mask):
-            screen.blit(self.player.mask.to_surface(unsetcolor=(0,0,0,50), setcolor=(155,55,55,255)), 
+            screen.blit(self.player.mask.to_surface(unsetcolor=(0,0,0,0), setcolor=(155,55,55,255)), 
                         ((self.player.rect.centerx - self.player.player_width , self.player.rect.centery - self.player.player_height)))    
 
 
