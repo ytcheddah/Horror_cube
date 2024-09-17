@@ -106,6 +106,9 @@ class Player(pygame.sprite.Sprite):
         self.speed = self.base_speed
         self.velocity_x = 0
         self.velocity_y = 0
+        
+        self.show_mask = False
+        self.mask = pygame.mask.from_surface(self.image)
 
         # Glowstick attr
         self.light_radius = 100
@@ -144,6 +147,7 @@ class Player(pygame.sprite.Sprite):
     def user_input(self):
         keys = pygame.key.get_pressed()
         global left, right, walkCount, sprint_factor, crouch_factor
+
         self.velocity_x = 0
         self.velocity_y = 0
 
@@ -250,7 +254,6 @@ class Player(pygame.sprite.Sprite):
         # Player movement
         self.rect.center += pygame.math.Vector2(self.velocity_x, self.velocity_y)
         self.rect.center = self.pos
-
         # Map movement (caused by player input)
         self.bg_pos += pygame.math.Vector2(-self.velocity_x, -self.velocity_y)
 
@@ -281,9 +284,13 @@ class Player(pygame.sprite.Sprite):
         # pygame.draw.rect(screen, 'pink', self.rect)
         screen.blit(self.light_surf, (0, 0))
         pygame.draw.circle(self.light_surf, (0, 0, 0, self.light_power), self.rect.center, self.light_radius)
-        # screen.blit(zenba_monster, ((SCREEN_WIDTH//2) - 50, (SCREEN_HEIGHT//2) - 50))
-        # Draw Player       
-        screen.blit(self.image, ((self.rect.centerx - self.player_width , self.rect.centery - self.player_height)))
+
+        # Draw Player
+        if not self.show_mask:              
+            screen.blit(self.image, ((self.rect.centerx - self.player_width , self.rect.centery - self.player_height)))
+        else:
+            screen.blit(self.mask.to_surface(unsetcolor=(0,0,0,50), setcolor=(155,255,255,255)), ((self.rect.centerx - self.player_width , self.rect.centery - self.player_height)))
+                            
         # Draw Traps
         for trap in self.inventoryTraps:
             trap.draw(screen)
@@ -315,7 +322,6 @@ class Trap:
         # pygame.draw.circle(screen, 'pink', (self.x + 100, self.y + 200), self.radius) # needs to be relative to the map
         screen.blit(spike_trap1, (self.x + 75, self.y + 150))
 
-
 class Monster(object):
 
     def __init__(self, name, player, image, x, y, speed, agro_distance, pursue_range, attack_range):
@@ -326,10 +332,19 @@ class Monster(object):
         self.image = image
         self.width = image.get_width()
         self.height = image.get_height()
+
+
         self.rect = self.image.get_rect(center = (x + self.width//2, y + self.width//2))
         self.pos = pygame.math.Vector2(x, y) # position on the screen
         self.coords = pygame.math.Vector2(x, y) # Position relative to the map
         # self.coords = pygame.math.Vector2(self.player.bg_pos.x + self.pos.x, self.player.bg_pos.y + self.pos.y)
+
+        self.mask = pygame.mask.from_surface(self.image)
+        self.offset_x = self.rect.x - self.player.rect.x
+        self.offset_y = self.rect.y - self.player.rect.y
+        self.offset = (self.offset_x, self.offset_y)
+        self.overlap_mask = self.mask.overlap_mask(self.mask, self.offset)
+
         self.speed = speed
         self.agro_distance = agro_distance
         self.pursue_range = pursue_range
@@ -346,8 +361,15 @@ class Monster(object):
 
         self.rect.center = (self.pos.x, self.pos.y)
         # Adjusts monster position relative to player's map position
-        pygame.draw.rect(screen, 'pink', self.rect, width=self.width)
-        screen.blit(self.image,self.rect.topleft)
+        # pygame.draw.rect(screen, 'pink', self.rect, width=self.width)
+        if not self.player.show_mask:
+            screen.blit(self.image, self.rect.topleft)
+        else:
+            if pygame.sprite.spritecollide(self, game.monsters, False, pygame.sprite.collide_mask):
+                screen.blit(self.mask.to_surface(unsetcolor=(0,0,0,50), setcolor=(255,145,200,255)), self.rect.topleft)
+            else:
+                screen.blit(self.mask.to_surface(unsetcolor=(0,0,0,20), setcolor=(55,145,20,255)), self.rect.topleft)
+            # screen.blit(self.overlap_mask.to_surface(unsetcolor=(0,0,0,50), setcolor=(255,0,0,255)), self.rect.topleft)
 
     def move(self):
         # Location relative to map
@@ -362,6 +384,11 @@ class Monster(object):
         distance_to_player = self.pos.distance_to(self.player.pos)
         # Calculate direction towards player
         direction = (self.player.pos - self.pos).normalize()
+
+        self.offset_x = self.rect.x - self.player.rect.x
+        self.offset_y = self.rect.y - self.player.rect.y
+        self.offset = (self.offset_x, self.offset_y)
+        self.overlap_mask = self.mask.overlap_mask(self.mask, self.offset)
         
         if distance_to_player <= self.pursue_range:
             if distance_to_player <= self.agro_distance:
@@ -382,7 +409,7 @@ class Monster(object):
             self.vel_x = 0
             self.vel_y = 0          
         
-    def update(self): # player_pos, map_offset
+    def update(self):
         self.behavior()
         self.move()
 
@@ -425,8 +452,7 @@ class BaseGame:
         self.button = Button((SCREEN_WIDTH//2 - 64), 10, spawn_button, 1)
 
         self.monsters = []
-
-        self.game_objects = [self.player, self.button] + self.monsters
+        self.game_objects = [self.player] + self.monsters
 
         # Fonts and other resources
         self.menu_font = menu_font
@@ -466,7 +492,7 @@ class BaseGame:
                 f'{monster.name}-vel:(x:{monster.vel_x:.3f}, y:{monster.vel_y:.3f}) '
                 f'-pos:(x:{int(monster.coords.x)}, y:{int(monster.coords.y)})',
                 True, GREEN)
-            self.screen.blit(monster_text, (10, 10 + i * 15))
+            self.screen.blit(monster_text, (20, 10 + i * 15))
 
         self.screen.blit(sprint_text, (SCREEN_WIDTH - 300, 32))
         self.screen.blit(crouch_text, (SCREEN_WIDTH - 300, 50))
@@ -501,6 +527,12 @@ class BaseGame:
         # iterates and draws all objects
         for obj in self.game_objects:
             obj.draw(screen)
+        self.button.draw(screen)
+
+        if pygame.sprite.spritecollide(self.player, self.monsters, False, pygame.sprite.collide_mask):
+            screen.blit(self.player.mask.to_surface(unsetcolor=(0,0,0,50), setcolor=(155,55,55,255)), 
+                        ((self.player.rect.centerx - self.player.player_width , self.player.rect.centery - self.player.player_height)))    
+
 
     # State Machine, always runs, checks which Game State we are in
     def run(self):
@@ -512,6 +544,16 @@ class BaseGame:
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
+                if event.type == pygame.KEYDOWN: # toggle keys
+                    if event.key == pygame.K_m:
+                        # toggle keys only
+                        self.player.show_mask = not self.player.show_mask
+
+            # collision
+            # if pygame.sprite.spritecollide(self.player, self.monsters, False, pygame.sprite.collide_mask):
+            #     screen.blit(self.player.mask.to_surface(unsetcolor=(0,50,0,0), setcolor=(155,55,55,255)), 
+            #                 ((self.player.rect.centerx - self.player.player_width , self.player.rect.centery - self.player.player_height)))
+            #     # print('collision')
 
             if game_state == PLAYING:
                 self.update()
