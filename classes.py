@@ -3,8 +3,6 @@ import math
 import random
 import sys
 from random import randint
-
-import pygame.gfxdraw
 from settings import *
 
 
@@ -318,7 +316,7 @@ class Player(pygame.sprite.Sprite):
 
 class Trap:
 
-    def __init__(self, player, x, y, image, radius=20, duration=5000):
+    def __init__(self, player, x, y, image, radius=20, duration=15000):
         self.player = player
         self.x = x
         self.y = y
