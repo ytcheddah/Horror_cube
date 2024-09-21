@@ -92,6 +92,7 @@ spawn_button = pygame.image.load('images/spawn_button1.png').convert_alpha()
 
 # Object Initialization
 game_objects = []
+show_mask = False
 
 class Player(pygame.sprite.Sprite):
 
@@ -110,7 +111,6 @@ class Player(pygame.sprite.Sprite):
         self.velocity_x = 0
         self.velocity_y = 0
         
-        self.show_mask = False
         self.mask = pygame.mask.from_surface(self.image)
 
         # Glowstick attr
@@ -289,7 +289,7 @@ class Player(pygame.sprite.Sprite):
         pygame.draw.circle(self.light_surf, (0, 0, 0, self.light_power), self.rect.center, self.light_radius)
 
         # Draw Player
-        if not self.show_mask:              
+        if not show_mask:              
             screen.blit(self.image, ((self.rect.centerx - self.width , self.rect.centery - self.height)))
         else:
             screen.blit(self.mask.to_surface(unsetcolor=(0,0,0,0), setcolor=(155,255,255,255)), ((self.rect.centerx - self.width , self.rect.centery - self.height)))
@@ -297,7 +297,7 @@ class Player(pygame.sprite.Sprite):
         # Draw Traps
         for trap in self.inventoryTraps:
             
-            if not self.show_mask:
+            if not show_mask:
                 trap.draw(screen)
                 print('player-work')
 
@@ -343,7 +343,7 @@ class Trap:
     def draw(self, screen):
         # pygame.draw.circle(screen, 'red', (self.x + 100, self.y + 200), self.radius) # needs to be relative to the map
         
-            if not self.player.show_mask:
+            if not show_mask:
                 # pygame.draw.rect(screen, 'pink', (self.rect), width=self.width)
                 screen.blit(self.image, (self.rect.topleft))
                 print('trap-works')
@@ -355,7 +355,7 @@ class Trap:
 
         # for trap in self.player.inventoryTraps:
             
-        #     if not self.show_mask:
+        #     if not show_mask:
         #         trap.draw(screen)
         #     else:
         #         screen.blit(trap.mask.to_surface(unsetcolor=(0,0,0,0),
@@ -395,7 +395,7 @@ class Monster(object):
         self.rect.center = (self.pos.x , self.pos.y)
         # Adjusts monster position relative to player's map position
         # pygame.draw.rect(screen, 'pink', self.rect, width=self.width)
-        if not self.player.show_mask:
+        if not show_mask:
             screen.blit(self.image, self.rect.topleft)
         else:
             screen.blit(self.mask.to_surface(unsetcolor=(0,0,0,0), setcolor=(155,245,120,255)), self.rect.topleft)
@@ -561,7 +561,7 @@ class BaseGame:
             obj.draw(screen)
         self.button.draw(screen)
 
-        if pygame.sprite.spritecollide(self.player, self.monsters, False, pygame.sprite.collide_mask) and self.player.show_mask:
+        if pygame.sprite.spritecollide(self.player, self.monsters, False, pygame.sprite.collide_mask) and show_mask:
             screen.blit(self.player.mask.to_surface(unsetcolor=(0,0,0,0), setcolor=(155,55,55,255)), 
                 ((self.player.rect.centerx - self.player.width , self.player.rect.centery - self.player.height)))    
 
@@ -578,8 +578,9 @@ class BaseGame:
                     sys.exit()
                 if event.type == pygame.KEYDOWN: # toggle keys
                     if event.key == pygame.K_m:
+                        global show_mask
                         # toggle keys only
-                        self.player.show_mask = not self.player.show_mask
+                        show_mask = not show_mask
 
             if game_state == PLAYING:
                 self.update()
