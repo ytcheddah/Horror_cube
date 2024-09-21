@@ -52,15 +52,18 @@ bg = pygame.transform.scale(pygame.image.load("images/desert_map.png").convert()
 background = pygame.transform.scale(pygame.image.load("images/test-image2.png").convert(), (SCREEN_WIDTH, SCREEN_HEIGHT))
 
 # Initialize Enemy Sprites
-angremlin_mon = pygame.image.load("images/_angremlin/angremlin1test.png").convert_alpha()
+angremlin_mon = pygame.image.load("images/angremlin/angremlin1test.png").convert_alpha()
 thecarne_mon = pygame.image.load("images/anth_sprites/64x64/thecarne1.png").convert_alpha()
 filth_mon = pygame.transform.rotozoom(pygame.image.load("images/anth_sprites/80x80/filth1.png").convert_alpha(), 0, 2)
 louis_mon = pygame.image.load("images/anth_sprites/64x64/louis1.png").convert_alpha()
 squihomie_mon = pygame.transform.rotozoom(pygame.image.load("images/anth_sprites/64x64/squihomie1.png").convert_alpha(), 0, 2)
 umo_mon = pygame.image.load("images/umo_Sprites/roam_chase/umo-rc-09.png").convert_alpha()
 zenba_mon = pygame.image.load("images/zenba_sprites/zenba1.png").convert_alpha()
+thssludge_mon = pygame.image.load("images/the_sludge/thesludge1.png").convert_alpha()
 
-monster_list = [angremlin_mon, thecarne_mon, filth_mon, louis_mon, squihomie_mon, umo_mon, zenba_mon]
+monster_list = [angremlin_mon, thecarne_mon,
+                 filth_mon, louis_mon, squihomie_mon,
+                   umo_mon, zenba_mon, thssludge_mon]
 
 # Initialize Player Sprites
 walkRight = [pygame.transform.rotozoom(pygame.image.load('images/umo_Sprites/roam_chase/umo-rc-00.png').convert_alpha(), 0, 2), 
@@ -102,8 +105,8 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
         self.pos = pygame.math.Vector2(self.rect.center) # where I am on the screen
 
-        self.player_width = PLAYER_WIDTH
-        self.player_height = PLAYER_HEIGHT
+        self.width = PLAYER_WIDTH
+        self.height = PLAYER_HEIGHT
         self.base_speed = PLAYER_SPEED
         self.speed = self.base_speed
         self.velocity_x = 0
@@ -266,13 +269,11 @@ class Player(pygame.sprite.Sprite):
         for trap in self.inventoryTraps:
             trap.x += -self.velocity_x
             trap.y += -self.velocity_y
-            trap.rect.x += -self.velocity_x
-            trap.rect.y += -self.velocity_y
 
     def create_trap(self):
         # Create a new "trap" (circle) under the player
-        trap_x = (self.rect.x)  # center the circle horizontally
-        trap_y = (self.rect.y) - 50 # place trap under player
+        trap_x = (self.rect.x + self.width - 32)  # center the circle horizontally
+        trap_y = (self.rect.y + self.height + 50) # place trap under player
         new_trap = Trap(player,trap_x,trap_y, trap_list[0]) # add more logic when new traps are made
         self.inventoryTraps.append(new_trap)
 
@@ -291,19 +292,22 @@ class Player(pygame.sprite.Sprite):
 
         # Draw Player
         if not self.show_mask:              
-            screen.blit(self.image, ((self.rect.centerx - self.player_width , self.rect.centery - self.player_height)))
+            screen.blit(self.image, ((self.rect.centerx - self.width , self.rect.centery - self.height)))
         else:
-            screen.blit(self.mask.to_surface(unsetcolor=(0,0,0,0), setcolor=(155,255,255,255)), ((self.rect.centerx - self.player_width , self.rect.centery - self.player_height)))
+            screen.blit(self.mask.to_surface(unsetcolor=(0,0,0,0), setcolor=(155,255,255,255)), ((self.rect.centerx - self.width , self.rect.centery - self.height)))
                             
         # Draw Traps
         for trap in self.inventoryTraps:
             
             if not self.show_mask:
                 trap.draw(screen)
+                print('player-work')
+
             else:
+                # trap.draw(screen)
                 screen.blit(trap.mask.to_surface(unsetcolor=(0,0,0,0),
-                     setcolor=(155,145,220,255)), (self.rect.x + 75, self.rect.y + 100))
-                print('working')
+                     setcolor=(155,145,220,255)), (trap.rect.topleft))
+                print('player-work')
 
     def update(self):
         self.user_input()
@@ -324,26 +328,40 @@ class Trap:
         self.image = image
         self.creation_time = pygame.time.get_ticks() # Correct reference to pygame.time.get_ticks
         self.duration = duration
-        self.rect = self.image.get_rect(center = (x + (self.width/2) + 75, y + (self.height/2) + 150))
-
         self.mask = pygame.mask.from_surface(self.image)
+        self.rect = self.image.get_rect(center = (x + (self.width//2) + 75, y + (self.height//2) + 150))
+        self.rect_list = self.mask.get_bounding_rects
 
     def update(self):
         # Check if the trap has expired (lifetime is over)
         if pygame.time.get_ticks() - self.creation_time > self.duration:
             return False
         
+        # for self.rect in enumerate(self.rect_list):
+        self.rect.center = (self.x + (self.width//2), self.y + (self.height//2))
+            
         return True
     
     def draw(self, screen):
-        # pygame.draw.circle(screen, 'pink', (self.x + 100, self.y + 200), self.radius) # needs to be relative to the map
-        if not self.player.show_mask:
-            pygame.draw.rect(screen, 'pink', self.rect, width=self.width)
-            screen.blit(self.image, (self.x + 75, self.y + 150))
-        else:
-            screen.blit(self.mask.to_surface(unsetcolor=(0,0,0,0),
-                  setcolor=(155,145,220,255)), (self.x + 75, self.y + 150))
-            print('working')
+        # pygame.draw.circle(screen, 'red', (self.x + 100, self.y + 200), self.radius) # needs to be relative to the map
+        
+            if not self.player.show_mask:
+                # pygame.draw.rect(screen, 'pink', (self.rect), width=self.width)
+                screen.blit(self.image, (self.rect.topleft))
+                print('trap-works')
+                
+            else:
+                screen.blit(self.mask.to_surface(unsetcolor=(0,0,0,0),
+                    setcolor=(155,145,220,255)), (self.rect.topleft))
+                print('trap-works')
+
+        # for trap in self.player.inventoryTraps:
+            
+        #     if not self.show_mask:
+        #         trap.draw(screen)
+        #     else:
+        #         screen.blit(trap.mask.to_surface(unsetcolor=(0,0,0,0),
+        #              setcolor=(155,145,220,255)), (self.rect.topleft))
 
 class Monster(object):
 
@@ -460,7 +478,7 @@ class BaseGame:
         self.button = Button((SCREEN_WIDTH//2 - 64), 10, spawn_button, 1)
 
         self.monsters = []
-        self.game_objects = [self.player] + self.monsters
+        self.game_objects = [self.player] + self.monsters + self.player.inventoryTraps
 
         # Fonts and other resources
         self.menu_font = menu_font
@@ -495,16 +513,24 @@ class BaseGame:
         sprint_text = self.speed_font.render(f'SPRINT: {self.player.is_sprinting} CD: {self.player.in_sprint_cooldown} SF: {sprint_factor:.1f}', True, bool_color1)
         crouch_text = self.speed_font.render(f'CROUCH: {self.player.is_crouching} CD: N/A  CF: {crouch_factor:.1f}', True, bool_color2)
         
+
         for i, monster in enumerate(self.monsters):
             monster_text = self.monster_font.render(
-                f'{monster.name}-vel:(x:{monster.vel_x:.3f}, y:{monster.vel_y:.3f}) '
-                f'-pos:(x:{int(monster.coords.x)}, y:{int(monster.coords.y)}) (x:{int(monster.pos.x)}, y"{int(monster.pos.y)})',
+                f'{monster.name}#{i+1}: vel:(x:{monster.vel_x:.3f}, y:{monster.vel_y:.3f}) '
+                f'-pos:(x:{int(monster.coords.x)}, y:{int(monster.coords.y)})', # coords rel to map
+                # f' (x:{int(monster.pos.x)}, y"{int(monster.pos.y)})', # pos rel to player
                 True, GREEN)
             self.screen.blit(monster_text, (20, 10 + i * 15))
 
+        for j, trap in enumerate(self.player.inventoryTraps):
+            trap_text = self.monster_font.render(
+                f'#{j+1}: x:{trap.x:.3f}, y:{trap.y:.3f}, Rect:{trap.rect.topleft}', True, GREEN)
+            self.screen.blit(trap_text, (SCREEN_WIDTH - 550, 70 + j * 15))
+            
         self.screen.blit(sprint_text, (SCREEN_WIDTH - 300, 32))
         self.screen.blit(crouch_text, (SCREEN_WIDTH - 300, 50))
         self.screen.blit(position_text, (SCREEN_WIDTH - 500, 10))
+
         self.screen.blit(speed_text, (SCREEN_WIDTH - 300, 10))
         self.screen.blit(x_text, (SCREEN_WIDTH - 500, 30))
         self.screen.blit(y_text, (SCREEN_WIDTH - 500, 45))
@@ -539,7 +565,7 @@ class BaseGame:
 
         if pygame.sprite.spritecollide(self.player, self.monsters, False, pygame.sprite.collide_mask) and self.player.show_mask:
             screen.blit(self.player.mask.to_surface(unsetcolor=(0,0,0,0), setcolor=(155,55,55,255)), 
-                ((self.player.rect.centerx - self.player.player_width , self.player.rect.centery - self.player.player_height)))    
+                ((self.player.rect.centerx - self.player.width , self.player.rect.centery - self.player.height)))    
 
 
     # State Machine, always runs, checks which Game State we are in
