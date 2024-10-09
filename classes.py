@@ -400,7 +400,7 @@ class GlowStick:
     def check_collision(self, player_mask, player_position):
             # Check for collision with the player's mask
             offset = (self.rect.x - player_position[0], self.rect.y - player_position[1])
-            if player_mask.overlap(pygame.mask.Mask.from_surface(self.image), offset):
+            if player_mask.overlap(pygame.mask.from_surface(self.image), offset):
                 self.picked_up = True
                 return True
             return False
