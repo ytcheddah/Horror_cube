@@ -26,6 +26,7 @@ pygame.display.set_caption("HC_CLASSES")
 clock = pygame.time.Clock()
 
 # Fonts
+# fontSize
 menu_font = pygame.font.Font("font/boldPixelFont.ttf", 74)
 p_font = pygame.font.Font("font/pixelFont.ttf", 36)
 pos_font = pygame.font.Font("font/pixelFont.ttf", 18)
@@ -82,8 +83,9 @@ walkCount = 0
 sprint_factor = 1
 crouch_factor = 1
 
-# Trap initialization
+# Item initialization
 spike_trap1 = pygame.image.load('images/anth_sprites/64x64/spiketrap1.png').convert_alpha()
+glow_stick_image = pygame.image.load('images/anth_sprites/64x64/glow_stick.png').convert_alpha()
 
 trap_list = [spike_trap1]
 
@@ -275,6 +277,12 @@ class Player(pygame.sprite.Sprite):
         new_trap = Trap(player,trap_x,trap_y, trap_list[0]) # add more logic when new traps are made
         self.inventoryTraps.append(new_trap)
 
+    def spawn_glowStick(self):
+        # Spawn a glow stick
+        glowStick_x = (random.randint[0, 500])
+        glowStick_y = (random.randint[0, 500])
+        new_glowStick = GlowStick(player, glowStick_x, glowStick_y, glow_stick_image)
+
     def draw(self, screen):
         global walkCount
         
@@ -306,6 +314,22 @@ class Player(pygame.sprite.Sprite):
                 screen.blit(trap.mask.to_surface(unsetcolor=(0,0,0,0),
                      setcolor=(155,145,220,255)), (trap.rect.topleft))
                 print('player-work')
+
+        # Draw Glowstick
+
+        # Create an instance of the GlowStick class
+        glow_stick = GlowStick(200, 300, glow_stick_image)
+
+        # Inside your game loop
+        player_position = player.rect.topleft  # Replace with the player's actual position
+        player_mask = pygame.mask.from_surface(player.image)  # Create the mask from the player's image
+
+        # Draw the glow stick on the screen
+        glow_stick.draw(screen)
+
+        # Check for collision with the player
+        if glow_stick.check_collision(player_mask, player_position):
+            print("Glow stick picked up!")
 
     def update(self):
         self.user_input()
@@ -360,6 +384,27 @@ class Trap:
         #     else:
         #         screen.blit(trap.mask.to_surface(unsetcolor=(0,0,0,0),
         #              setcolor=(155,145,220,255)), (self.rect.topleft))
+
+class GlowStick:
+
+    def __init__(self, x, y, image):
+        self.image = glow_stick_image
+        self.rect = self.image.get_rect(topleft = (x, y))
+        self.picked_up = False
+
+    def draw(self, screen):
+        # Draw the glowstick on the screen
+        if not self.picked_up:
+            screen.blit(self.image, self.rect.topleft)
+        
+    def check_collision(self, player_mask, player_position):
+            # Check for collision with the player's mask
+            offset = (self.rect.x - player_position[0], self.rect.y - player_position[1])
+            if player_mask.overlap(pygame.mask.Mask.from_surface(self.image), offset):
+                self.picked_up = True
+                return True
+            return False
+        
 
 class Monster(object):
 
