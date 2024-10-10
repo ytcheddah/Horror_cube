@@ -3,11 +3,11 @@ import math
 import random
 import sys
 from random import randint
-from settings import *
-from cl_button import *
-from cl_monster import *
-from cl_player import *
-from cl_trap import *
+from game.settings import *
+from game.button import Button
+from game.monster import Monster
+from game.player import Player
+from game.trap import Trap
 
 # Game states
 MENU = "menu"

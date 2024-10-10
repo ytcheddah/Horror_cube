@@ -3,7 +3,7 @@ import math
 import random
 import sys
 from random import randint
-from settings import *
+from game.settings import *
 
 
 # --- Put all classes in this file and then import them into the other files to improve readability ---

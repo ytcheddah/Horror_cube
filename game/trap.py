@@ -1,5 +1,5 @@
 import pygame
-from main import *
+from game.main import *
 
 class Trap:
 

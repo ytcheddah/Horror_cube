@@ -1,5 +1,5 @@
 import pygame, sys
-from settings import *
+from game.settings import *
 from pytmx.util_pygame import load_pygame
 
 #class for the tiles in the map
