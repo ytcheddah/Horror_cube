@@ -1,5 +1,5 @@
 import pygame
-from game.main import *
+from main import *
 
 # Fonts
 menu_font = pygame.font.Font("font/boldPixelFont.ttf", 74)

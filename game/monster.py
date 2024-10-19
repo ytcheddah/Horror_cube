@@ -1,7 +1,7 @@
 import pygame
-from game.main import *
+from shared import *
 from random import randint
-from game.settings import *
+from settings import *
 
 # Screen display
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
