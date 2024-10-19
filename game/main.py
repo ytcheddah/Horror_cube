@@ -4,10 +4,10 @@ import random
 import sys
 from random import randint
 from game.settings import *
-from game.button import Button
-from game.monster import Monster
-from game.player import Player
-from game.trap import Trap
+from game.Button import Button
+from game. Monster import Monster
+from game.Player import Player
+from game.Trap import Trap
 
 # Game states
 MENU = "menu"
