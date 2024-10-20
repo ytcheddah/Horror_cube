@@ -1,8 +1,8 @@
 import pygame
-from main import *
+from shared import *
 import math
 from settings import *
-from cl_trap import *
+from Trap import *
 
 pygame.init()
 

@@ -1,7 +1,7 @@
 import pygame
 import sys
 import math
-from settings import *
+from game.settings import *
 
 # initialize pygame
 pygame.init()

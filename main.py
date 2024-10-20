@@ -1,13 +1,15 @@
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
 import pygame
 import math
 import random
 import sys
 from random import randint
-from settings import *
-from cl_button import *
-from cl_monster import *
-from cl_player import *
-from cl_trap import *
+from game.shared import Button, Monster, Player
+from game.settings import *
+
 
 # Game states
 MENU = "menu"
