@@ -96,10 +96,39 @@ spawn_button = pygame.image.load('images/spawn_button1.png').convert_alpha()
 game_objects = []
 show_mask = False
 
-class Player(pygame.sprite.Sprite):
+class Character:
+
+    def __init__(self, name, health, position):
+        self.name = name
+        self.health = health
+        self.position = position # tuple
+        self.inventory = []
+
+    def take_damage(self, amount):
+        self.health -= amount
+
+    def display_stats(self):
+        print(f'Name: {self.name}, Health: {self.health}, Position: {self.position}')
+
+    def to_dict(self):
+        return {
+            'name:': self.name,
+            'health': self.health,
+            'position': self.position,
+            'inventory': self.inventory
+        }
+
+    @classmethod
+    def from_dict(cls, data):
+        char = cls(data['name'], data['health'], tuple(data['position']))
+        char.inventory = data['inventory']
+        return char
+
+class Player(pygame.sprite.Sprite): # Character inheritance needed
 
     def __init__(self):
-        super().__init__()
+        pygame.sprite.Sprite().__init__()
+        # Character().__init__(self, name, health, position)
         # load the image and scale it
         self.image = pygame.transform.rotozoom(pygame.image.load("images/umo_Sprites/idle/umo-idle-0.png").convert_alpha(), 0 , 2)
         # get_rect() gets the rectangular area of a given surface, the kwarg "center" creates a rectangle for the Surface centered at the given position
@@ -159,17 +188,21 @@ class Player(pygame.sprite.Sprite):
         if keys[pygame.K_w] or keys[pygame.K_UP]: 
             self.velocity_y = -self.speed
             self.bg_y = self.speed
+            direction = 'up'
         if keys[pygame.K_s] or keys[pygame.K_DOWN]: 
             self.velocity_y = self.speed
             self.bg_y = -self.speed
+            direction = 'down'
         if keys[pygame.K_a] or keys[pygame.K_LEFT]: 
             self.velocity_x = -self.speed
             self.bg_x = self.speed
+            direction = 'left'
             left = True
             right = False
         if keys[pygame.K_d] or keys[pygame.K_RIGHT]: 
             self.velocity_x = self.speed
             self.bg_x = -self.speed
+            direction = 'right'
             right = True
             left = False
         else:
@@ -405,7 +438,6 @@ class GlowStick:
                 return True
             return False
         
-
 class Monster(object):
 
     def __init__(self, name, player, image, x, y, speed, agro_distance, pursue_range, attack_range):
