@@ -9,8 +9,10 @@ percentage = 100
 percentage_decay = (100 / 10_800)
 
 class UserInterface:
-    """A parent class which provides a framework for all classes 
-    displayed on the user interface"""
+    """
+    A parent class which provides a framework for all classes 
+    displayed on the user interface.
+    """
 
     def __init__(self, x, y):
         """

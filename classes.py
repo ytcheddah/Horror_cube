@@ -547,6 +547,10 @@ class Button():
 class BaseGame:
 
     def __init__(self):
+        """
+        Initialize attributes of BaseGame. Automatically creates an instance
+        of Player and Button.
+        """
         self.screen = screen
         self.clock = clock
         self.player = Player()
