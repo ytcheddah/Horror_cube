@@ -1,7 +1,7 @@
 import pygame
 import math
 import sys
-from game.settings import *
+from settings import *
 
 monster_dict = { # used for the monster base stats/info
     "Angremlin" : {

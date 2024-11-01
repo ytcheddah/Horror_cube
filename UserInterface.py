@@ -1,5 +1,5 @@
 import pygame
-from game.settings import *
+from settings import *
 pygame.init()
 
 # Screen display
