@@ -1,0 +1,19 @@
+class Animate:
+    """
+    A class that handles any spritesheet and can animate a specified 
+    region of the spritesheet.
+    """
+    def __init__(self, spritesheet):
+        """Initialize the attributes of the animate class."""
+
+
+def animate(spritesheet, range)
+
+it will take a sprite sheet and move left to right. when it reaches the 
+right limit of the range, it restarts at the left. If you have an 
+exceptionlly large range that extends down, it will move downward before 
+restarting at the left position. 
+
+
+[0, 0, 0, 0, 0, 0
+0, 0, 0]

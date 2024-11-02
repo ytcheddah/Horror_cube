@@ -76,11 +76,10 @@ class HorrorCube:
     def _update_screen(self):
         """Update images on the screen, and flip to the new screen."""
         self.screen.fill(self.settings.bg_color)
-        self.player.blitplayer()
-    
+        self.player.blitplayer()   
 
-image_path = os.path.join(os.path.dirname(__file__), 'images', 'MainCharacter', 'MC_Simpleton_SpritSheet.png')
-print("Image path:", image_path)  # Debug line
+# image_path = os.path.join(os.path.dirname(__file__), 'images', 'MainCharacter', 'MC_Simpleton_SpritSheet.png')
+# print("Image path:", image_path)  # Debug line
 
 
 if __name__ == "__main__":

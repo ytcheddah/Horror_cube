@@ -3,9 +3,17 @@ import math
 import os
 
 class Character:
-    pass
+    """A parent class which manages character in game."""
+    def __init__(self):
+        """Initialize the attributes of the character class."""
 
-class Player:
+    def animate(self, spritesheet):
+        """A function which takes any spritesheet and animates it."""
+         
+
+
+
+class Player(Character):
     """A class that manages the player character"""
 
     def __init__(self, hc_game):
