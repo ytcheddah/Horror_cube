@@ -1,8 +1,9 @@
 import pygame 
-
 import math
-
 import os
+
+class Character:
+    pass
 
 class Player:
     """A class that manages the player character"""
@@ -39,20 +40,23 @@ class Player:
         self.x = float(self.rect.x)
         self.y = float(self.rect.y)
 
+        self.coords = pygame.math.Vector2(self.rect.center) # player relative to map
+        self.pos = pygame.math.Vector2(self.screen_rect.center) # player relative to screen (always centered)
+
     def update(self):
         """Update the player's position based on the movement flag."""
         if self.moving_right and self.rect.right < self.screen_rect.right:
             self.velocity_x = self.settings.player_speed
-            self.x += self.settings.self.velocity_x
+            self.x += self.settings.player_speed
         if self.moving_left and self.rect.left > 0:
             self.velocity_x = -self.settings.player_speed
-            self.x -= self.settings.velocity_x
+            self.x -= self.settings.player_speed
         if self.moving_up and self.rect.top > 0:
             self.velocity_y = self.settings.player_speed
-            self.y -= self.settings.player_velocity_y 
+            self.y -= self.settings.player_speed
         if self.moving_down and self.rect.bottom < self.screen_rect.bottom:
             self.velocity_y = -self.settings.player_speed
-            self.y += self.settings.player_velocity_y
+            self.y += self.settings.player_speed
         
         # Diagonal movement 
         if self.velocity_x != 0 and self.velocity_y != 0:

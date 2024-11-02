@@ -450,8 +450,8 @@ class Monster(object):
         self.height = image.get_height()
 
         self.rect = self.image.get_rect(center = (x + self.width//2, y + self.width//2))
-        self.pos = pygame.math.Vector2(x, y) # position on the screen
-        self.coords = pygame.math.Vector2(x, y) # Position relative to the map
+        self.coords = pygame.math.Vector2(x, y) # Object relative to map
+        self.pos = pygame.math.Vector2(x, y) # Object relative to screen
 
         self.mask = pygame.mask.from_surface(self.image)
 
@@ -596,8 +596,8 @@ class BaseGame:
         for i, monster in enumerate(self.monsters):
             monster_text = self.monster_font.render(
                 f'{monster.name}#{i+1}: vel:(x:{monster.vel_x:.3f}, y:{monster.vel_y:.3f}) '
-                f'-pos:(x:{int(monster.coords.x)}, y:{int(monster.coords.y)})', # coords rel to map
-                # f' (x:{int(monster.pos.x)}, y"{int(monster.pos.y)})', # pos rel to player
+                f'-coords:(x:{int(monster.coords.x)}, y:{int(monster.coords.y)}) '
+                f'-pos(x:{int(monster.pos.x)}, y:{int(monster.pos.y)})', # coords rel to map and pos rel to screen
                 True, GREEN)
             self.screen.blit(monster_text, (20, 10 + i * 15))
 

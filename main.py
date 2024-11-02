@@ -1,11 +1,7 @@
 import sys
-
 import pygame 
-
 from SettingsClass import Settings
-
 from player import Player 
-
 import os
 
 class HorrorCube:
