@@ -1,5 +1,7 @@
 import pygame 
 
+import math
+
 import os
 
 class Player:
@@ -16,6 +18,10 @@ class Player:
                 os.path.dirname(__file__),'images', 'MainCharacter', 'MC_Simpleton_SpriteSheet.png')
                 )
         self.rect = self.image.get_rect()
+
+        # Load player velocity 
+        self.velocity_x = 0 
+        self.velocity_y = 0
 
         # Load player settings 
         self.settings = hc_game.settings
@@ -36,15 +42,23 @@ class Player:
     def update(self):
         """Update the player's position based on the movement flag."""
         if self.moving_right and self.rect.right < self.screen_rect.right:
-            self.x += self.settings.player_speed
+            self.velocity_x = self.settings.player_speed
+            self.x += self.settings.self.velocity_x
         if self.moving_left and self.rect.left > 0:
-            self.x -= self.settings.player_speed
+            self.velocity_x = -self.settings.player_speed
+            self.x -= self.settings.velocity_x
         if self.moving_up and self.rect.top > 0:
-            self.y -= self.settings.player_speed 
+            self.velocity_y = self.settings.player_speed
+            self.y -= self.settings.player_velocity_y 
         if self.moving_down and self.rect.bottom < self.screen_rect.bottom:
-            self.y += self.settings.player_speed
-
+            self.velocity_y = -self.settings.player_speed
+            self.y += self.settings.player_velocity_y
         
+        # Diagonal movement 
+        if self.velocity_x != 0 and self.velocity_y != 0:
+            self.velocity_x /= math.sqrt(2)
+            self.velocity_y /= math.sqrt(2)
+
 
         # Update the rect object
         self.rect.x = self.x
