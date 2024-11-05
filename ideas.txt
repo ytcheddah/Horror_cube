@@ -98,7 +98,10 @@ UPGRADEABLE ITEMS:
 
 Traps, Flashlights/Glow Sticks, Night Vision
 
-
+*Kill NPC's and Enemies for resources to create
+creative and ituitive killing
+- some mobs can insta kill
+- hovering an enemy with the mouse opens a UI that describes them based off the amount of previous interaction
 
 -----------------------------------------------------------------------------------------------
 
@@ -139,5 +142,22 @@ MADE MONSTERS:
         - if it gets into melee range it will kamikaze into you which is an insta kill if you are hit
         - they themselves dont make a lot of noise, similar threat style to a creeper in minecraft in that sense
         - their explosion leaves a toxic trail that will decay after 5 seconds, if walked on will poison you.
-        - drops explosives and sludge in high amounts
+        - drops explosives and sludge in high 
+        
+-----------------------------------------------------------------------------------------------
 
+MINI MAP NEEDED
+
+LIST OF SHARED CHARACTER ATTRIBUTES:
+
+    - sprite.Sprite parent class
+    - animation
+    - movement
+    - collision (pixel perfect with masks)
+    - inventory
+    - take damage
+    - deal damage
+    - status effects
+    - emmit light
+    - make sound
+    - agro logic (running towards and away from conflict/danger)
