@@ -1,19 +1,16 @@
-class Animate:
-    """
-    A class that handles any spritesheet and can animate a specified 
-    region of the spritesheet.
-    """
-    def __init__(self, spritesheet):
-        """Initialize the attributes of the animate class."""
+Make a function that takes extracted positions, and adds them into a list. 
+Make a function that animates that list. 
 
+Make if statements based on direction
 
-def animate(spritesheet, range)
+    if self.direction == "right"
+        """animate in this direction."""
+        ...
 
-it will take a sprite sheet and move left to right. when it reaches the 
-right limit of the range, it restarts at the left. If you have an 
-exceptionlly large range that extends down, it will move downward before 
-restarting at the left position. 
+    if self.direction == "left"  
+        """shoot/throw projectiles in this direction."""
+        ...
 
+Make a setting for mouse interaction. Set as the default playing style. 
 
-[0, 0, 0, 0, 0, 0
-0, 0, 0]
+    The player will face the direction of the mouse.

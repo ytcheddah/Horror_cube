@@ -1,17 +1,7 @@
 import pygame 
 import math
 import os
-
-class Character:
-    """A parent class which manages character in game."""
-    def __init__(self):
-        """Initialize the attributes of the character class."""
-
-    def animate(self, spritesheet):
-        """A function which takes any spritesheet and animates it."""
-         
-
-
+from character import Character
 
 class Player(Character):
     """A class that manages the player character"""
@@ -40,6 +30,9 @@ class Player(Character):
         self.moving_left = False
         self.moving_up = False
         self.moving_down = False
+
+        # Bookean flags for direction player is facing
+        self.direction = 'down'
 
         # Spawn the character in the middle of the screen 
         self.rect.center = self.screen_rect.center 
