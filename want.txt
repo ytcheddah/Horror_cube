@@ -1,0 +1,16 @@
+Make a function that takes extracted positions, and adds them into a list. 
+Make a function that animates that list. 
+
+Make if statements based on direction
+
+    if self.direction == "right"
+        """animate in this direction."""
+        ...
+
+    if self.direction == "left"  
+        """shoot/throw projectiles in this direction."""
+        ...
+
+Make a setting for mouse interaction. Set as the default playing style. 
+
+    The player will face the direction of the mouse.

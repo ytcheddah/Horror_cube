@@ -1,11 +1,9 @@
 import pygame 
 import math
 import os
+from character import Character
 
-class Character:
-    pass
-
-class Player:
+class Player(Character):
     """A class that manages the player character"""
 
     def __init__(self, hc_game):
@@ -32,6 +30,9 @@ class Player:
         self.moving_left = False
         self.moving_up = False
         self.moving_down = False
+
+        # Bookean flags for direction player is facing
+        self.direction = 'down'
 
         # Spawn the character in the middle of the screen 
         self.rect.center = self.screen_rect.center 
