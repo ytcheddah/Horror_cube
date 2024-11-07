@@ -10,6 +10,6 @@ class Settings:
 
         # Flare settings 
         self.flare_color = (230, 5, 15)
-        self.flare_width = 3 
-        self.flare_height = 15
+        self.flare_width = 6 
+        self.flare_height = 6
         self.flare_speed = 8

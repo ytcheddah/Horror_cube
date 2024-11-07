@@ -32,6 +32,7 @@ class HorrorCube:
             pygame.display.flip()
             self._update_screen()
             self.clock.tick(60)
+            print(self.player.direction)
             
 
     def _check_events(self):
