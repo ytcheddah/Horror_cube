@@ -26,7 +26,6 @@ pygame.display.set_caption("HC_CLASSES")
 clock = pygame.time.Clock()
 
 # Fonts
-# fontSize
 menu_font = pygame.font.Font("font/boldPixelFont.ttf", 74)
 p_font = pygame.font.Font("font/pixelFont.ttf", 36)
 pos_font = pygame.font.Font("font/pixelFont.ttf", 18)
@@ -65,18 +64,7 @@ monster_list = [angremlin_mon, thecarne_mon,
                    umo_mon, zenba_mon, thssludge_mon]
 
 # Initialize Player Sprites
-walkRight = [pygame.transform.rotozoom(pygame.image.load('images/umo_Sprites/roam_chase/umo-rc-00.png').convert_alpha(), 0, 2), 
-             pygame.transform.rotozoom(pygame.image.load('images/umo_Sprites/roam_chase/umo-rc-01.png').convert_alpha(), 0, 2),
-             pygame.transform.rotozoom(pygame.image.load('images/umo_Sprites/roam_chase/umo-rc-02.png').convert_alpha(), 0, 2), 
-             pygame.transform.rotozoom(pygame.image.load('images/umo_Sprites/roam_chase/umo-rc-03.png').convert_alpha(), 0, 2), 
-             pygame.transform.rotozoom(pygame.image.load('images/umo_Sprites/roam_chase/umo-rc-04.png').convert_alpha(), 0, 2), 
-             pygame.transform.rotozoom(pygame.image.load('images/umo_Sprites/roam_chase/umo-rc-05.png').convert_alpha(), 0, 2), 
-             pygame.transform.rotozoom(pygame.image.load('images/umo_Sprites/roam_chase/umo-rc-06.png').convert_alpha(), 0, 2), 
-             pygame.transform.rotozoom(pygame.image.load('images/umo_Sprites/roam_chase/umo-rc-07.png').convert_alpha(), 0, 2), 
-             pygame.transform.rotozoom(pygame.image.load('images/umo_Sprites/roam_chase/umo-rc-08.png').convert_alpha(), 0, 2), 
-             pygame.transform.rotozoom(pygame.image.load('images/umo_Sprites/roam_chase/umo-rc-09.png').convert_alpha(), 0, 2), 
-             pygame.transform.rotozoom(pygame.image.load('images/umo_Sprites/roam_chase/umo-rc-10.png').convert_alpha(), 0, 2), 
-             pygame.transform.rotozoom(pygame.image.load('images/umo_Sprites/roam_chase/umo-rc-11.png').convert_alpha(), 0, 2)]
+player_spritesheet = pygame.image.load("images/MainCharacter/MC_Simpleton_SpriteSheet.png").convert_alpha()
 left = False
 right = False
 walkCount = 0
@@ -96,13 +84,70 @@ spawn_button = pygame.image.load('images/spawn_button1.png').convert_alpha()
 game_objects = []
 show_mask = False
 
-class Character:
+class Character(pygame.sprite.Sprite):
 
-    def __init__(self, name, health, position):
-        self.name = name
-        self.health = health
-        self.position = position # tuple
+    def __init__(
+            self, spritesheet, frame_width, frame_height, dif_animation_amount, animation_speed=9,
+            ):
+        super().__init__()
+        # self.name = name
+        # self.health = health
+        # self.position = position # tuple
+        self.spritesheet = spritesheet
+        self.frame_width = frame_width
+        self.frame_height = frame_height
+        self.dif_animation_amount = dif_animation_amount
+        self.direction = 'down' # default
+        self.current_frame = 0
+        self.image = None
+        self.rect = None
         self.inventory = []
+
+        # split the spritesheet into frames
+        self.frames = self._load_frames()
+
+        # setting up a clock to control the animation speed
+        self.animation_speed = animation_speed
+        self.frame_counter = 0
+
+    def _load_frames(self):
+        frames = {
+            'left': [],
+            'up': [],
+            'down': [],
+            'right': []
+        }
+
+        for i, direction in enumerate(frames.keys()):
+            for j in range(self.dif_animation_amount):
+                frame_x = j * self.frame_width
+                frame_y = i * self.frame_height
+                frame = self.spritesheet.subsurface((frame_x, frame_y, self.frame_width, self.frame_height))
+                frames[direction].append(frame)
+
+        return frames
+    
+    def update_animation(self):
+        # increment frame_counter to time the frame updates
+        self.frame_counter += 1
+        if self.frame_counter >= self.animation_speed:
+            self.frame_counter = 0 # Reset the counter
+
+            # cycle through frames for the current direction
+            self.current_frame = (self.current_frame + 1) % self.dif_animation_amount
+            self.image = self.frames[self.direction][self.current_frame]
+
+            # update rect with new image for collision handling
+            if not self.rect:
+                self.rect = self.image.get_rect()
+            else:
+                self.rect = self.image.get_rect(center=self.rect.center)
+
+    def set_direction(self, direction):
+        # only update the frame if direction changes
+        if self.direction != direction:
+            self.direction = direction
+            self.current_frame = 0 # Reset to first frame when direction changes
 
     def take_damage(self, amount):
         self.health -= amount
@@ -124,10 +169,10 @@ class Character:
         char.inventory = data['inventory']
         return char
 
-class Player(pygame.sprite.Sprite): # Character inheritance needed
+class Player(Character): # Character inheritance needed
 
-    def __init__(self):
-        pygame.sprite.Sprite().__init__()
+    def __init__(self, spritesheet, frame_width, frame_height, dif_animation_amount):
+        super().__init__(spritesheet, frame_width, frame_height, dif_animation_amount)
         # Character().__init__(self, name, health, position)
         # load the image and scale it
         self.image = pygame.transform.rotozoom(pygame.image.load("images/umo_Sprites/idle/umo-idle-0.png").convert_alpha(), 0 , 2)
@@ -188,25 +233,22 @@ class Player(pygame.sprite.Sprite): # Character inheritance needed
         if keys[pygame.K_w] or keys[pygame.K_UP]: 
             self.velocity_y = -self.speed
             self.bg_y = self.speed
-            direction = 'up'
+            self.set_direction('up')
         if keys[pygame.K_s] or keys[pygame.K_DOWN]: 
             self.velocity_y = self.speed
             self.bg_y = -self.speed
-            direction = 'down'
+            self.set_direction('down')
         if keys[pygame.K_a] or keys[pygame.K_LEFT]: 
             self.velocity_x = -self.speed
             self.bg_x = self.speed
-            direction = 'left'
-            left = True
-            right = False
+            self.set_direction('left')
         if keys[pygame.K_d] or keys[pygame.K_RIGHT]: 
             self.velocity_x = self.speed
             self.bg_x = -self.speed
-            direction = 'right'
-            right = True
-            left = False
-        else:
-            walkCount = 0
+            self.set_direction('right')
+        
+        # update animation
+        self.update_animation()
 
         # If no input, reset walkCount
         if not (keys[pygame.K_w] or keys[pygame.K_s] or keys[pygame.K_a] or keys[pygame.K_d]):
@@ -314,7 +356,6 @@ class Player(pygame.sprite.Sprite): # Character inheritance needed
         # Spawn a glow stick
         glowStick_x = (random.randint[0, 500])
         glowStick_y = (random.randint[0, 500])
-        new_glowStick = GlowStick(player, glowStick_x, glowStick_y, glow_stick_image)
 
     def draw(self, screen):
         global walkCount
@@ -410,14 +451,6 @@ class Trap:
                     setcolor=(155,145,220,255)), (self.rect.topleft))
                 print('trap-works')
 
-        # for trap in self.player.inventoryTraps:
-            
-        #     if not show_mask:
-        #         trap.draw(screen)
-        #     else:
-        #         screen.blit(trap.mask.to_surface(unsetcolor=(0,0,0,0),
-        #              setcolor=(155,145,220,255)), (self.rect.topleft))
-
 class GlowStick:
 
     def __init__(self, x, y, image):
@@ -440,7 +473,7 @@ class GlowStick:
         
 class Monster(object):
 
-    def __init__(self, name, player, image, x, y, speed, agro_distance, pursue_range, attack_range):
+    def __init__(self, name, image, x, y, speed, agro_distance, pursue_range, attack_range):
         x = randint(0, SCREEN_WIDTH)
         y = randint(0, SCREEN_HEIGHT)
         self.name = name
@@ -553,7 +586,7 @@ class BaseGame:
         """
         self.screen = screen
         self.clock = clock
-        self.player = Player()
+        self.player = Player(player_spritesheet, 64, 64, 4)
         self.button = Button((SCREEN_WIDTH//2 - 64), 10, spawn_button, 1)
 
         self.monsters = []
@@ -572,7 +605,8 @@ class BaseGame:
     # future function for making light outside of player class, will be needed eventually
     # def create_light(self, screen, x, y, radius, color, alpha_level):
     
-    #     pygame.gfxdraw.filled_circle(screen, x ,y ,radius ,(color[0],color[1],color[2],alpha_level))
+    # pygame.gfxdraw.filled_circle(screen, x ,y ,radius ,(color[0],color[1],color[2],alpha_level))
+
     def track_stats(self):
 
         bool_color1 = WHITE
@@ -591,7 +625,6 @@ class BaseGame:
         y_text = self.xy_font.render(f'y-vel(pixel): {self.player.velocity_y:.3f}', True, GRAY)
         sprint_text = self.speed_font.render(f'SPRINT: {self.player.is_sprinting} CD: {self.player.in_sprint_cooldown} SF: {sprint_factor:.1f}', True, bool_color1)
         crouch_text = self.speed_font.render(f'CROUCH: {self.player.is_crouching} CD: N/A  CF: {crouch_factor:.1f}', True, bool_color2)
-        
 
         for i, monster in enumerate(self.monsters):
             monster_text = self.monster_font.render(
@@ -619,7 +652,7 @@ class BaseGame:
         random_index = random.randint(0, len(monster_list) - 1)
         random_mon = monster_list[random_index] # make a monster_list dictionary in the future
         
-        new_monster = Monster('dict-name',self.player, random_mon, 900, 650, 2, 300, 500, 100)
+        new_monster = Monster('dict-name', random_mon, 900, 650, 2, 300, 500, 100)
         # last 3 paramters and name are generic because: no dict for monster_list, no subclasses for monster types
         if len(self.monsters) < 15: # any starting monsters not in the list break this mob cap method from being accurate
             self.monsters.append(new_monster)
@@ -675,7 +708,7 @@ class BaseGame:
                 sys.exit()              ###
 
 # player instance
-player = Player()
+player = Player(player_spritesheet, 64, 64, 4)
 
 # Create game instance and run the game
 game = BaseGame()
