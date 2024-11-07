@@ -19,13 +19,11 @@ sprite_sheet_path =  os.path.join(
     )
 sprite_sheet_image = pygame.image.load(sprite_sheet_path).convert_alpha()
 
-# Animation parameters 
-SPRITE_WIDTH = 64 
-SPRITE_HEIGHT = 64 
+# Animation parameters
+SPRITE_WIDTH = 64
+SPRITE_HEIGHT = 64
 SCALE = 1
 FRAME_COUNT = 4
-
-
 
 def get_image(sheet, frame, width, height, scale, color):
     """Extracts an image from the sprite sheet."""
