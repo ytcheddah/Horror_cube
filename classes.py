@@ -248,7 +248,11 @@ class Player(Character): # Character inheritance needed
             self.set_direction('right')
         
         # update animation
-        self.update_animation()
+        if self.velocity_x == 0 and self.velocity_y == 0:
+            # self.current_frame = self.frames[0]
+            self.image = self.frames[self.direction][0]
+        else:
+            self.update_animation()
 
         # If no input, reset walkCount
         if not (keys[pygame.K_w] or keys[pygame.K_s] or keys[pygame.K_a] or keys[pygame.K_d]):
@@ -454,7 +458,7 @@ class Trap:
 class GlowStick:
 
     def __init__(self, x, y, image):
-        self.image = glow_stick_image
+        self.image = image
         self.rect = self.image.get_rect(topleft = (x, y))
         self.picked_up = False
 
@@ -678,7 +682,6 @@ class BaseGame:
         if pygame.sprite.spritecollide(self.player, self.monsters, False, pygame.sprite.collide_mask) and show_mask:
             screen.blit(self.player.mask.to_surface(unsetcolor=(0,0,0,0), setcolor=(155,55,55,255)), 
                 ((self.player.rect.centerx - self.player.width , self.player.rect.centery - self.player.height)))    
-
 
     # State Machine, always runs, checks which Game State we are in
     def run(self):
