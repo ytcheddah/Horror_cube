@@ -39,8 +39,7 @@ class HorrorCube:
             pygame.display.flip()
             self._update_screen()
             self.clock.tick(60)
-            print(self.settings.percentage)
-            
+            print(self.player.velocity_x, self.player.velocity_y, self.player.moving_down)
 
     def _check_events(self):
         """Respond to keypresses and mouse events."""
@@ -167,11 +166,8 @@ class HorrorCube:
             flare.draw_flare()
         self.player.blitplayer()   
 
-    
-
 # image_path = os.path.join(os.path.dirname(__file__), 'images', 'MainCharacter', 'MC_Simpleton_SpritSheet.png')
 # print("Image path:", image_path)  # Debug line
-
 
 if __name__ == "__main__":
     hc = HorrorCube()

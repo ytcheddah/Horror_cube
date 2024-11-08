@@ -48,22 +48,21 @@ class Player(Character):
         """Update the player's position based on the movement flag."""
         if self.moving_right and self.rect.right < self.screen_rect.right:
             self.velocity_x = self.settings.player_speed
-            self.x += self.settings.player_speed
+            self.x += self.velocity_x
         if self.moving_left and self.rect.left > 0:
             self.velocity_x = -self.settings.player_speed
-            self.x -= self.settings.player_speed
+            self.x += self.velocity_x
         if self.moving_up and self.rect.top > 0:
             self.velocity_y = self.settings.player_speed
-            self.y -= self.settings.player_speed
+            self.y -= self.velocity_y
         if self.moving_down and self.rect.bottom < self.screen_rect.bottom:
             self.velocity_y = -self.settings.player_speed
-            self.y += self.settings.player_speed
+            self.y -= self.velocity_y
         
         # Diagonal movement 
         if self.velocity_x != 0 and self.velocity_y != 0:
             self.velocity_x /= math.sqrt(2)
             self.velocity_y /= math.sqrt(2)
-
 
         # Update the rect object
         self.rect.x = self.x

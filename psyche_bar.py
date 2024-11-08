@@ -43,4 +43,4 @@ class PsycheBar:
         pygame.draw.rect(self.screen, self.color, self.inner_rect)
 
     def update(self):
-        self.settings.percentage -= self.settings.percentage_decay
+        self.settings.percentage = max(0, self.settings.percentage - self.settings.percentage_decay)

@@ -3,7 +3,7 @@ class Settings:
     def __init__(self):
         self.screen_width = 1280
         self.screen_height = 720
-        self.bg_color = 'WHITE'
+        self.bg_color = (135, 135, 135)
         self.frame_rate = 60
 
         # Player settings 
@@ -20,7 +20,7 @@ class Settings:
         self.outer_bar_height = 25
         self.bar_width = 488
         self.bar_height = 15
-        self.percentage_decay = (1000 / 10800) 
+        self.percentage_decay = (1 / 108) 
         self.percentage = 100
         self.bar_x = self.screen_width // 2 
         self.bar_y = self.screen_height - 35
