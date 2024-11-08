@@ -45,10 +45,8 @@ def draw_psyche_bar(percentage):
     else:
         color = RED
     
-
     # draw the black outline
     pygame.draw.rect(screen, BLACK, (BAR_X, BAR_Y, BAR_OUTLINE_WIDTH, BAR_OUTLINE_HEIGHT))
-
 
     # draw the inner bar
     pygame.draw.rect(screen, color, ((BAR_X + 6), (BAR_Y + 5), inner_bar_width, BAR_HEIGHT))

@@ -25,6 +25,15 @@ class Flare(Sprite):
             self.rect.midtop = hc_game.player.rect.midtop
         elif self.direction == "down":
             self.rect.midbottom = hc_game.player.rect.midbottom
+        # Set rect pos for diagonal movement
+        elif self.direction == "upright":
+            self.rect.topright = hc_game.player.rect.topright
+        elif self.direction == "upleft":
+            self.rect.topleft = hc_game.player.rect.topleft
+        elif self.direction == "downright":
+            self.rect.bottomright = hc_game.player.rect.bottomright
+        elif self.direction == "downleft":
+            self.rect.bottomleft = hc_game.player.rect.bottomleft
         
         self.x = float(self.rect.x)
         self.y = float(self.rect.y)
@@ -39,6 +48,18 @@ class Flare(Sprite):
             self.y-= self.settings.flare_speed
         elif self.direction == "down":
             self.y += self.settings.flare_speed
+        elif self.direction == "upright":
+            self.x += self.settings.flare_speed
+            self.y -= self.settings.flare_speed
+        elif self.direction == "upleft":
+            self.x -= self.settings.flare_speed
+            self.y -= self.settings.flare_speed
+        elif self.direction == "downright":
+            self.x += self.settings.flare_speed
+            self.y += self.settings.flare_speed
+        elif self.direction == "downleft":
+            self.x -= self.settings.flare_speed
+            self.y += self.settings.flare_speed
 
         # Update rect position 
         self.rect.x = self.x 
@@ -48,6 +69,3 @@ class Flare(Sprite):
     def draw_flare(self):
         """Draw the flare on the screen"""
         pygame.draw.rect(self.screen, self.color, self.rect)
-
-    
-

@@ -4,6 +4,7 @@ import pygame
 from SettingsClass import Settings
 from player import Player 
 from flare_gun import Flare
+from psyche_bar import PsycheBar
 
 class HorrorCube:
     """Overall game class to manage the game assets and behavior."""
@@ -17,6 +18,7 @@ class HorrorCube:
             (self.settings.screen_width, self.settings.screen_height)
         )
         self.player = Player(self)
+        self.psyche_bar = PsycheBar(self)
         self.flares = pygame.sprite.Group()
 
         pygame.display.set_caption("Horror Cube")
@@ -27,12 +29,17 @@ class HorrorCube:
             self._check_events()
             self.player.update()
             self._update_flares()
+            self.psyche_bar.draw_psyche_bar(self.settings.percentage)
+            if self.settings.percentage > 0:
+                self.psyche_bar.update()
+            if self.settings.percentage < 0:
+                self.settings.percentage = 0
 
             # Make the most recently drawn screen visible 
             pygame.display.flip()
             self._update_screen()
             self.clock.tick(60)
-            print(self.player.direction)
+            print(self.settings.percentage)
             
 
     def _check_events(self):
@@ -45,7 +52,33 @@ class HorrorCube:
                 self._check_keydown_event(event)
             elif event.type == pygame.KEYUP:
                 self._check_keyup_event(event)
+            self._check_multiple()
 
+    def _check_multiple(self):
+        """Responds to simultaneous inputs."""
+        
+        # Two or four inputs
+        if self.player.moving_right and self.player.moving_up:
+            self.player.direction = 'upright'
+        elif self.player.moving_right and self.player.moving_down:
+            self.player.direction = 'downright'
+        elif self.player.moving_left and self.player.moving_up:
+            self.player.direction = 'upleft'
+        elif self.player.moving_left and self.player.moving_down:
+            self.player.direction = 'downleft'
+        elif self.player.moving_right and self.player.moving_left or self.player.moving_up and self.player.moving_down:
+            self.player.direction = None
+
+        # Special cases for three simultaneous inputs.
+        if self.player.direction == 'upright' and self.player.moving_left:
+            self.player.direction = 'up'
+        elif self.player.direction == 'downright' and self.player.moving_left:
+            self.player.direction = 'down'
+        elif self.player.direction == 'upleft' and self.player.moving_down:
+            self.player.direction = 'left'
+        elif self.player.direction == 'upright' and self.player.moving_down:
+            self.player.direction = 'right'
+        
     def _check_keydown_event(self, event):
         """Responds to keypresses."""
 
@@ -53,23 +86,27 @@ class HorrorCube:
         if event.type == pygame.KEYDOWN:
            
             # Player movement
-            if event.key == pygame.K_RIGHT:
+            if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
                 self.player.moving_right = True
                 self.player.direction = 'right'
-            elif event.key == pygame.K_LEFT:
+            elif event.key == pygame.K_LEFT or event.key == pygame.K_a:
                 self.player.moving_left = True
                 self.player.direction = 'left'
-            elif event.key == pygame.K_UP:
+            elif event.key == pygame.K_UP or event.key == pygame.K_w:
                 self.player.moving_up = True
                 self.player.direction = 'up'
-            elif event.key == pygame.K_DOWN:
+            elif event.key == pygame.K_DOWN or event.key == pygame.K_s:
                 self.player.moving_down = True
                 self.player.direction = 'down'
             # Shoot flare.
             elif event.key == pygame.K_SPACE:
                 self._shoot_flare()
-            # Exit
             elif event.key == pygame.K_q:
+                print('cycle left')
+            elif event.key == pygame.K_e:
+                print('cycle right')
+            # Exit
+            elif event.key == pygame.K_ESCAPE:
                 sys.exit()
             
     def _check_keyup_event(self, event):
@@ -77,15 +114,44 @@ class HorrorCube:
 
         # Key releases to move the player with Boolean flags.
         if event.type == pygame.KEYUP:
-            if event.key == pygame.K_RIGHT:
+            # R, L, U, D movement
+            if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
                 self.player.moving_right = False
-            elif event.key == pygame.K_LEFT:
+                if self.player.direction == 'upright':
+                    self.player.direction = 'up'
+                elif self.player.direction == 'downright':
+                    self.player.direction = 'down'
+                # When the player presses both L and R directional keys
+                elif self.player.direction == None:
+                    self.player.direction = 'left'
+            elif event.key == pygame.K_LEFT or event.key == pygame.K_a:
                 self.player.moving_left = False
-            elif event.key == pygame.K_UP:
+                if self.player.direction == 'upleft':
+                    self.player.direction = 'up'
+                elif self.player.direction == 'downleft':
+                    self.player.direction = 'down' 
+                # When the player presses both L and R directional keys
+                elif self.player.direction == None:
+                    self.player.direction = 'right'
+            elif event.key == pygame.K_UP or event.key == pygame.K_w:
                 self.player.moving_up = False
-            elif event.key == pygame.K_DOWN:
+                if self.player.direction == 'upright':
+                    self.player.direction = 'right'
+                elif self.player.direction == 'upleft':
+                    self.player.direction = 'left' 
+                # When the player presses both U and D directional keys
+                elif self.player.direction == None:
+                    self.player.direction = 'down'
+            elif event.key == pygame.K_DOWN or event.key == pygame.K_s:
                 self.player.moving_down = False
-            
+                if self.player.direction == 'downright':
+                    self.player.direction = 'right'
+                elif self.player.direction == 'downleft':
+                    self.player.direction = 'left' 
+                # When the player presses both U and D directional keys
+                elif self.player.direction == None:
+                    self.player.direction = 'up'
+                 
     def _update_flares(self):
         """Update position of flares and remove old ones"""
         self.flares.update()
