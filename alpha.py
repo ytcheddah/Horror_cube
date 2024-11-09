@@ -41,7 +41,7 @@ class HorrorCube:
             pygame.display.flip()
             self._update_screen()
             self.clock.tick(60)
-            print(self.player.velocity_x, self.player.velocity_y, self.player.moving_down)
+            print(self.player.dx, self.player.dy, self.player.moving_down)
 
     def _check_events(self):
         """Respond to keypresses and mouse events."""

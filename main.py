@@ -42,7 +42,7 @@ class HorrorCube:
             self.clock.tick(60)
             if direction_flag != self.player.direction:
                 print(self.player.direction)
-                print(self.player.velocity_x, self.player.velocity_y, self.player.moving_down)
+                print(self.player.dx, self.player.dy, self.player.moving_down)
                 direction_flag = self.player.direction
 
     def _check_events(self):
@@ -105,6 +105,7 @@ class HorrorCube:
             # Shoot flare.
             elif event.key == pygame.K_SPACE:
                 self._shoot_flare()
+                print('shoot flare')
             elif event.key == pygame.K_q:
                 print('cycle left')
             elif event.key == pygame.K_e:
@@ -118,6 +119,10 @@ class HorrorCube:
 
         # Key releases to move the player with Boolean flags.
         if event.type == pygame.KEYUP:
+            # this resets player velocity to 0 when key is released so that the dynamic value doesnt continually
+            # change when different keys are entered, rather they are based only off each individual keypress as intended
+            self.player.dx = 0
+            self.player.dy = 0
             # R, L, U, D movement
             if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
                 self.player.moving_right = False

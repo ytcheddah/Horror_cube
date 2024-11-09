@@ -19,8 +19,8 @@ class Player(Character):
         self.rect = self.image.get_rect()
 
         # Load player velocity 
-        self.velocity_x = 0 
-        self.velocity_y = 0
+        self.dx = 0 
+        self.dy = 0
 
         # Load player settings 
         self.settings = hc_game.settings
@@ -30,6 +30,10 @@ class Player(Character):
         self.moving_left = False
         self.moving_up = False
         self.moving_down = False
+        self.moving_upright = False
+        self.moving_downright = False
+        self.moving_upleft = False
+        self.moving_downleft = False
 
         # Bookean flags for direction player is facing
         self.direction = 'down'
@@ -47,22 +51,22 @@ class Player(Character):
     def update(self):
         """Update the player's position based on the movement flag."""
         if self.moving_right and self.rect.right < self.screen_rect.right:
-            self.velocity_x = self.settings.player_speed
-            self.x += self.velocity_x
+            self.dx = self.settings.player_speed
+            self.x += self.dx
         if self.moving_left and self.rect.left > 0:
-            self.velocity_x = -self.settings.player_speed
-            self.x += self.velocity_x
+            self.dx = self.settings.player_speed
+            self.x -= self.dx
         if self.moving_up and self.rect.top > 0:
-            self.velocity_y = self.settings.player_speed
-            self.y -= self.velocity_y
+            self.dy = self.settings.player_speed
+            self.y -= self.dy
         if self.moving_down and self.rect.bottom < self.screen_rect.bottom:
-            self.velocity_y = -self.settings.player_speed
-            self.y -= self.velocity_y
-        
+            self.dy = self.settings.player_speed
+            self.y += self.dy
+
         # Diagonal movement 
-        if self.velocity_x != 0 and self.velocity_y != 0:
-            self.velocity_x /= math.sqrt(2)
-            self.velocity_y /= math.sqrt(2)
+        if self.dx != 0 and self.dy != 0:
+            self.dx /= math.sqrt(2)
+            self.dy /= math.sqrt(2)
 
         # Update the rect object
         self.rect.x = self.x

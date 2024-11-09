@@ -184,8 +184,8 @@ class Player(Character): # Character inheritance needed
         self.height = PLAYER_HEIGHT
         self.base_speed = PLAYER_SPEED
         self.speed = self.base_speed
-        self.velocity_x = 0
-        self.velocity_y = 0
+        self.dx = 0
+        self.dy = 0
         
         self.mask = pygame.mask.from_surface(self.image)
 
@@ -227,40 +227,37 @@ class Player(Character): # Character inheritance needed
         keys = pygame.key.get_pressed()
         global left, right, walkCount, sprint_factor, crouch_factor
 
-        self.velocity_x = 0
-        self.velocity_y = 0
+        self.dx = 0
+        self.dy = 0
 
         if keys[pygame.K_w] or keys[pygame.K_UP]: 
-            self.velocity_y = -self.speed
+            self.dy = -self.speed
             self.bg_y = self.speed
             self.set_direction('up')
         if keys[pygame.K_s] or keys[pygame.K_DOWN]: 
-            self.velocity_y = self.speed
+            self.dy = self.speed
             self.bg_y = -self.speed
             self.set_direction('down')
         if keys[pygame.K_a] or keys[pygame.K_LEFT]: 
-            self.velocity_x = -self.speed
+            self.dx = -self.speed
             self.bg_x = self.speed
             self.set_direction('left')
         if keys[pygame.K_d] or keys[pygame.K_RIGHT]: 
-            self.velocity_x = self.speed
+            self.dx = self.speed
             self.bg_x = -self.speed
             self.set_direction('right')
         
         # update animation
-        if self.velocity_x == 0 and self.velocity_y == 0:
-            # self.current_frame = self.frames[0]
+        if self.dx == 0 and self.dy == 0:
+            # puts character to no animation when not moving
             self.image = self.frames[self.direction][0]
         else:
+            # animates regularly
             self.update_animation()
 
-        # If no input, reset walkCount
-        if not (keys[pygame.K_w] or keys[pygame.K_s] or keys[pygame.K_a] or keys[pygame.K_d]):
-            walkCount = 0
-
-        if self.velocity_x != 0 and self.velocity_y != 0: # moving diagonally
-            self.velocity_x /= math.sqrt(2)
-            self.velocity_y /= math.sqrt(2)
+        if self.dx != 0 and self.dy != 0: # moving diagonally
+            self.dx /= math.sqrt(2)
+            self.dy /= math.sqrt(2)
 
         if keys[pygame.K_ESCAPE]:
             global game_state
@@ -336,18 +333,18 @@ class Player(Character): # Character inheritance needed
     def move(self):
        
         # Player movement
-        self.rect.center += pygame.math.Vector2(self.velocity_x, self.velocity_y)
+        self.rect.center += pygame.math.Vector2(self.dx, self.dy)
         self.rect.center = self.pos
         # Map movement (caused by player input)
-        self.bg_pos += pygame.math.Vector2(-self.velocity_x, -self.velocity_y)
+        self.bg_pos += pygame.math.Vector2(-self.dx, -self.dy)
 
         # position rel to map
-        self.coords += pygame.math.Vector2(self.velocity_x, self.velocity_y)
+        self.coords += pygame.math.Vector2(self.dx, self.dy)
 
         # Trap movement rel to player after placed
         for trap in self.inventoryTraps:
-            trap.x += -self.velocity_x
-            trap.y += -self.velocity_y
+            trap.x += -self.dx
+            trap.y += -self.dy
 
     def create_trap(self):
         # Create a new "trap" (circle) under the player
@@ -517,7 +514,7 @@ class Monster(object):
     def move(self):
         # Location relative to map
         self.pos += pygame.math.Vector2(self.vel_x, self.vel_y)
-        self.pos += pygame.math.Vector2(-self.player.velocity_x, -self.player.velocity_y)
+        self.pos += pygame.math.Vector2(-self.player.dx, -self.player.dy)
 
         self.coords += pygame.math.Vector2(self.vel_x, self.vel_y)
 
@@ -625,8 +622,8 @@ class BaseGame:
       
         position_text = self.pos_font.render(f"Pos: ({int(self.player.coords.x)}, {int(self.player.coords.y)})", True, RED)
         speed_text = self.speed_font.render(f"FPS: ({FPS}) Speed: {self.player.speed}", True, PURPLE)
-        x_text = self.xy_font.render(f'x-vel(pixel): {self.player.velocity_x:.3f}', True, GRAY)
-        y_text = self.xy_font.render(f'y-vel(pixel): {self.player.velocity_y:.3f}', True, GRAY)
+        x_text = self.xy_font.render(f'x-vel(pixel): {self.player.dx:.3f}', True, GRAY)
+        y_text = self.xy_font.render(f'y-vel(pixel): {self.player.dy:.3f}', True, GRAY)
         sprint_text = self.speed_font.render(f'SPRINT: {self.player.is_sprinting} CD: {self.player.in_sprint_cooldown} SF: {sprint_factor:.1f}', True, bool_color1)
         crouch_text = self.speed_font.render(f'CROUCH: {self.player.is_crouching} CD: N/A  CF: {crouch_factor:.1f}', True, bool_color2)
 
