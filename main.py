@@ -25,6 +25,7 @@ class HorrorCube:
 
     def run_game(self):
         """Start the main loop of the game."""
+        direction_flag = self.player.direction
         while True:
             self._check_events()
             self.player.update()
@@ -39,7 +40,10 @@ class HorrorCube:
             pygame.display.flip()
             self._update_screen()
             self.clock.tick(60)
-            print(self.player.velocity_x, self.player.velocity_y, self.player.moving_down)
+            if direction_flag != self.player.direction:
+                print(self.player.direction)
+                print(self.player.velocity_x, self.player.velocity_y, self.player.moving_down)
+                direction_flag = self.player.direction
 
     def _check_events(self):
         """Respond to keypresses and mouse events."""
