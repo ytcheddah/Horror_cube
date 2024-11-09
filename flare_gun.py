@@ -1,4 +1,5 @@
 import pygame 
+import math
 from pygame.sprite import Sprite
 
 class Flare(Sprite):
@@ -51,17 +52,17 @@ class Flare(Sprite):
         elif self.direction == "down" or self.direction == None:
             self.y += self.settings.flare_speed
         elif self.direction == "upright":
-            self.x += self.settings.flare_speed
-            self.y -= self.settings.flare_speed
+            self.x += self.settings.flare_speed / math.sqrt(2)
+            self.y -= self.settings.flare_speed / math.sqrt(2)
         elif self.direction == "upleft":
-            self.x -= self.settings.flare_speed
-            self.y -= self.settings.flare_speed
+            self.x -= self.settings.flare_speed / math.sqrt(2)
+            self.y -= self.settings.flare_speed / math.sqrt(2)
         elif self.direction == "downright":
-            self.x += self.settings.flare_speed
-            self.y += self.settings.flare_speed
+            self.x += self.settings.flare_speed / math.sqrt(2)
+            self.y += self.settings.flare_speed / math.sqrt(2)
         elif self.direction == "downleft":
-            self.x -= self.settings.flare_speed
-            self.y += self.settings.flare_speed
+            self.x -= self.settings.flare_speed / math.sqrt(2)
+            self.y += self.settings.flare_speed / math.sqrt(2)
 
         # Update rect position 
         self.rect.x = self.x 
