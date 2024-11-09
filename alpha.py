@@ -2,7 +2,9 @@ import sys
 import os
 import pygame 
 from SettingsClass import Settings
-from player import Player 
+from player import Player
+from actions import Action, EscapeAction, MovementAction
+from input_handlers import EventHandler
 from flare_gun import Flare
 from psyche_bar import PsycheBar
 
@@ -43,11 +45,22 @@ class HorrorCube:
 
     def _check_events(self):
         """Respond to keypresses and mouse events."""
-
+        event_handler = EventHandler()
         for event in pygame.event.get():
+
+            action = event_handler.handle_events 
+            if action is None:
+                continue
+
+            if isinstance(action, MovementAction):
+                player_x += action.dx
+                player_y += action.dy
+
+            elif isinstance(action, EscapeAction):
+                raise SystemExit
             
-            if event.type == pygame.QUIT:
-                sys.exit()
+            # if event.type == pygame.QUIT:
+            #     sys.exit()
             elif event.type == pygame.KEYDOWN:
                 self._check_keydown_event(event)
             elif event.type == pygame.KEYUP:
@@ -87,17 +100,13 @@ class HorrorCube:
            
             # Player movement
             if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
-                self.player.moving_right = True
-                self.player.direction = 'right'
+                action = MovementAction(dx=self.settings.player_speed, dy=0)
             elif event.key == pygame.K_LEFT or event.key == pygame.K_a:
-                self.player.moving_left = True
-                self.player.direction = 'left'
+                action = MovementAction(dx=-self.settings.player_speed, dy =0)
             elif event.key == pygame.K_UP or event.key == pygame.K_w:
-                self.player.moving_up = True
-                self.player.direction = 'up'
+                action = MovementAction(dx=0, dy=self.settings.player_speed)
             elif event.key == pygame.K_DOWN or event.key == pygame.K_s:
-                self.player.moving_down = True
-                self.player.direction = 'down'
+                action = MovementAction(dx=0, dy=self.settings.player_speed)
             # Shoot flare.
             elif event.key == pygame.K_SPACE:
                 self._shoot_flare()
@@ -170,7 +179,7 @@ class HorrorCube:
 # image_path = os.path.join(os.path.dirname(__file__), 'images', 'MainCharacter', 'MC_Simpleton_SpritSheet.png')
 # print("Image path:", image_path)  # Debug line
 
-if __name__ == "__main__":
+if __name__ == "__alpha__":
     hc = HorrorCube()
     hc.run_game()
         
