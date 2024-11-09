@@ -174,7 +174,7 @@ class HorrorCube:
         self.screen.fill(self.settings.bg_color)
         for flare in self.flares.sprites():
             flare.draw_flare()
-        self.player.blitplayer()   
+        self.player.blitplayer()
 
 # image_path = os.path.join(os.path.dirname(__file__), 'images', 'MainCharacter', 'MC_Simpleton_SpritSheet.png')
 # print("Image path:", image_path)  # Debug line

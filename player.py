@@ -8,7 +8,7 @@ class Player(Character):
 
     def __init__(self, hc_game):
         """Initialize the player class and sets its starting position"""
-        self.screen = hc_game.screen 
+        self.screen = hc_game.screen
         self.screen_rect = hc_game.screen.get_rect()
 
         # Load the player image and its rect
